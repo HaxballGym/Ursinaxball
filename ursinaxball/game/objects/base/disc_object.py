@@ -1,6 +1,6 @@
-from typing import Tuple
 from ursinaxball.game.common_values import COLLISION_FLAG_ALL
 from ursinaxball.game.objects.base import PhysicsObject
+from ursinaxball.shaders import sdf_circle
 
 from ursina import Entity
 
@@ -70,15 +70,27 @@ class Disc(PhysicsObject):
         self.color = copy.copy(other.color)
 
     def get_entity(self) -> Entity:
-        disc_entity = Entity(
-            model="quad",
-            texture="circle_outlined",
+        disc_parent = Entity(
             x=self.position[0],
             y=self.position[1],
             z=0,
-            color=self.parse_color_entity(self.color),
-            scale=(self.radius + 0.5) * 2,
             always_on_top=True,
         )
 
-        return disc_entity
+        disc_outline_entity = Entity(
+            parent=disc_parent,
+            model="quad",
+            color=self.parse_color_entity("000000"),
+            shader=sdf_circle,
+            scale=(self.radius + 1) * 2,
+        )
+
+        disc_entity = Entity(
+            parent=disc_parent,
+            model="quad",
+            color=self.parse_color_entity(self.color),
+            shader=sdf_circle,
+            scale=(self.radius - 1) * 2,
+        )
+
+        return disc_parent

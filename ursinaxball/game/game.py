@@ -62,6 +62,12 @@ class Game:
         player.action = action
         player.resolve_movement(self.stadium_game, self.score)
 
+    def get_player_by_id(self, player_id: int) -> PlayerHandler | None:
+        for player in self.players:
+            if player.id == player_id:
+                return player
+        return None
+
     def load_map(self, map_file: str) -> None:
         """
         Loads a map from a hbs file.

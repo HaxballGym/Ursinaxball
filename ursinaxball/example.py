@@ -1,4 +1,3 @@
-from pprint import pprint
 import time
 import random
 from ursina import held_keys, Keys
@@ -8,7 +7,7 @@ from ursinaxball.game.modules import GameScore, PlayerHandler
 
 game = Game(folder_rec="./recordings/")
 team_size = 1
-tick_skip = 6
+tick_skip = 15
 tick_limit = 1 * 60 * 60
 
 
@@ -21,7 +20,7 @@ players_blue = [
     PlayerHandler(f"P{team_size + i}", common_values.TEAM_BLUE_ID)
     for i in range(team_size)
 ]
-players = players_red
+players = players_red + players_blue
 
 game.add_players(players)
 
@@ -58,11 +57,13 @@ while True:
     done = False
     steps = 0
     t0 = time.time()
+    actions = [actions_player, [0, 0, 0]]
     while not done and steps < tick_limit:
         action_handle()
-        actions = [actions_player]
-        # if steps % (tick_skip + 1) == 0:
-        #     actions[1] = action_sample()
+        actions[0] = actions_player
+        if steps % (tick_skip + 1) == 0:
+            # actions[0] = action_sample()
+            actions[1] = action_sample()
         done = game.step(actions)
         steps += 1
 

@@ -30,7 +30,7 @@ class PlayerHandler(object):
         self.kicking = False
         # Once you kick the ball, the player should stop kicking. kick_cancel is used to make sure the mechanism works.
         self._kick_cancel = False
-        self.disc: PlayerPhysics = PlayerPhysics()
+        self.disc: PlayerPhysics = PlayerPhysics(self.id)
         self.player_data = PlayerData()
 
         self.set_player_color()
@@ -41,7 +41,7 @@ class PlayerHandler(object):
         elif self.team == TEAM_BLUE_ID:
             self.disc.color = TEAM_BLUE_COLOR
 
-    def is_player_kicking(self):
+    def is_kicking(self):
         return self.kicking and not self._kick_cancel
 
     def resolve_movement(self, stadium_game: Stadium, game_score: GameScore) -> None:
@@ -56,7 +56,7 @@ class PlayerHandler(object):
             ) != 0 and disc_stadium != self.disc:
                 dist = np.linalg.norm(disc_stadium.position - self.disc.position)
                 if (dist - self.disc.radius - disc_stadium.radius) < 4:
-                    if self.is_player_kicking():
+                    if self.is_kicking():
                         # Player kicks the ball
                         normal = (disc_stadium.position - self.disc.position) / dist
                         disc_stadium.velocity += normal * self.disc.kick_strength
@@ -73,7 +73,7 @@ class PlayerHandler(object):
         )
         player_acceleration = (
             self.disc.kicking_acceleration
-            if self.is_player_kicking()
+            if self.is_kicking()
             else self.disc.acceleration
         )
         self.disc.velocity += input_direction * player_acceleration

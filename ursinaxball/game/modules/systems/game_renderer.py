@@ -1,5 +1,6 @@
-from ursina import Ursina, window, camera, Vec2, destroy, application
-from pathlib import Path
+from ursina import Ursina, Entity, window, color, camera, Vec2, destroy
+
+from ursinaxball.game.objects.base import Disc
 
 
 class GameRenderer(object):
@@ -12,11 +13,25 @@ class GameRenderer(object):
         self.UI_strings = []
         self.UI_fixed_entities = []
 
+    def get_disc_player(self, disc: Disc):
+        if not hasattr(disc, "player_id"):
+            return None
+        return self.game.get_player_by_id(disc.player_id)
+
+    def handle_shooting(self, disc: Disc, entity: Entity) -> None:
+        player = self.get_disc_player(disc)
+        if player is None:
+            return
+        if player.is_kicking():
+            entity.children[0].color = color.white
+        else:
+            entity.children[0].color = color.black
+
     def start(self) -> None:
 
         if self.app is None:
             window.borderless = False
-            window.vsync = True
+            window.vsync = False
 
             self.app = Ursina(
                 title="HaxballGym",
@@ -42,7 +57,7 @@ class GameRenderer(object):
     def update(self):
         for entity, game_disc in zip(self.disc_entities, self.game.stadium_game.discs):
             entity.position = game_disc.position
-            entity.texture = "circle_outlined"
+            self.handle_shooting(game_disc, entity)
 
         if self.UI_strings[0].text != self.game.score.get_score_string():
             self.UI_strings[0].text = self.game.score.get_score_string()

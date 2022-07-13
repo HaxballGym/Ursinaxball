@@ -8,11 +8,12 @@ class PlayerPhysics(Disc):
     A class to represent the player disc object from the game.
     """
 
-    def __init__(self, data_object=None, data_stadium=None):
+    def __init__(self, player_id: int, data_object=None, data_stadium=None):
 
         if data_object is None:
             data_object = {}
 
+        self.player_id = player_id
         self.acceleration: float = data_object.get("acceleration")
         self.kicking_acceleration: float = data_object.get("kickingAcceleration")
         self.kicking_damping: float = data_object.get("kickingDamping")
