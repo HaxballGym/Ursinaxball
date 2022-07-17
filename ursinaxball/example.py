@@ -2,10 +2,14 @@ import time
 import random
 from ursina import held_keys, Keys
 
-from ursinaxball.game import Game, common_values
+from ursinaxball.game import Game
+from ursinaxball.game.common_values import TeamID
 from ursinaxball.game.modules import GameScore, PlayerHandler
 
-game = Game(folder_rec="./recordings/")
+game = Game(
+    folder_rec="./recordings/",
+    enable_vsync=True,
+)
 team_size = 1
 tick_skip = 15
 tick_limit = 1 * 60 * 60
@@ -13,12 +17,9 @@ tick_limit = 1 * 60 * 60
 
 game.score = GameScore(time_limit=1, score_limit=1)
 
-players_red = [
-    PlayerHandler(f"P{i}", common_values.TEAM_RED_ID) for i in range(team_size)
-]
+players_red = [PlayerHandler(f"P{i}", TeamID.RED) for i in range(team_size)]
 players_blue = [
-    PlayerHandler(f"P{team_size + i}", common_values.TEAM_BLUE_ID)
-    for i in range(team_size)
+    PlayerHandler(f"P{team_size + i}", TeamID.BLUE) for i in range(team_size)
 ]
 players = players_red + players_blue
 

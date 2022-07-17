@@ -1,33 +1,87 @@
-COLLISION_FLAG_NONE = 0
-COLLISION_FLAG_BALL = 1
-COLLISION_FLAG_RED = 2
-COLLISION_FLAG_BLUE = 4
-COLLISION_FLAG_REDKO = 8
-COLLISION_FLAG_BLUEKO = 16
-COLLISION_FLAG_WALL = 32
-COLLISION_FLAG_ALL = 63
-COLLISION_FLAG_KICK = 64
-COLLISION_FLAG_SCORE = 128
-COLLISION_FLAG_C0 = 268435456
-COLLISION_FLAG_C1 = 536870912
-COLLISION_FLAG_C2 = 1073741824
-COLLISION_FLAG_C3 = -2147483648
+from enum import IntEnum, IntFlag, Enum
+
+
+class CollisionFlag(IntFlag):
+    NONE = 0
+    BALL = 1
+    RED = 2
+    BLUE = 4
+    REDKO = 8
+    BLUEKO = 16
+    WALL = 32
+    ALL = 63
+    KICK = 64
+    SCORE = 128
+    C0 = 268435456
+    C1 = 536870912
+    C2 = 1073741824
+    C3 = -2147483648
+
+
+class TeamID(IntEnum):
+    SPECTATOR = 0
+    RED = 1
+    BLUE = 2
+
+
+class GameState(IntEnum):
+    KICKOFF = 0
+    PLAYING = 1
+    GOAL = 2
+    END = 3
+
+
+class ActionBin(IntEnum):
+    UP = 0
+    RIGHT = 1
+    KICK = 2
+
+
+class Input(IntEnum):
+    UP = 4
+    DOWN = 1
+    LEFT = 2
+    RIGHT = 8
+    SHOOT = 16
+
+
+class BaseMap(str, Enum):
+    CLASSIC = "classic.hbs"
+    BIG = "big.hbs"
+    FUTSAL_CLASSIC = "futsal-classic.hbs"
+    FUTSAL_BIG = "futsal-big.hbs"
+    PENALTY = "penalty-soccer.hbs"
+
+
+class TeamColor(str, Enum):
+    RED = "E56E56"
+    BLUE = "5689E5"
+
+
+GRASS_BORDER_COLOR = "C7E6BD"
+HOCKEY_BORDER_COLOR = "E9CC6E"
+DEFAULT_BORDER_COLOR = "000000"
+
+GRASS_FILL_COLOR = "718C5A"
+HOCKEY_FILL_COLOR = "555555"
+DEFAULT_FILL_COLOR = "000000"
+
 
 DICT_COLLISION = {
-    "": COLLISION_FLAG_NONE,
-    "ball": COLLISION_FLAG_BALL,
-    "red": COLLISION_FLAG_RED,
-    "blue": COLLISION_FLAG_BLUE,
-    "redKO": COLLISION_FLAG_REDKO,
-    "blueKO": COLLISION_FLAG_BLUEKO,
-    "wall": COLLISION_FLAG_WALL,
-    "all": COLLISION_FLAG_ALL,
-    "kick": COLLISION_FLAG_KICK,
-    "score": COLLISION_FLAG_SCORE,
-    "c0": COLLISION_FLAG_C0,
-    "c1": COLLISION_FLAG_C1,
-    "c2": COLLISION_FLAG_C2,
-    "c3": COLLISION_FLAG_C3,
+    "": CollisionFlag.NONE,
+    "ball": CollisionFlag.BALL,
+    "red": CollisionFlag.RED,
+    "blue": CollisionFlag.BLUE,
+    "redKO": CollisionFlag.REDKO,
+    "blueKO": CollisionFlag.BLUEKO,
+    "wall": CollisionFlag.WALL,
+    "all": CollisionFlag.ALL,
+    "kick": CollisionFlag.KICK,
+    "score": CollisionFlag.SCORE,
+    "c0": CollisionFlag.C0,
+    "c1": CollisionFlag.C1,
+    "c2": CollisionFlag.C2,
+    "c3": CollisionFlag.C3,
 }
 
 DICT_KEYS = {
@@ -42,40 +96,15 @@ DICT_KEYS = {
     "bias": "bias",
     "vis": "visible",
     "color": "color",
+    "spawnDistance": "spawn_distance",
+    "kickOffRadius": "kickoff_radius",
+    "cornerRadius": "corner_radius",
+    "pos": "position",
+    "dist": "distance_origin",
+    "vertexes": "vertices",
+    "bg": "background",
+    "goalLine": "goal_line",
+    "speed": "velocity",
+    "cameraWidth": "camera_width",
+    "cameraHeight": "camera_height",
 }
-
-TEAM_SPECTATOR_ID = 0
-TEAM_RED_ID = 1
-TEAM_BLUE_ID = 2
-
-GAME_STATE_KICKOFF = 0
-GAME_STATE_PLAYING = 1
-GAME_STATE_GOAL = 2
-GAME_STATE_END = 3
-
-ACTION_BIN_UP = 0
-ACTION_BIN_RIGHT = 1
-ACTION_BIN_KICK = 2
-
-INPUT_UP = 4
-INPUT_LEFT = 2
-INPUT_DOWN = 1
-INPUT_RIGHT = 8
-INPUT_SHOOT = 16
-
-MAP_CLASSIC = "classic.hbs"
-MAP_BIG = "big.hbs"
-MAP_FUTSAL_CLASSIC = "futsal-classic.hbs"
-MAP_FUTSAL_BIG = "futsal-big.hbs"
-MAP_PENALTY = "penalty-soccer.hbs"
-
-TEAM_RED_COLOR = "E56E56"
-TEAM_BLUE_COLOR = "5689E5"
-
-GRASS_BORDER_COLOR = "C7E6BD"
-HOCKEY_BORDER_COLOR = "E9CC6E"
-DEFAULT_BORDER_COLOR = "000000"
-
-GRASS_FILL_COLOR = "718C5A"
-HOCKEY_FILL_COLOR = "555555"
-DEFAULT_FILL_COLOR = "000000"

@@ -12,6 +12,7 @@ from ursinaxball.game.objects.base import (
 )
 import json
 import importlib.resources as pkg_resources
+from ursinaxball.game.common_values import BaseMap
 
 from ursinaxball.game import stadiums
 
@@ -75,5 +76,6 @@ def load_stadium_hbs(file_name: str) -> Stadium:
 
 
 if __name__ == "__main__":
-    stadium = load_stadium_hbs("classic.hbs")
+    haxball_map = BaseMap.CLASSIC
+    stadium = load_stadium_hbs(haxball_map)
     print(stadium.name)

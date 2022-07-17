@@ -1,4 +1,4 @@
-from ursinaxball.game.common_values import COLLISION_FLAG_WALL, COLLISION_FLAG_ALL
+from ursinaxball.game.common_values import CollisionFlag
 from ursinaxball.game.objects.base import PhysicsObject
 import numpy as np
 
@@ -33,8 +33,8 @@ class Vertex(PhysicsObject):
         Applies the default values to the vertex if they are none
         """
         if self.collision_group is None:
-            self.collision_group = COLLISION_FLAG_WALL
+            self.collision_group = CollisionFlag.WALL
         if self.collision_mask is None:
-            self.collision_mask = COLLISION_FLAG_ALL
+            self.collision_mask = CollisionFlag.ALL
         if self.bouncing_coefficient is None:
             self.bouncing_coefficient = 1

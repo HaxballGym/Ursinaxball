@@ -1,12 +1,4 @@
-from ursinaxball.game.common_values import (
-    TEAM_RED_ID,
-    TEAM_BLUE_ID,
-    TEAM_SPECTATOR_ID,
-    GAME_STATE_KICKOFF,
-    GAME_STATE_PLAYING,
-    TEAM_RED_COLOR,
-    TEAM_BLUE_COLOR,
-)
+from ursinaxball.game.common_values import TeamID, GameState, TeamColor
 from ursinaxball.game.objects.base import PhysicsObject
 
 from ursina import *
@@ -26,9 +18,9 @@ class GameScore(object):
         self.animation_timeout = 0
 
     def step(self, state: int) -> None:
-        if state == GAME_STATE_KICKOFF:
+        if state == GameState.KICKOFF:
             self.total_ticks += 1
-        elif state == GAME_STATE_PLAYING:
+        elif state == GameState.PLAYING:
             self.total_ticks += 1
             self.ticks += 1
             self.time = self.ticks / 60
@@ -41,9 +33,9 @@ class GameScore(object):
         self.blue = 0
 
     def update_score(self, team_id: int) -> None:
-        if team_id == TEAM_BLUE_ID:
+        if team_id == TeamID.BLUE:
             self.red += 1
-        elif team_id == TEAM_RED_ID:
+        elif team_id == TeamID.RED:
             self.blue += 1
         else:
             raise ValueError("Invalid team_id: {}".format(team_id))
@@ -71,11 +63,11 @@ class GameScore(object):
 
     def get_winner(self) -> int:
         if self.red > self.blue:
-            return TEAM_RED_ID
+            return TeamID.RED
         elif self.blue > self.red:
-            return TEAM_BLUE_ID
+            return TeamID.BLUE
         else:
-            return TEAM_SPECTATOR_ID
+            return TeamID.SPECTATOR
 
     def get_time_string(self) -> str:
         return f"{int(self.time / 60):02d}:{int(self.time % 60):02d}"
@@ -118,7 +110,7 @@ class GameScore(object):
                 aspect=1,
                 radius=0.1,
             ),
-            color=PhysicsObject.parse_color_entity(TEAM_RED_COLOR),
+            color=PhysicsObject.parse_color_entity(TeamColor.RED),
         )
 
         blue_score_square = Entity(
@@ -129,7 +121,7 @@ class GameScore(object):
                 aspect=1,
                 radius=0.1,
             ),
-            color=PhysicsObject.parse_color_entity(TEAM_BLUE_COLOR),
+            color=PhysicsObject.parse_color_entity(TeamColor.BLUE),
         )
 
         return [background_score, red_score_square, blue_score_square]

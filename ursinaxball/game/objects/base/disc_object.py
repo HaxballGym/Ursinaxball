@@ -1,4 +1,4 @@
-from ursinaxball.game.common_values import COLLISION_FLAG_ALL
+from ursinaxball.game.common_values import CollisionFlag
 from ursinaxball.game.objects.base import PhysicsObject
 from ursinaxball.shaders import sdf_circle
 
@@ -39,9 +39,9 @@ class Disc(PhysicsObject):
 
     def apply_default_values(self):
         if self.collision_group is None:
-            self.collision_group = COLLISION_FLAG_ALL
+            self.collision_group = CollisionFlag.ALL
         if self.collision_mask is None:
-            self.collision_mask = COLLISION_FLAG_ALL
+            self.collision_mask = CollisionFlag.ALL
         if np.isnan(self.velocity):
             self.velocity = np.zeros(2)
         if np.isnan(self.gravity):
@@ -82,7 +82,7 @@ class Disc(PhysicsObject):
             model="quad",
             color=self.parse_color_entity("000000"),
             shader=sdf_circle,
-            scale=(self.radius + 1) * 2,
+            scale=(self.radius + 0.75) * 2,
         )
 
         disc_entity = Entity(
@@ -90,7 +90,7 @@ class Disc(PhysicsObject):
             model="quad",
             color=self.parse_color_entity(self.color),
             shader=sdf_circle,
-            scale=(self.radius - 1) * 2,
+            scale=(self.radius - 0.75) * 2,
         )
 
         return disc_parent

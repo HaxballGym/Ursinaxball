@@ -3,13 +3,7 @@ import msgpack
 import os.path
 import time
 
-from ursinaxball.game.common_values import (
-    INPUT_UP,
-    INPUT_DOWN,
-    INPUT_RIGHT,
-    INPUT_LEFT,
-    INPUT_SHOOT,
-)
+from ursinaxball.game.common_values import Input
 
 # This is temporary, until we have a proper game recorder system
 # In the meantime, we will use the same recording system than my JS version
@@ -19,17 +13,17 @@ def input_translate_js(actions: np.ndarray) -> int:
     result = 0
 
     if actions[0] == -1:
-        result += INPUT_LEFT
+        result += Input.LEFT
     elif actions[0] == 1:
-        result += INPUT_RIGHT
+        result += Input.RIGHT
 
     if actions[1] == -1:
-        result += INPUT_DOWN
+        result += Input.DOWN
     elif actions[1] == 1:
-        result += INPUT_UP
+        result += Input.UP
 
     if actions[2]:
-        result += INPUT_SHOOT
+        result += Input.SHOOT
 
     return result
 

@@ -4,19 +4,10 @@ import copy
 import logging
 
 from ursinaxball.game.common_values import (
-    COLLISION_FLAG_BLUE,
-    COLLISION_FLAG_BLUEKO,
-    COLLISION_FLAG_RED,
-    COLLISION_FLAG_REDKO,
-    TEAM_RED_ID,
-    TEAM_BLUE_ID,
-    TEAM_SPECTATOR_ID,
-    GAME_STATE_KICKOFF,
-    GAME_STATE_PLAYING,
-    GAME_STATE_GOAL,
-    GAME_STATE_END,
-    COLLISION_FLAG_SCORE,
-    MAP_CLASSIC,
+    CollisionFlag,
+    TeamID,
+    GameState,
+    BaseMap,
 )
 from ursinaxball.game.objects.base import Disc
 from ursinaxball.game.objects.stadium_object import Stadium, load_stadium_hbs
@@ -33,23 +24,24 @@ from ursinaxball.game.modules import (
 class Game:
     def __init__(
         self,
-        stadium_file: str = MAP_CLASSIC,
+        stadium_file: str = BaseMap.CLASSIC,
         folder_rec: str = "",
         logging_level: int = logging.DEBUG,
+        enable_vsync: bool = True,
     ):
 
         logging.basicConfig(level=logging_level, format="%(levelname)s - %(message)s")
 
         self.folder_rec = folder_rec
         self.score = GameScore()
-        self.state = GAME_STATE_KICKOFF
+        self.state = GameState.KICKOFF
         self.players: List[PlayerHandler] = []
-        self.team_kickoff = TEAM_RED_ID
+        self.team_kickoff = TeamID.RED
         self.stadium_file = stadium_file
         self.stadium_store: Stadium = load_stadium_hbs(self.stadium_file)
         self.stadium_game: Stadium = copy.deepcopy(self.stadium_store)
         self.recorder = GameActionRecorder(self, self.folder_rec)
-        self.renderer = GameRenderer(self)
+        self.renderer = GameRenderer(self, enable_vsync)
 
     def add_player(self, player: PlayerHandler) -> None:
         self.players.append(player)
@@ -80,7 +72,7 @@ class Game:
         current_disc_position = [
             disc
             for disc in self.stadium_game.discs
-            if disc.collision_group & COLLISION_FLAG_SCORE != 0
+            if disc.collision_group & CollisionFlag.SCORE != 0
         ]
         for previous_disc_pos, current_disc_pos in zip(
             previous_discs_position, current_disc_position
@@ -99,58 +91,58 @@ class Game:
                     * np.cross(current_p0, goal_vector)
                     <= 0
                 ):
-                    team_score = TEAM_RED_ID if goal.team == "red" else TEAM_BLUE_ID
+                    team_score = TeamID.RED if goal.team == "red" else TeamID.BLUE
                     return team_score
 
-        return TEAM_SPECTATOR_ID
+        return TeamID.SPECTATOR
 
     def handle_game_state(self, previous_discs_position: List[Disc]) -> bool:
 
         self.score.step(self.state)
 
-        if self.state == GAME_STATE_KICKOFF:
+        if self.state == GameState.KICKOFF:
             for player in self.players:
                 if player.disc.position is not None:
                     kickoff_collision = (
-                        COLLISION_FLAG_REDKO
-                        if self.team_kickoff == TEAM_RED_ID
-                        else COLLISION_FLAG_BLUEKO
+                        CollisionFlag.REDKO
+                        if self.team_kickoff == TeamID.RED
+                        else CollisionFlag.BLUEKO
                     )
                     player.disc.collision_mask = 39 | kickoff_collision
             ball_disc = self.stadium_game.discs[0]
             if np.linalg.norm(ball_disc.velocity) > 0:
                 logging.debug("Kickoff made")
-                self.state = GAME_STATE_PLAYING
+                self.state = GameState.PLAYING
 
-        elif self.state == GAME_STATE_PLAYING:
+        elif self.state == GameState.PLAYING:
             for player in self.players:
                 if player.disc.position is not None:
                     player.disc.collision_mask = 39
             team_goal = self.check_goal(previous_discs_position)
-            if team_goal != TEAM_SPECTATOR_ID:
-                team_goal_string = "Red" if team_goal == TEAM_RED_ID else "Blue"
+            if team_goal != TeamID.SPECTATOR:
+                team_goal_string = "Red" if team_goal == TeamID.RED else "Blue"
                 logging.debug(f"Team {team_goal_string} conceded a goal")
-                self.state = GAME_STATE_GOAL
+                self.state = GameState.GOAL
                 self.score.update_score(team_goal)
                 if not self.score.is_game_over():
                     self.team_kickoff = (
-                        TEAM_BLUE_ID if team_goal == TEAM_BLUE_ID else TEAM_RED_ID
+                        TeamID.BLUE if team_goal == TeamID.BLUE else TeamID.RED
                     )
             elif self.score.is_game_over():
-                self.state = GAME_STATE_END
+                self.state = GameState.END
                 self.score.end_animation()
 
-        elif self.state == GAME_STATE_GOAL:
+        elif self.state == GameState.GOAL:
             self.score.animation_timeout -= 1
             if not self.score.is_animation():
                 if self.score.is_game_over():
-                    self.state = GAME_STATE_END
+                    self.state = GameState.END
                     self.score.end_animation()
                 else:
                     self.reset_discs_positions()
-                    self.state = GAME_STATE_KICKOFF
+                    self.state = GameState.KICKOFF
 
-        elif self.state == GAME_STATE_END:
+        elif self.state == GameState.END:
             self.score.animation_timeout -= 1
             if not self.score.is_animation():
                 return True
@@ -177,13 +169,11 @@ class Game:
         for player in self.players:
             player.disc.copy(self.stadium_store.player_physics)
             player.disc.collision_group |= (
-                COLLISION_FLAG_RED
-                if player.team == TEAM_RED_ID
-                else COLLISION_FLAG_BLUE
+                CollisionFlag.RED if player.team == TeamID.RED else CollisionFlag.BLUE
             )
             player.set_player_color()
 
-            if player.team == TEAM_RED_ID:
+            if player.team == TeamID.RED:
                 player.disc.position[0] = -self.stadium_game.spawn_distance
                 if (red_count % 2) == 1:
                     player.disc.position[1] = -55 * (red_count + 1 >> 1)
@@ -191,7 +181,7 @@ class Game:
                     player.disc.position[1] = 55 * (red_count + 1 >> 1)
                 red_count += 1
 
-            elif player.team == TEAM_BLUE_ID:
+            elif player.team == TeamID.BLUE:
                 player.disc.position[0] = self.stadium_game.spawn_distance
                 if (blue_count % 2) == 1:
                     player.disc.position[1] = -55 * (blue_count + 1 >> 1)
@@ -213,7 +203,7 @@ class Game:
         previous_discs_position = [
             copy.deepcopy(disc)
             for disc in self.stadium_game.discs
-            if disc.collision_group & COLLISION_FLAG_SCORE != 0
+            if disc.collision_group & CollisionFlag.SCORE != 0
         ]
         update_discs(self.stadium_game)
         resolve_collisions(self.stadium_game)
@@ -232,8 +222,8 @@ class Game:
         )
 
         self.score = GameScore()
-        self.state = GAME_STATE_KICKOFF
-        self.team_kickoff = TEAM_RED_ID
+        self.state = GameState.KICKOFF
+        self.team_kickoff = TeamID.RED
         self.stadium_game: Stadium = copy.deepcopy(self.stadium_store)
         self.recorder = GameActionRecorder(self, self.folder_rec)
         self.renderer.stop()
@@ -249,8 +239,8 @@ if __name__ == "__main__":
     custom_score = GameScore(time_limit=1, score_limit=1)
     game.score = custom_score
 
-    player_red = PlayerHandler("P0", TEAM_RED_ID)
-    player_blue = PlayerHandler("P1", TEAM_BLUE_ID)
+    player_red = PlayerHandler("P0", TeamID.RED)
+    player_blue = PlayerHandler("P1", TeamID.BLUE)
     game.add_players([player_red, player_blue])
 
     game.start()

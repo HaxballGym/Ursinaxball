@@ -1,11 +1,4 @@
-from ursinaxball.game.common_values import (
-    COLLISION_FLAG_BALL,
-    COLLISION_FLAG_SCORE,
-    COLLISION_FLAG_KICK,
-    COLLISION_FLAG_ALL,
-    COLLISION_FLAG_REDKO,
-    COLLISION_FLAG_BLUEKO,
-)
+from ursinaxball.game.common_values import CollisionFlag
 from ursinaxball.game.objects.base import Disc
 import numpy as np
 
@@ -27,10 +20,10 @@ class BallPhysics(Disc):
         self.gravity = np.array([0, 0], dtype=float)
 
         self.collision_group = (
-            self.collision_group | COLLISION_FLAG_SCORE | COLLISION_FLAG_KICK
+            self.collision_group | CollisionFlag.SCORE | CollisionFlag.KICK
         )
         self.collision_mask = (
-            self.collision_mask ^ COLLISION_FLAG_REDKO ^ COLLISION_FLAG_BLUEKO
+            self.collision_mask ^ CollisionFlag.REDKO ^ CollisionFlag.BLUEKO
         )
         del self.trait
 
@@ -41,9 +34,9 @@ class BallPhysics(Disc):
         if self.bouncing_coefficient is None:
             self.bouncing_coefficient = 0.5
         if self.collision_group is None:
-            self.collision_group = COLLISION_FLAG_BALL
+            self.collision_group = CollisionFlag.BALL
         if self.collision_mask is None:
-            self.collision_mask = COLLISION_FLAG_ALL
+            self.collision_mask = CollisionFlag.ALL
         if self.radius is None:
             self.radius = 10
         if self.inverse_mass is None:

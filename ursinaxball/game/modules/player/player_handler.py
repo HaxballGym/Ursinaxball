@@ -2,13 +2,10 @@ import numpy as np
 import itertools
 
 from ursinaxball.game.common_values import (
-    TEAM_RED_ID,
-    TEAM_BLUE_ID,
-    TEAM_SPECTATOR_ID,
-    TEAM_RED_COLOR,
-    TEAM_BLUE_COLOR,
-    ACTION_BIN_KICK,
-    COLLISION_FLAG_KICK,
+    ActionBin,
+    CollisionFlag,
+    TeamID,
+    TeamColor,
 )
 from ursinaxball.game.modules.player import PlayerData
 from ursinaxball.game.objects.base import PlayerPhysics
@@ -20,7 +17,7 @@ class PlayerHandler(object):
 
     id_iterate = itertools.count()
 
-    def __init__(self, name: str, team: int = TEAM_SPECTATOR_ID) -> None:
+    def __init__(self, name: str, team: int = TeamID.SPECTATOR) -> None:
 
         self.id = next(PlayerHandler.id_iterate)
         self.name = name
@@ -36,23 +33,23 @@ class PlayerHandler(object):
         self.set_player_color()
 
     def set_player_color(self) -> None:
-        if self.team == TEAM_RED_ID:
-            self.disc.color = TEAM_RED_COLOR
-        elif self.team == TEAM_BLUE_ID:
-            self.disc.color = TEAM_BLUE_COLOR
+        if self.team == TeamID.RED:
+            self.disc.color = TeamColor.RED
+        elif self.team == TeamID.BLUE:
+            self.disc.color = TeamColor.BLUE
 
     def is_kicking(self):
         return self.kicking and not self._kick_cancel
 
     def resolve_movement(self, stadium_game: Stadium, game_score: GameScore) -> None:
         if self.disc is not None:
-            self.kicking = self.action[ACTION_BIN_KICK] == 1
-            if self.action[ACTION_BIN_KICK] == 0:
+            self.kicking = self.action[ActionBin.KICK] == 1
+            if self.action[ActionBin.KICK] == 0:
                 self._kick_cancel = False
 
         for disc_stadium in stadium_game.discs:
             if (
-                disc_stadium.collision_group & COLLISION_FLAG_KICK
+                disc_stadium.collision_group & CollisionFlag.KICK
             ) != 0 and disc_stadium != self.disc:
                 dist = np.linalg.norm(disc_stadium.position - self.disc.position)
                 if (dist - self.disc.radius - disc_stadium.radius) < 4:

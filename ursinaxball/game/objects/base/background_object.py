@@ -1,7 +1,5 @@
-from typing import List
 from numpy import pi
-from PIL import Image
-from ursina import Entity, Mesh, Pipe, Sprite, Sky, Texture, load_texture
+from ursina import Entity, Mesh, Pipe, Sky
 from ursinaxball.game.common_values import (
     GRASS_BORDER_COLOR,
     GRASS_FILL_COLOR,

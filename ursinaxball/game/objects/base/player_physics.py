@@ -1,4 +1,4 @@
-from ursinaxball.game.common_values import COLLISION_FLAG_NONE, COLLISION_FLAG_ALL
+from ursinaxball.game.common_values import CollisionFlag
 from ursinaxball.game.objects.base import Disc
 import numpy as np
 
@@ -34,9 +34,9 @@ class PlayerPhysics(Disc):
         if self.bouncing_coefficient is None:
             self.bouncing_coefficient = 0.5
         if self.collision_group is None:
-            self.collision_group = COLLISION_FLAG_NONE
+            self.collision_group = CollisionFlag.NONE
         if self.collision_mask is None:
-            self.collision_mask = COLLISION_FLAG_ALL
+            self.collision_mask = CollisionFlag.ALL
         if self.radius is None:
             self.radius = 15
         if self.inverse_mass is None:

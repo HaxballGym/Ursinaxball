@@ -14,7 +14,7 @@ void main() {
     vec4 circle_col = texture(p3d_Texture0, uv) * p3d_ColorScale;
     vec4 bg_col = vec4(0.0);
     vec2 center = vec2(0.5);
-    float smooth_cutoff = 0.0365;
+    float smooth_cutoff = 0.01;
     float radius = 0.5;
     float sdf_factor = smoothstep(
       radius, 

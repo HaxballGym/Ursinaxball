@@ -4,7 +4,7 @@ from ursinaxball.game.objects.base import Disc
 
 
 class GameRenderer(object):
-    def __init__(self, game) -> None:
+    def __init__(self, game, enable_vsync=True) -> None:
         self.game = game
         self.app: Ursina = None
         self.disc_entities = []
@@ -12,6 +12,7 @@ class GameRenderer(object):
         self.background_entities = []
         self.UI_strings = []
         self.UI_fixed_entities = []
+        self.enable_vsync = enable_vsync
 
     def get_disc_player(self, disc: Disc):
         if not hasattr(disc, "player_id"):
@@ -31,7 +32,7 @@ class GameRenderer(object):
 
         if self.app is None:
             window.borderless = False
-            window.vsync = False
+            window.vsync = self.enable_vsync
 
             self.app = Ursina(
                 title="HaxballGym",
