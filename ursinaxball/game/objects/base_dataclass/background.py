@@ -1,5 +1,6 @@
-from attr import define
 from enum import Enum
+
+from attr import define
 
 
 class BackgroundType(str, Enum):
@@ -25,6 +26,7 @@ class Background:
 
 if __name__ == "__main__":
     import json
+
     from cattr import structure
 
     json_bg = """{

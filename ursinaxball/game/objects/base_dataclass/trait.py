@@ -1,5 +1,5 @@
-from attrs import define, field
 import numpy as np
+from attrs import define, field
 
 from ursinaxball.game.common_values import CollisionFlag
 from ursinaxball.game.objects.base_dataclass.parser import (
@@ -25,6 +25,7 @@ class Trait:
 
 if __name__ == "__main__":
     import json
+
     from cattr import structure
 
     json_trait = """{

@@ -1,20 +1,20 @@
-from typing import List
-from ursinaxball.game.objects.base import (
-    Vertex,
-    Segment,
-    Plane,
-    Disc,
-    Goal,
-    Trait,
-    PlayerPhysics,
-    BallPhysics,
-    Background,
-)
-import json
 import importlib.resources as pkg_resources
-from ursinaxball.game.common_values import BaseMap
+import json
+from typing import List
 
 from ursinaxball.game import stadiums
+from ursinaxball.game.common_values import BaseMap
+from ursinaxball.game.objects.base import (
+    Background,
+    BallPhysics,
+    Disc,
+    Goal,
+    Plane,
+    PlayerPhysics,
+    Segment,
+    Trait,
+    Vertex,
+)
 
 
 class Stadium(object):

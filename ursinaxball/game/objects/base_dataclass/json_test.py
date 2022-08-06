@@ -1,9 +1,8 @@
 import importlib.resources as pkg_resources
 import json
-from pprint import pprint
 
 from ursinaxball.game import stadiums
-from ursinaxball.game.common_values import DICT_KEYS, DICT_COLLISION, CollisionFlag
+from ursinaxball.game.common_values import DICT_COLLISION, DICT_KEYS, CollisionFlag
 
 
 def rename_keys(data: dict):

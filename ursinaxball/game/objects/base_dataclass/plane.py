@@ -1,5 +1,5 @@
-from attrs import define, field
 import numpy as np
+from attrs import define, field
 
 from ursinaxball.game.common_values import CollisionFlag
 from ursinaxball.game.objects.base_dataclass.parser import converter_array
@@ -21,6 +21,7 @@ class Plane:
 
 if __name__ == "__main__":
     import json
+
     from cattr import structure
 
     json_plane = """{

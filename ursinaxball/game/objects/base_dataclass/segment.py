@@ -1,5 +1,5 @@
 from attr import define, field
-import numpy as np
+
 from ursinaxball.game.common_values import CollisionFlag
 from ursinaxball.game.objects.base_dataclass.vertex import Vertex
 
@@ -26,6 +26,7 @@ class Segment:
 
 if __name__ == "__main__":
     import json
+
     from cattr import structure
 
     json_segment = """{

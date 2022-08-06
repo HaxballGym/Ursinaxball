@@ -1,5 +1,5 @@
-from attr import define, field
 import numpy as np
+from attr import define, field
 
 from ursinaxball.game.common_values import TeamID
 from ursinaxball.game.objects.base_dataclass.parser import converter_array
@@ -17,6 +17,7 @@ class Goal:
 
 if __name__ == "__main__":
     import json
+
     from cattr import structure
 
     json_goal = """{

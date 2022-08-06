@@ -1,5 +1,5 @@
-from attrs import define, field, Factory
 import numpy as np
+from attrs import Factory, define, field
 
 from ursinaxball.game.objects.base_dataclass.parser import converter_array
 
@@ -26,6 +26,7 @@ class StadiumProps:
 
 if __name__ == "__main__":
     import json
+
     from cattr import structure
 
     json_stadium_props = """{
