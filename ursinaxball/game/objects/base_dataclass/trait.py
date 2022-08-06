@@ -2,7 +2,10 @@ from attrs import define, field
 import numpy as np
 
 from ursinaxball.game.common_values import CollisionFlag
-from ursinaxball.game.objects.base_dataclass.parser import converter_array_none
+from ursinaxball.game.objects.base_dataclass.parser import (
+    converter_array,
+    converter_array_none,
+)
 
 
 @define
@@ -25,9 +28,10 @@ if __name__ == "__main__":
     from cattr import structure
 
     json_trait = """{
-        "name": "ballArea",
-        "bouncing_coefficient": 1,
-        "visible": false
+        "bouncing_coefficient": 0.5,
+        "collision_mask": 6,
+        "visible": false,
+        "name": "kickOffBarrier"
     }"""
     t = structure(json.loads(json_trait), Trait)
     print(t)

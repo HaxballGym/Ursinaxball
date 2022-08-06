@@ -1,24 +1,25 @@
 from attr import define, field
 import numpy as np
 from ursinaxball.game.common_values import CollisionFlag
-from ursinaxball.game.objects.base_dataclass.parser import converter_array
+from ursinaxball.game.objects.base_dataclass.vertex import Vertex
 
 
 @define
-class Disc:
+class Segment:
     """
     A class to represent the state of a vertex from the game.
     """
 
-    position: np.ndarray = field(converter=converter_array)
-    velocity: np.ndarray | None = field(default=None, converter=converter_array)
-    gravity: np.ndarray | None = field(default=None, converter=converter_array)
-    radius: float | None = None
-    inverse_mass: float | None = None
-    damping: float | None = None
+    vertices_index: list[int]
+    vertices: list[Vertex] = field(init=False)
     collision_group: CollisionFlag | None = None
     collision_mask: CollisionFlag | None = None
+
     bouncing_coefficient: float | None = None
+    curve: float | None = None
+    curveF: float | None = None
+    bias: float | None = None
+    visible: bool | None = None
     color: str | None = None
     trait: str | None = None
 
@@ -27,12 +28,12 @@ if __name__ == "__main__":
     import json
     from cattr import structure
 
-    json_disc = """{
+    json_segment = """{
         "position": [
             -370,
             170
         ],
         "trait": "goalNet"
     }"""
-    d = structure(json.loads(json_disc), Disc)
-    print(d)
+    s = structure(json.loads(json_segment), Segment)
+    print(s)
