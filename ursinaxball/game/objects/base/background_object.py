@@ -1,12 +1,13 @@
 from numpy import pi
 from ursina import Entity, Mesh, Pipe, Sky
+
 from ursinaxball.game.common_values import (
+    DEFAULT_BORDER_COLOR,
+    DEFAULT_FILL_COLOR,
     GRASS_BORDER_COLOR,
     GRASS_FILL_COLOR,
     HOCKEY_BORDER_COLOR,
     HOCKEY_FILL_COLOR,
-    DEFAULT_BORDER_COLOR,
-    DEFAULT_FILL_COLOR,
 )
 from ursinaxball.game.objects.base import PhysicsObject
 

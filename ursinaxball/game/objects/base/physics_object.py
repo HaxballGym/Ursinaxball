@@ -5,8 +5,9 @@ The physics object.
 from abc import ABC, abstractmethod
 
 from numpy import cos, sin
+from ursina.color import Color, rgb
+
 from ursinaxball.game.common_values import DICT_COLLISION, DICT_KEYS
-from ursina.color import rgb, Color
 
 
 class PhysicsObject(ABC):

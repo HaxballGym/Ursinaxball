@@ -1,6 +1,8 @@
 from typing import List
-from ursinaxball.game.objects.base import PhysicsObject
+
 import numpy as np
+
+from ursinaxball.game.objects.base import PhysicsObject
 
 
 class Goal(PhysicsObject):

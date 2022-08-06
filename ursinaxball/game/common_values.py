@@ -1,4 +1,4 @@
-from enum import IntEnum, IntFlag, Enum
+from enum import Enum, IntEnum, IntFlag
 
 
 class CollisionFlag(IntFlag):
@@ -47,6 +47,7 @@ class Input(IntEnum):
 
 class BaseMap(str, Enum):
     CLASSIC = "classic.hbs"
+    ROUNDED = "rounded.hbs"
     BIG = "big.hbs"
     FUTSAL_CLASSIC = "futsal-classic.hbs"
     FUTSAL_BIG = "futsal-big.hbs"

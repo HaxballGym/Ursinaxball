@@ -1,6 +1,7 @@
+import numpy as np
+
 from ursinaxball.game.common_values import CollisionFlag
 from ursinaxball.game.objects.base import PhysicsObject
-import numpy as np
 
 
 class Plane(PhysicsObject):

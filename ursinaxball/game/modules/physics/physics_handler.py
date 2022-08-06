@@ -1,8 +1,9 @@
 from typing import Tuple
+
 import numpy as np
 
-from ursinaxball.game.objects.base import Disc, Vertex, Segment, Plane
 from ursinaxball.game.objects import Stadium
+from ursinaxball.game.objects.base import Disc, Plane, Segment, Vertex
 
 
 def resolve_disc_disc_collision(disc_a: Disc, disc_b: Disc) -> None:

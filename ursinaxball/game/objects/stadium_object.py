@@ -66,8 +66,9 @@ def load_stadium_hbs(file_name: str) -> Stadium:
     """
     Load a stadium from a file with extension hbs.
     """
+    stadium_file = file_name.value
     if file_name.endswith(".hbs"):
-        with pkg_resources.open_text(stadiums, file_name) as f:
+        with pkg_resources.open_text(stadiums, stadium_file) as f:
             data = json.load(f)
         return Stadium(data)
 

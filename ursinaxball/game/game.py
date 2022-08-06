@@ -1,24 +1,20 @@
-from typing import List
-import numpy as np
 import copy
 import logging
+from typing import List
 
-from ursinaxball.game.common_values import (
-    CollisionFlag,
-    TeamID,
-    GameState,
-    BaseMap,
+import numpy as np
+
+from ursinaxball.game.common_values import BaseMap, CollisionFlag, GameState, TeamID
+from ursinaxball.game.modules import (
+    GameActionRecorder,
+    GameRenderer,
+    GameScore,
+    PlayerHandler,
+    resolve_collisions,
+    update_discs,
 )
 from ursinaxball.game.objects.base import Disc
 from ursinaxball.game.objects.stadium_object import Stadium, load_stadium_hbs
-from ursinaxball.game.modules import (
-    GameScore,
-    GameActionRecorder,
-    resolve_collisions,
-    update_discs,
-    PlayerHandler,
-    GameRenderer,
-)
 
 
 class Game:

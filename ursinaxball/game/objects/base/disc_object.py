@@ -1,11 +1,11 @@
+import copy
+
+import numpy as np
+from ursina import Entity
+
 from ursinaxball.game.common_values import CollisionFlag
 from ursinaxball.game.objects.base import PhysicsObject
 from ursinaxball.shaders import sdf_circle
-
-from ursina import Entity
-
-import numpy as np
-import copy
 
 
 class Disc(PhysicsObject):

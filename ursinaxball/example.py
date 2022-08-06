@@ -1,6 +1,7 @@
-import time
 import random
-from ursina import held_keys, Keys
+import time
+
+from ursina import Keys, held_keys
 
 from ursinaxball.game import Game
 from ursinaxball.game.common_values import TeamID
