@@ -1,7 +1,7 @@
 import numpy as np
 
-from ursinaxball.game.common_values import CollisionFlag
-from ursinaxball.game.objects.base import Disc
+from ursinaxball.common_values import CollisionFlag
+from ursinaxball.objects.base import Disc
 
 
 class BallPhysics(Disc):

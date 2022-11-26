@@ -2,7 +2,7 @@ from typing import List
 
 import numpy as np
 
-from ursinaxball.game.objects.base import PhysicsObject
+from ursinaxball.objects.base import PhysicsObject
 
 
 class Goal(PhysicsObject):

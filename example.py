@@ -3,9 +3,9 @@ import time
 
 from ursina import Keys, held_keys
 
-from ursinaxball.game import Game
-from ursinaxball.game.common_values import TeamID, BaseMap
-from ursinaxball.game.modules import GameScore, PlayerHandler
+from ursinaxball import Game
+from ursinaxball.common_values import TeamID, BaseMap
+from ursinaxball.modules import GameScore, PlayerHandler
 
 game = Game(
     folder_rec="./recordings/",

@@ -4,8 +4,8 @@ from typing import List
 import numpy as np
 from ursina import Entity, Pipe
 
-from ursinaxball.game.common_values import CollisionFlag
-from ursinaxball.game.objects.base import PhysicsObject, Vertex
+from ursinaxball.common_values import CollisionFlag
+from ursinaxball.objects.base import PhysicsObject, Vertex
 
 
 class Segment(PhysicsObject):

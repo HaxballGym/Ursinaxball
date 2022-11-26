@@ -1,6 +1,6 @@
 from ursina import Entity, Ursina, Vec2, camera, color, destroy, window
 
-from ursinaxball.game.objects.base import Disc
+from ursinaxball.objects.base import Disc
 
 
 class GameRenderer(object):

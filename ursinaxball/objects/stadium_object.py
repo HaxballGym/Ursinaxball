@@ -2,9 +2,9 @@ import importlib.resources as pkg_resources
 import json
 from typing import List
 
-from ursinaxball.game import stadiums
-from ursinaxball.game.common_values import BaseMap
-from ursinaxball.game.objects.base import (
+from ursinaxball import stadiums
+from ursinaxball.common_values import BaseMap
+from ursinaxball.objects.base import (
     Background,
     BallPhysics,
     Disc,

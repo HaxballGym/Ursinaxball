@@ -7,7 +7,7 @@ from abc import ABC, abstractmethod
 from numpy import cos, sin
 from ursina.color import Color, rgb
 
-from ursinaxball.game.common_values import DICT_COLLISION, DICT_KEYS
+from ursinaxball.common_values import DICT_COLLISION, DICT_KEYS
 
 
 class PhysicsObject(ABC):

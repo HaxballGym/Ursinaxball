@@ -1,5 +1,5 @@
-from ursinaxball.game.objects import Stadium
-from ursinaxball.game.modules import GameScore
+from ursinaxball.objects import Stadium
+from ursinaxball.modules import GameScore
 
 
 class PlayerData(object):

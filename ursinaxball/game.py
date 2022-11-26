@@ -4,8 +4,8 @@ from typing import List
 
 import numpy as np
 
-from ursinaxball.game.common_values import BaseMap, CollisionFlag, GameState, TeamID
-from ursinaxball.game.modules import (
+from ursinaxball.common_values import BaseMap, CollisionFlag, GameState, TeamID
+from ursinaxball.modules import (
     GameActionRecorder,
     GameRenderer,
     GameScore,
@@ -13,8 +13,8 @@ from ursinaxball.game.modules import (
     resolve_collisions,
     update_discs,
 )
-from ursinaxball.game.objects.base import Disc
-from ursinaxball.game.objects.stadium_object import Stadium, load_stadium_hbs
+from ursinaxball.objects.base import Disc
+from ursinaxball.objects.stadium_object import Stadium, load_stadium_hbs
 
 log = logging.getLogger(__name__)
 

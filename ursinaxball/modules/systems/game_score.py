@@ -1,5 +1,5 @@
-from ursinaxball.game.common_values import TeamID, GameState, TeamColor
-from ursinaxball.game.objects.base import PhysicsObject
+from ursinaxball.common_values import TeamID, GameState, TeamColor
+from ursinaxball.objects.base import PhysicsObject
 
 from ursina import *
 

@@ -3,7 +3,7 @@ import msgpack
 import os.path
 import time
 
-from ursinaxball.game.common_values import Input
+from ursinaxball.common_values import Input
 
 # This is temporary, until we have a proper game recorder system
 # In the meantime, we will use the same recording system than my JS version

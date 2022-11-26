@@ -1,7 +1,7 @@
 import numpy as np
 
-from ursinaxball.game.common_values import CollisionFlag
-from ursinaxball.game.objects.base import PhysicsObject
+from ursinaxball.common_values import CollisionFlag
+from ursinaxball.objects.base import PhysicsObject
 
 
 class Vertex(PhysicsObject):

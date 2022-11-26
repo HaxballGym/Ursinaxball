@@ -1,4 +1,4 @@
-from ursinaxball.game.objects.base import PhysicsObject
+from ursinaxball.objects.base import PhysicsObject
 
 
 class Trait(PhysicsObject):

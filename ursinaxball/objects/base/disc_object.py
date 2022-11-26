@@ -3,8 +3,8 @@ import copy
 import numpy as np
 from ursina import Entity
 
-from ursinaxball.game.common_values import CollisionFlag
-from ursinaxball.game.objects.base import PhysicsObject
+from ursinaxball.common_values import CollisionFlag
+from ursinaxball.objects.base import PhysicsObject
 
 
 class Disc(PhysicsObject):

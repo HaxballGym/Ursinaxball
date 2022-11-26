@@ -1,7 +1,7 @@
 from numpy import pi
 from ursina import Entity, Mesh, Pipe, Sky
 
-from ursinaxball.game.common_values import (
+from ursinaxball.common_values import (
     DEFAULT_BORDER_COLOR,
     DEFAULT_FILL_COLOR,
     GRASS_BORDER_COLOR,
@@ -9,7 +9,7 @@ from ursinaxball.game.common_values import (
     HOCKEY_BORDER_COLOR,
     HOCKEY_FILL_COLOR,
 )
-from ursinaxball.game.objects.base import PhysicsObject
+from ursinaxball.objects.base import PhysicsObject
 
 
 class Background:
