@@ -15,3 +15,5 @@ Install the library via pip:
 ```bash
 pip install ursinaxball
 ```
+
+Once installed, copy the example.py file and run it. The game should be playing fine!
