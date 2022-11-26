@@ -16,6 +16,8 @@ from ursinaxball.game.modules import (
 from ursinaxball.game.objects.base import Disc
 from ursinaxball.game.objects.stadium_object import Stadium, load_stadium_hbs
 
+log = logging.getLogger(__name__)
+
 
 class Game:
     def __init__(
@@ -24,6 +26,7 @@ class Game:
         folder_rec: str = "",
         logging_level: int = logging.DEBUG,
         enable_vsync: bool = True,
+        enable_renderer: bool = True,
     ):
 
         logging.basicConfig(level=logging_level, format="%(levelname)s - %(message)s")
@@ -36,8 +39,12 @@ class Game:
         self.stadium_file = stadium_file
         self.stadium_store: Stadium = load_stadium_hbs(self.stadium_file)
         self.stadium_game: Stadium = copy.deepcopy(self.stadium_store)
-        self.recorder = GameActionRecorder(self, self.folder_rec)
-        self.renderer = GameRenderer(self, enable_vsync)
+        self.enable_recorder = False
+        self.recorder = (
+            GameActionRecorder(self, self.folder_rec) if self.enable_recorder else None
+        )
+        self.enable_renderer = enable_renderer
+        self.renderer = GameRenderer(self, enable_vsync) if enable_renderer else None
 
     def add_player(self, player: PlayerHandler) -> None:
         self.players.append(player)
@@ -107,7 +114,7 @@ class Game:
                     player.disc.collision_mask = 39 | kickoff_collision
             ball_disc = self.stadium_game.discs[0]
             if np.linalg.norm(ball_disc.velocity) > 0:
-                logging.debug("Kickoff made")
+                log.debug("Kickoff made")
                 self.state = GameState.PLAYING
 
         elif self.state == GameState.PLAYING:
@@ -117,7 +124,7 @@ class Game:
             team_goal = self.check_goal(previous_discs_position)
             if team_goal != TeamID.SPECTATOR:
                 team_goal_string = "Red" if team_goal == TeamID.RED else "Blue"
-                logging.debug(f"Team {team_goal_string} conceded a goal")
+                log.debug(f"Team {team_goal_string} conceded a goal")
                 self.state = GameState.GOAL
                 self.score.update_score(team_goal)
                 if not self.score.is_game_over():
@@ -189,8 +196,10 @@ class Game:
         for player in self.players:
             self.stadium_game.discs.append(player.disc)
         self.reset_discs_positions()
-        self.recorder.start()
-        self.renderer.start()
+        if self.enable_recorder:
+            self.recorder.start()
+        if self.enable_renderer:
+            self.renderer.start()
 
     def step(self, actions: np.ndarray) -> bool:
         for action, player in zip(actions, self.players):
@@ -204,25 +213,31 @@ class Game:
         update_discs(self.stadium_game)
         resolve_collisions(self.stadium_game)
         done = self.handle_game_state(previous_discs_position)
-        self.recorder.step(actions)
-        self.renderer.update()
+        if self.enable_recorder:
+            self.recorder.step(actions)
+        if self.enable_renderer:
+            self.renderer.update()
 
         return done
 
     def stop(self, save_recording: bool) -> None:
-        self.recorder.stop(save=save_recording)
-        if save_recording:
-            logging.debug(f"Recording saved under {self.recorder.filename}")
-        logging.debug(
+        if self.enable_recorder:
+            self.recorder.stop(save=save_recording)
+
+        if save_recording and self.enable_recorder:
+            log.debug(f"Recording saved under {self.recorder.filename}")
+        log.debug(
             f"Game stopped with score {self.score.red}-{self.score.blue} at {round(self.score.time, 2)}s\n"
         )
 
-        self.score = GameScore()
+        self.score.stop()
         self.state = GameState.KICKOFF
         self.team_kickoff = TeamID.RED
         self.stadium_game: Stadium = copy.deepcopy(self.stadium_store)
-        self.recorder = GameActionRecorder(self, self.folder_rec)
-        self.renderer.stop()
+        if self.enable_recorder:
+            self.recorder = GameActionRecorder(self, self.folder_rec)
+        if self.enable_renderer:
+            self.renderer.stop()
 
     def reset(self, save_recording: bool) -> None:
         self.stop(save_recording)

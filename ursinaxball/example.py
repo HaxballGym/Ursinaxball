@@ -1,15 +1,16 @@
 import random
 import time
 
-from ursina import Keys, held_keys
+from ursina import Keys, held_keys, window
 
 from ursinaxball.game import Game
-from ursinaxball.game.common_values import TeamID
+from ursinaxball.game.common_values import TeamID, BaseMap
 from ursinaxball.game.modules import GameScore, PlayerHandler
 
 game = Game(
     folder_rec="./recordings/",
-    enable_vsync=True,
+    enable_vsync=False,
+    stadium_file=BaseMap.PENALTY,
 )
 team_size = 1
 tick_skip = 15
@@ -59,8 +60,14 @@ while True:
     done = False
     steps = 0
     t0 = time.time()
+    frame_time = time.time()
     actions = [actions_player, [0, 0, 0]]
     while not done and steps < tick_limit:
+        current_time = time.time()
+        if current_time - frame_time >= 0:
+            time.sleep(current_time - frame_time)
+
+        frame_time = time.time()
         action_handle()
         actions[0] = actions_player
         if steps % (tick_skip + 1) == 0:

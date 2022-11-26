@@ -1,4 +1,4 @@
-from ursina import Ursina, Entity, window, color, camera, Vec2, destroy
+from ursina import Entity, Ursina, Vec2, camera, color, destroy, window
 
 from ursinaxball.game.objects.base import Disc
 

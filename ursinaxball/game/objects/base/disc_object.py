@@ -5,7 +5,6 @@ from ursina import Entity
 
 from ursinaxball.game.common_values import CollisionFlag
 from ursinaxball.game.objects.base import PhysicsObject
-from ursinaxball.shaders import sdf_circle
 
 
 class Disc(PhysicsObject):
@@ -77,19 +76,17 @@ class Disc(PhysicsObject):
             always_on_top=True,
         )
 
-        disc_outline_entity = Entity(
+        Entity(
             parent=disc_parent,
-            model="quad",
+            model="circle",
             color=self.parse_color_entity("000000"),
-            shader=sdf_circle,
             scale=(self.radius + 0.75) * 2,
         )
 
-        disc_entity = Entity(
+        Entity(
             parent=disc_parent,
-            model="quad",
+            model="circle",
             color=self.parse_color_entity(self.color),
-            shader=sdf_circle,
             scale=(self.radius - 0.75) * 2,
         )
 

@@ -2,7 +2,7 @@
 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-This is a python package that can be used to treat the game [HaxBall](https://www.haxball.com) as though it were an [OpenAI Gym](https://gym.openai.com)-style environment for Reinforcement Learning projects.
+HaxBallGym a python package that can be used to treat the game [HaxBall](https://www.haxball.com) as though it were an [OpenAI Gym](https://gym.openai.com)-style environment for Reinforcement Learning projects.
 
 ## Requirements
 

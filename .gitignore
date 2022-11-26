@@ -126,3 +126,6 @@ dmypy.json
 
 # game recordings
 *.hbar
+
+# poetry
+poetry.lock

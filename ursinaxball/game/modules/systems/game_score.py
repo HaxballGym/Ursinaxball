@@ -25,12 +25,13 @@ class GameScore(object):
             self.ticks += 1
             self.time = self.ticks / 60
 
-    def reset(self) -> None:
-        self.total_ticks = 0
+    def stop(self) -> None:
         self.ticks = 0
+        self.total_ticks = 0
         self.time = 0
         self.red = 0
         self.blue = 0
+        self.animation_timeout = 0
 
     def update_score(self, team_id: int) -> None:
         if team_id == TeamID.BLUE:
@@ -78,14 +79,13 @@ class GameScore(object):
     def get_time_entity(self) -> Entity:
 
         text_time = self.get_time_string()
-        text_time_width = Text.get_width(text_time, font="fonts/arial-black.ttf")
+        text_time_width = Text.get_width(text_time)
 
         time_text_entity = Text(
             position=Vec2(0.3 - 1.5 * text_time_width / 2, 0.5 - Text.size * 1.35),
             origin=Vec2(0, 0),
             size=1.25 * Text.size,
             text=self.get_time_string(),
-            font="fonts/arial-black.ttf",
         )
 
         return time_text_entity
@@ -133,7 +133,6 @@ class GameScore(object):
             origin=Vec2(0, 0),
             size=1.25 * Text.size,
             text=self.get_score_string(),
-            font="fonts/arial-black.ttf",
         )
 
         time_text_entity = self.get_time_entity()

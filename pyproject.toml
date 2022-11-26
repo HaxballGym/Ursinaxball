@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "ursinaxball"
+version = "0.1.0"
+description = ""
+authors = ["Wazarr <jeje_04@live.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+numpy = "^1.23.5"
+msgpack = "^1.0.4"
+ursina = {git = "https://github.com/pokepetter/ursina.git"}
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
