@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ursinaxball"
-version = "0.1.3"
+version = "0.1.4"
 description = ""
 authors = ["Wazarr <jeje_04@live.com>"]
 readme = "README.md"
