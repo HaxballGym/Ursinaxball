@@ -27,6 +27,7 @@ class Game:
         logging_level: int = logging.DEBUG,
         enable_vsync: bool = True,
         enable_renderer: bool = True,
+        enable_recorder: bool = True,
     ):
 
         logging.basicConfig(level=logging_level, format="%(levelname)s - %(message)s")
@@ -39,7 +40,7 @@ class Game:
         self.stadium_file = stadium_file
         self.stadium_store: Stadium = load_stadium_hbs(self.stadium_file)
         self.stadium_game: Stadium = copy.deepcopy(self.stadium_store)
-        self.enable_recorder = False
+        self.enable_recorder = enable_recorder
         self.recorder = (
             GameActionRecorder(self, self.folder_rec) if self.enable_recorder else None
         )
