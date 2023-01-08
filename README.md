@@ -6,7 +6,7 @@ Ursinaxball is a Python clone of the game [HaxBall](https://www.haxball.com) dev
 
 ## Requirements
 
-- Python >= 3.10
+- Python == 3.10
 
 ## Installation
 

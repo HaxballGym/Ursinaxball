@@ -20,7 +20,7 @@ class Plane(PhysicsObject):
         self.collision_mask: int = self.transform_collision_dict(
             data_object.get("cMask")
         )
-        self.normal: np.ndarray = np.array(data_object.get("normal"), dtype=np.float)
+        self.normal: np.ndarray = np.array(data_object.get("normal"), dtype=float)
         self.distance_origin: float = data_object.get("dist")
         self.bouncing_coefficient: float = data_object.get("bCoef")
         self.trait = data_object.get("trait")

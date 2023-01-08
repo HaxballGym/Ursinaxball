@@ -22,9 +22,9 @@ class PlayerPhysics(Disc):
 
         super().__init__(data_object, data_stadium)
 
-        self.position = np.array([0, 0], dtype=np.float)
-        self.velocity = np.array([0, 0], dtype=np.float)
-        self.gravity = np.array([0, 0], dtype=np.float)
+        self.position = np.array([0, 0], dtype=float)
+        self.velocity = np.array([0, 0], dtype=float)
+        self.gravity = np.array([0, 0], dtype=float)
         self.color = "FFFFFF"
         del self.trait
 
