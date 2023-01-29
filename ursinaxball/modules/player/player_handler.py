@@ -1,16 +1,17 @@
-import numpy as np
 import itertools
+
+import numpy as np
 
 from ursinaxball.common_values import (
     ActionBin,
     CollisionFlag,
-    TeamID,
     TeamColor,
+    TeamID,
 )
-from ursinaxball.modules.player import PlayerData
-from ursinaxball.objects.base import PlayerPhysics
-from ursinaxball.objects import Stadium
 from ursinaxball.modules import GameScore
+from ursinaxball.modules.player import PlayerData
+from ursinaxball.objects import Stadium
+from ursinaxball.objects.base import PlayerPhysics
 
 
 class PlayerHandler(object):

@@ -1,6 +1,14 @@
 from typing import Tuple
 
 import numpy as np
+from ursinaxball.modules.physics.fn_base import (
+    resolve_disc_disc_collision_fn,
+    resolve_disc_vertex_collision_fn,
+    resolve_disc_segment_collision_no_curve_fn,
+    resolve_disc_segment_collision_curve_fn,
+    resolve_disc_segment_final_fn,
+    resolve_disc_plane_collision_fn,
+)
 
 from ursinaxball.objects import Stadium
 from ursinaxball.objects.base import Disc, Plane, Segment, Vertex
@@ -10,23 +18,22 @@ def resolve_disc_disc_collision(disc_a: Disc, disc_b: Disc) -> None:
     """
     Resolves the collision between two discs
     """
-    dist = np.linalg.norm(disc_a.position - disc_b.position)
-    radius_sum = disc_a.radius + disc_b.radius
-    if 0 < dist <= radius_sum:
-        normal = (disc_a.position - disc_b.position) / dist
-        mass_factor = disc_a.inverse_mass / (disc_a.inverse_mass + disc_b.inverse_mass)
-        disc_a.position += normal * (radius_sum - dist) * mass_factor
-        disc_b.position -= normal * (radius_sum - dist) * (1 - mass_factor)
-        relative_velocity = disc_a.velocity - disc_b.velocity
-        normal_velocity = np.dot(relative_velocity, normal)
-        if normal_velocity < 0:
-            bouncing_factor = -(
-                1 + disc_a.bouncing_coefficient * disc_b.bouncing_coefficient
-            )
-            disc_a.velocity += normal * normal_velocity * bouncing_factor * mass_factor
-            disc_b.velocity -= (
-                normal * normal_velocity * bouncing_factor * (1 - mass_factor)
-            )
+    disc_a_res, disc_b_res = resolve_disc_disc_collision_fn(
+        disc_a.position,
+        disc_b.position,
+        disc_a.velocity,
+        disc_b.velocity,
+        disc_a.radius,
+        disc_b.radius,
+        disc_a.inverse_mass,
+        disc_b.inverse_mass,
+        disc_a.bouncing_coefficient,
+        disc_b.bouncing_coefficient,
+    )
+    disc_a.position = disc_a_res[0]
+    disc_a.velocity = disc_a_res[1]
+    disc_b.position = disc_b_res[0]
+    disc_b.velocity = disc_b_res[1]
 
     return
 
@@ -35,16 +42,16 @@ def resolve_disc_vertex_collision(disc: Disc, vertex: Vertex) -> None:
     """
     Resolves the collision between a disc and a vertex
     """
-    dist = np.linalg.norm(disc.position - vertex.position)
-    if 0 < dist <= disc.radius:
-        normal = (disc.position - vertex.position) / dist
-        disc.position += normal * (disc.radius - dist)
-        normal_velocity = np.dot(disc.velocity, normal)
-        if normal_velocity < 0:
-            bouncing_factor = -(
-                1 + disc.bouncing_coefficient * vertex.bouncing_coefficient
-            )
-            disc.velocity += normal * normal_velocity * bouncing_factor
+    disc_res = resolve_disc_vertex_collision_fn(
+        disc.position,
+        vertex.position,
+        disc.velocity,
+        disc.radius,
+        disc.bouncing_coefficient,
+        vertex.bouncing_coefficient,
+    )
+    disc.position = disc_res[0]
+    disc.velocity = disc_res[1]
 
     return
 
@@ -73,39 +80,26 @@ def segment_apply_bias(
 def resolve_disc_segment_collision_no_curve(
     disc: Disc, segment: Segment
 ) -> Tuple[float, np.ndarray]:
-    normal_segment = segment.vertices[1].position - segment.vertices[0].position
-    normal_disc_v0 = disc.position - segment.vertices[0].position
-    normal_disc_v1 = disc.position - segment.vertices[1].position
-    if (
-        np.dot(normal_segment, normal_disc_v0) > 0
-        and np.dot(normal_segment, normal_disc_v1) < 0
-    ):
-        normal = [normal_segment[1], -normal_segment[0]] / np.linalg.norm(
-            normal_segment
-        )
-        dist = np.dot(normal, normal_disc_v1)
-
-        return dist, normal
-
-    return None, None
+    res = resolve_disc_segment_collision_no_curve_fn(
+        disc.position,
+        segment.vertices[0].position,
+        segment.vertices[1].position,
+    )
+    return res
 
 
 def resolve_disc_segment_collision_curve(
     disc: Disc, segment: Segment
 ) -> Tuple[float, np.ndarray]:
-    normal_circle = disc.position - segment.circle_center
-    if (
-        np.dot(normal_circle, segment.circle_tangeant[0]) > 0
-        and np.dot(normal_circle, segment.circle_tangeant[1]) > 0
-    ) != (segment.curve < 0):
-        dist_norm = np.linalg.norm(normal_circle)
-        if dist_norm > 0:
-            dist = dist_norm - segment.circle_radius
-            normal = normal_circle / dist_norm
-
-        return dist, normal
-
-    return None, None
+    res = resolve_disc_segment_collision_curve_fn(
+        disc.position,
+        segment.circle_center,
+        segment.circle_radius,
+        segment.circle_tangeant[0],
+        segment.circle_tangeant[1],
+        segment.curve,
+    )
+    return res
 
 
 def resolve_disc_segment_collision(disc: Disc, segment: Segment) -> None:
@@ -119,15 +113,17 @@ def resolve_disc_segment_collision(disc: Disc, segment: Segment) -> None:
 
     if dist is not None and normal is not None:
         dist, normal = segment_apply_bias(segment, dist, normal)
-
-        if dist < disc.radius:
-            disc.position += normal * (disc.radius - dist)
-            normal_velocity = np.dot(disc.velocity, normal)
-            if normal_velocity < 0:
-                bouncing_factor = -(
-                    1 + disc.bouncing_coefficient * segment.bouncing_coefficient
-                )
-                disc.velocity += normal * normal_velocity * bouncing_factor
+        res = resolve_disc_segment_final_fn(
+            dist,
+            normal,
+            disc.position,
+            disc.velocity,
+            disc.radius,
+            disc.bouncing_coefficient,
+            segment.bouncing_coefficient,
+        )
+        disc.position = res[0]
+        disc.velocity = res[1]
 
     return
 
@@ -136,16 +132,19 @@ def resolve_disc_plane_collision(disc: Disc, plane: Plane) -> None:
     """
     Resolves the collision between a disc and a plane
     """
-    norm_plane = plane.normal / np.linalg.norm(plane.normal)
-    dist = plane.distance_origin - np.dot(disc.position, norm_plane) + disc.radius
-    if dist > 0:
-        disc.position += norm_plane * dist
-        normal_velocity = np.dot(disc.velocity, norm_plane)
-        if normal_velocity < 0:
-            bouncing_factor = -(
-                1 + disc.bouncing_coefficient * plane.bouncing_coefficient
-            )
-            disc.velocity += plane.normal * normal_velocity * bouncing_factor
+    disc_res = resolve_disc_plane_collision_fn(
+        disc.position,
+        plane.normal,
+        disc.velocity,
+        plane.distance_origin,
+        disc.radius,
+        disc.bouncing_coefficient,
+        plane.bouncing_coefficient,
+    )
+    disc.position = disc_res[0]
+    disc.velocity = disc_res[1]
+
+    return
 
 
 def resolve_collisions(stadium_game: Stadium) -> None:

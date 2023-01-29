@@ -1,7 +1,7 @@
-from ursinaxball.common_values import TeamID, GameState, TeamColor
-from ursinaxball.objects.base import PhysicsObject
+from ursina import Entity, Quad, Text, Vec2, Vec3, camera
 
-from ursina import *
+from ursinaxball.common_values import GameState, TeamColor, TeamID
+from ursinaxball.objects.base import PhysicsObject
 
 
 class GameScore(object):
