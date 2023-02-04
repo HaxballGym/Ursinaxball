@@ -51,7 +51,7 @@ class PlayerHandler(object):
 
     def step(self, game: Game) -> list[int] | None:
         if self.bot is not None:
-            return self.bot.step(game)
+            return self.bot.step(self, game)
         return None
 
     def resolve_movement(self, stadium_game: Stadium, game_score: GameScore) -> None:

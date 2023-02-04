@@ -32,8 +32,8 @@ class GameState(IntEnum):
 
 
 class ActionBin(IntEnum):
-    UP = 0
-    RIGHT = 1
+    RIGHT = 0
+    UP = 1
     KICK = 2
 
 

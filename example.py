@@ -1,30 +1,24 @@
 from dataclasses import dataclass
-import random
 
 from ursina import Keys, held_keys
 
 from ursinaxball import Game
 from ursinaxball.common_values import BaseMap, TeamID
-from ursinaxball.modules import GameScore, PlayerHandler
+from ursinaxball.modules import GameScore, PlayerHandler, ChaseBot
 
 game = Game(
     folder_rec="./recordings/",
-    enable_vsync=False,
+    enable_vsync=True,
     stadium_file=BaseMap.CLASSIC,
 )
-team_size = 1
-tick_skip = 15
-
-
 game.score = GameScore(time_limit=3, score_limit=3)
+tick_skip = 2
 
-players_red = [PlayerHandler(f"P{i}", TeamID.RED) for i in range(team_size)]
-players_blue = [
-    PlayerHandler(f"P{team_size + i}", TeamID.BLUE) for i in range(team_size)
-]
-players = players_red + players_blue
+bot_blue = ChaseBot(tick_skip)
 
-game.add_players(players)
+player_red = PlayerHandler("P1", TeamID.RED)
+player_blue = PlayerHandler("P2", TeamID.BLUE, bot=bot_blue)
+game.add_players([player_red, player_blue])
 
 
 @dataclass
@@ -41,7 +35,7 @@ input_player = InputPlayer(
     right=[Keys.right_arrow],
     up=[Keys.up_arrow],
     down=[Keys.down_arrow],
-    shoot=["l"],
+    shoot=["x"],
 )
 
 
@@ -62,22 +56,12 @@ def action_handle(actions_player_output: list[int], inputs_player: InputPlayer):
     return actions_player_output
 
 
-def action_sample():
-    RA = random.randint(-1, 1)
-    UA = random.randint(-1, 1)
-    SA = random.randint(0, 1)
-    return [RA, UA, SA]
-
-
 while True:
     save_rec = False
     game.reset(save_recording=save_rec)
-    steps = 0
     done = False
     actions = [[0, 0, 0], [0, 0, 0]]
     while not done:
         actions[0] = action_handle(actions[0], input_player)
-        if steps % (tick_skip + 1) == 0:
-            actions[1] = action_sample()
+        actions[1] = player_blue.step(game)
         done = game.step(actions)
-        steps += 1
