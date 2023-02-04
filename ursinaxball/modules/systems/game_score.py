@@ -4,8 +4,8 @@ from ursinaxball.common_values import GameState, TeamColor, TeamID
 from ursinaxball.objects.base import PhysicsObject
 
 
-class GameScore(object):
-    def __init__(self, time_limit=None, score_limit=None):
+class GameScore:
+    def __init__(self, time_limit: int | None = None, score_limit: int | None = None):
         # The GameScore object is used to keep track of the score of the game.
         # Score limit = 0 means no score limit, same for time limit.
         self.ticks = 0
@@ -77,7 +77,6 @@ class GameScore(object):
         return f"{self.red} - {self.blue}"
 
     def get_time_entity(self) -> Entity:
-
         text_time = self.get_time_string()
         text_time_width = Text.get_width(text_time)
 

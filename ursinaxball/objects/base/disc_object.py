@@ -12,7 +12,9 @@ class Disc(PhysicsObject):
     A class to represent the state of a disc from the game.
     """
 
-    def __init__(self, data_object=None, data_stadium=None):
+    def __init__(
+        self, data_object: dict | None = None, data_stadium: dict | None = None
+    ):
 
         if data_object is None:
             data_object = {}

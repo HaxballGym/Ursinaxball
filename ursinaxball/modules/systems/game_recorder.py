@@ -1,9 +1,16 @@
-import numpy as np
-import msgpack
-import os.path
+from __future__ import annotations
+
+import os
 import time
+from typing import TYPE_CHECKING
+
+import msgpack
+import numpy as np
 
 from ursinaxball.common_values import Input
+
+if TYPE_CHECKING:
+    from ursinaxball import Game
 
 # This is temporary, until we have a proper game recorder system
 # In the meantime, we will use the same recording system than my JS version
@@ -29,7 +36,7 @@ def input_translate_js(actions: np.ndarray) -> int:
 
 
 class GameActionRecorder:
-    def __init__(self, game, folder_rec: str = ""):
+    def __init__(self, game: Game, folder_rec: str = ""):
 
         self.game = game
         self.folder_rec = folder_rec
@@ -46,7 +53,10 @@ class GameActionRecorder:
         'HBR_<timestamp>_<score_red>-<score_blue>_<team_kickoff>.hbar'
         Time stamp is the current time in seconds since 01/01/1970.
         """
-        file_name = f"HBR_{str(int(time.time()))}_{self.game.score.red}-{self.game.score.blue}_{self.options[0]}.hbar"
+        file_name = (
+            f"HBR_{str(int(time.time()))}_{self.game.score.red}-"
+            + f"{self.game.score.blue}_{self.options[0]}.hbar"
+        )
         return file_name
 
     def start(self):
@@ -89,7 +99,7 @@ class GameActionRecorder:
 
 
 class GamePositionRecorder:
-    def __init__(self, game, folder_rec: str = ""):
+    def __init__(self, game: Game, folder_rec: str = ""):
 
         self.game = game
         self.folder_rec = folder_rec
@@ -106,7 +116,10 @@ class GamePositionRecorder:
         'HBR_<timestamp>_<score_red>-<score_blue>_<team_kickoff>.hbpr'
         Time stamp is the current time in seconds since 01/01/1970.
         """
-        file_name = f"HBR_{str(int(time.time()))}_{self.game.score.red}-{self.game.score.blue}_{self.options[0]}.hbpr"
+        file_name = (
+            f"HBR_{str(int(time.time()))}_{self.game.score.red}-"
+            + f"{self.game.score.blue}_{self.options[0]}.hbpr"
+        )
         return file_name
 
     def start(self):

@@ -11,7 +11,7 @@ from ursinaxball.common_values import DICT_COLLISION, DICT_KEYS
 
 
 class PhysicsObject(ABC):
-    def __init__(self, data_object: dict, data_stadium: dict):
+    def __init__(self, data_object: dict | None, data_stadium: dict):
         pass
 
     @staticmethod

@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import itertools
+from typing import TYPE_CHECKING
 
 import numpy as np
 
@@ -9,24 +12,28 @@ from ursinaxball.common_values import (
     TeamID,
 )
 from ursinaxball.modules import GameScore
+from ursinaxball.modules.bots import Bot
 from ursinaxball.modules.player import PlayerData
 from ursinaxball.objects import Stadium
 from ursinaxball.objects.base import PlayerPhysics
 
+if TYPE_CHECKING:
+    from ursinaxball import Game
+
 
 class PlayerHandler(object):
-
     id_iterate = itertools.count()
 
-    def __init__(self, name: str, team: int = TeamID.SPECTATOR) -> None:
-
+    def __init__(
+        self, name: str, team: int = TeamID.SPECTATOR, bot: Bot | None = None
+    ) -> None:
         self.id = next(PlayerHandler.id_iterate)
         self.name = name
         self.team = team
-        self.bot = True
-        self.action = []
+        self.bot = bot
+        self.action: list[int] = []
         self.kicking = False
-        # Once you kick the ball, the player should stop kicking. kick_cancel is used to make sure the mechanism works.
+        # kick_cancel is used to make sure you stop kicking after hitting the ball
         self._kick_cancel = False
         self.disc: PlayerPhysics = PlayerPhysics(self.id)
         self.player_data = PlayerData()
@@ -39,8 +46,13 @@ class PlayerHandler(object):
         elif self.team == TeamID.BLUE:
             self.disc.color = TeamColor.BLUE
 
-    def is_kicking(self):
+    def is_kicking(self) -> bool:
         return self.kicking and not self._kick_cancel
+
+    def step(self, game: Game) -> list[int] | None:
+        if self.bot is not None:
+            return self.bot.step(game)
+        return None
 
     def resolve_movement(self, stadium_game: Stadium, game_score: GameScore) -> None:
         if self.disc is not None:
@@ -55,13 +67,11 @@ class PlayerHandler(object):
                 dist = np.linalg.norm(disc_stadium.position - self.disc.position)
                 if (dist - self.disc.radius - disc_stadium.radius) < 4:
                     if self.is_kicking():
-                        # Player kicks the ball
                         normal = (disc_stadium.position - self.disc.position) / dist
                         disc_stadium.velocity += normal * self.disc.kick_strength
                         self._kick_cancel = True
                         self.player_data.update_touch(stadium_game, game_score)
                     else:
-                        # Player touches the ball
                         self.player_data.update_touch(stadium_game, game_score)
 
         input_direction = (

@@ -13,7 +13,7 @@ from ursinaxball.objects.base import PhysicsObject
 
 
 class Background:
-    def __init__(self, data_object=None):
+    def __init__(self, data_object: dict | None = None):
 
         if data_object is None:
             data_object = {}

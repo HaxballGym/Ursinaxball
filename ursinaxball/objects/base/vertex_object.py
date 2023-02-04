@@ -9,7 +9,7 @@ class Vertex(PhysicsObject):
     A class to represent the state of a vertex from the game.
     """
 
-    def __init__(self, data_object: dict, data_stadium: dict):
+    def __init__(self, data_object: dict | None, data_stadium: dict):
 
         if data_object is None:
             data_object = {}

@@ -17,7 +17,7 @@ from ursinaxball.objects.base import (
 )
 
 
-class Stadium(object):
+class Stadium:
     """
     A class to represent the state of a stadium from the game.
     """

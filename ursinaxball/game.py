@@ -228,7 +228,8 @@ class Game:
         if save_recording and self.enable_recorder:
             log.debug(f"Recording saved under {self.recorder.filename}")
         log.debug(
-            f"Game stopped with score {self.score.red}-{self.score.blue} at {round(self.score.time, 2)}s\n"
+            f"Game stopped with score {self.score.red}-{self.score.blue}"
+            + f" at {round(self.score.time, 2)}s\n",
         )
 
         self.score.stop()
@@ -246,27 +247,26 @@ class Game:
 
 
 if __name__ == "__main__":
+    from ursinaxball.modules.bots import ConstantActionBot
+
     game = Game()
 
     custom_score = GameScore(time_limit=1, score_limit=1)
     game.score = custom_score
 
-    player_red = PlayerHandler("P0", TeamID.RED)
-    player_blue = PlayerHandler("P1", TeamID.BLUE)
+    bot_1 = ConstantActionBot([1, 0, 0])
+    bot_2 = ConstantActionBot([1, 1, 1], symmetry=True)
+
+    player_red = PlayerHandler("P0", TeamID.RED, bot=bot_1)
+    player_blue = PlayerHandler("P1", TeamID.BLUE, bot=bot_2)
     game.add_players([player_red, player_blue])
 
     game.start()
 
     done = False
     while not done:
-        RIGHT_ACTION = 1
-        UP_ACTION = 0
-        KICK_ACTION = 0
-        actions_player_1 = [RIGHT_ACTION, UP_ACTION, KICK_ACTION]
-        RIGHT_ACTION = -1
-        UP_ACTION = 1
-        KICK_ACTION = 1
-        actions_player_2 = [RIGHT_ACTION, UP_ACTION, KICK_ACTION]
+        actions_player_1 = player_red.step(game)
+        actions_player_2 = player_blue.step(game)
         done = game.step([actions_player_1, actions_player_2])
 
     game.stop(save_recording=False)

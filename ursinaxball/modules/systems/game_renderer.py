@@ -1,10 +1,17 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from ursina import Entity, Ursina, Vec2, camera, color, destroy, window
 
 from ursinaxball.objects.base import Disc
 
+if TYPE_CHECKING:
+    from ursinaxball import Game
+
 
 class GameRenderer(object):
-    def __init__(self, game, enable_vsync=True) -> None:
+    def __init__(self, game: Game, enable_vsync=True) -> None:
         self.game = game
         self.app: Ursina = None
         self.disc_entities = []
@@ -29,14 +36,10 @@ class GameRenderer(object):
             entity.children[0].color = color.black
 
     def start(self) -> None:
-
         if self.app is None:
             window.borderless = False
-            window.vsync = self.enable_vsync
-
-            self.app = Ursina(
-                title="HaxballGym",
-            )
+            window.vsync = 60 if self.enable_vsync else False
+            self.app = Ursina(title="HaxballGym", vsync=60)
             self.UI_fixed_entities = self.game.score.get_fixed_entities()
 
         window.exit_button.visible = False

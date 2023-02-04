@@ -6,7 +6,7 @@ class Trait(PhysicsObject):
     A class to represent the state of a Trait from the game.
     """
 
-    def __init__(self, data_object: dict, name: str):
+    def __init__(self, data_object: dict | None, name: str):
 
         if data_object is None:
             data_object = {}
