@@ -4,7 +4,7 @@ import numpy as np
 from numba import jit
 
 
-@jit
+@jit(cache=True)
 def resolve_disc_disc_collision_fn(
     position_a: np.ndarray,
     position_b: np.ndarray,
@@ -34,7 +34,7 @@ def resolve_disc_disc_collision_fn(
     return ((position_a, velocity_a), (position_b, velocity_b))
 
 
-@jit
+@jit(cache=True)
 def resolve_disc_vertex_collision_fn(
     position_disc: np.ndarray,
     position_vertex: np.ndarray,
@@ -55,7 +55,7 @@ def resolve_disc_vertex_collision_fn(
     return (position_disc, velocity)
 
 
-@jit
+@jit(cache=True)
 def resolve_disc_segment_collision_no_curve_fn(
     position_disc: np.ndarray,
     position_vertex_0: np.ndarray,
@@ -78,7 +78,7 @@ def resolve_disc_segment_collision_no_curve_fn(
     return None, None
 
 
-@jit
+@jit(cache=True)
 def resolve_disc_segment_collision_curve_fn(
     position_disc: np.ndarray,
     circle_center: np.ndarray,
@@ -102,7 +102,7 @@ def resolve_disc_segment_collision_curve_fn(
     return None, None
 
 
-@jit
+@jit(cache=True)
 def resolve_disc_segment_final_fn(
     dist: float,
     normal: np.ndarray,
@@ -122,7 +122,7 @@ def resolve_disc_segment_final_fn(
     return (position_disc, velocity)
 
 
-@jit
+@jit(cache=True)
 def resolve_disc_plane_collision_fn(
     position_disc: np.ndarray,
     normal_plane: np.ndarray,

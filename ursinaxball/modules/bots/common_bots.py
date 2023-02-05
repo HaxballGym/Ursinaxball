@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 class ConstantActionBot(Bot):
     """
-    This bot goes presses the same keys every step
+    This bot presses the same keys every step
     """
 
     def __init__(self, action: list[int], symmetry: bool = False):
@@ -28,7 +28,7 @@ class ConstantActionBot(Bot):
 
 class RandomBot(Bot):
     """
-    This bot goes presses the same keys every step
+    This bot presses random keys every step
     """
 
     def __init__(self, tick_skip: int):
@@ -66,8 +66,8 @@ class ChaseBot(Bot):
             inputs_player[ActionBin.UP] += 1
 
         dist = np.linalg.norm(ball.position - player.disc.position)
-        if (dist - player.disc.radius - ball.radius) < 8:
-            if ~player.is_kicking() and self.previous_actions[ActionBin.KICK] == 1:
+        if (dist - player.disc.radius - ball.radius) < 15:
+            if ~player._kick_cancel and self.previous_actions[ActionBin.KICK] == 1:
                 inputs_player[ActionBin.KICK] = 0
             else:
                 inputs_player[ActionBin.KICK] = 1
