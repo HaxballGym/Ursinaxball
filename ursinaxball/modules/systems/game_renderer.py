@@ -39,7 +39,7 @@ class GameRenderer(object):
         if self.app is None:
             window.borderless = False
             window.vsync = 60 if self.enable_vsync else False
-            self.app = Ursina(title="HaxballGym", vsync=60)
+            self.app = Ursina(title="HaxballGym")
             self.UI_fixed_entities = self.game.score.get_fixed_entities()
 
         window.exit_button.visible = False
