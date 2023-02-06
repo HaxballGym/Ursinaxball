@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ursinaxball"
-version = "0.2.2"
+version = "0.2.3"
 description = ""
 authors = ["Wazarr <jeje_04@live.com>"]
 readme = "README.md"
@@ -10,7 +10,7 @@ python = ">=3.10,<3.12"
 numpy = "^1.23.5"
 msgpack = "^1.0.4"
 panda3d = "1.10.13"
-ursina = "5.2.0"
+ursina = "5.0.0"
 scipy = "^1.10.0"
 numba = "^0.56.4"
 screeninfo = "^0.8.1"
