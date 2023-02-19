@@ -37,15 +37,16 @@ class Disc(PhysicsObject):
 
         self.apply_trait(self, data_stadium)
         self.apply_default_values()
+        self.get_y_symmetry()
 
     def apply_default_values(self):
         if self.collision_group is None:
             self.collision_group = CollisionFlag.ALL
         if self.collision_mask is None:
             self.collision_mask = CollisionFlag.ALL
-        if np.isnan(self.velocity):
+        if len(self.velocity.shape) == 0:
             self.velocity = np.zeros(2)
-        if np.isnan(self.gravity):
+        if len(self.gravity.shape) == 0:
             self.gravity = np.zeros(2)
         if self.bouncing_coefficient is None:
             self.bouncing_coefficient = 0.5
@@ -69,6 +70,14 @@ class Disc(PhysicsObject):
         self.inverse_mass = copy.copy(other.inverse_mass)
         self.damping = copy.copy(other.damping)
         self.color = copy.copy(other.color)
+
+    def get_y_symmetry(self):
+        if len(self.position.shape) > 0:
+            self.position[1] *= -1
+        if len(self.velocity.shape) > 0:
+            self.velocity[1] *= -1
+        if len(self.gravity.shape) > 0:
+            self.gravity[1] *= -1
 
     def get_entity(self) -> Entity:
         disc_parent = Entity(

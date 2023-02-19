@@ -28,6 +28,7 @@ class Vertex(PhysicsObject):
 
         self.apply_trait(self, data_stadium)
         self.apply_default_values()
+        self.get_y_symmetry()
 
     def apply_default_values(self):
         """
@@ -39,3 +40,6 @@ class Vertex(PhysicsObject):
             self.collision_mask = CollisionFlag.ALL
         if self.bouncing_coefficient is None:
             self.bouncing_coefficient = 1
+
+    def get_y_symmetry(self):
+        self.position[1] *= -1

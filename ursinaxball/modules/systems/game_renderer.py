@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 
 class GameRenderer(object):
-    def __init__(self, game: Game, enable_vsync=True) -> None:
+    def __init__(self, game: Game, enable_vsync=True, fov: int = 550) -> None:
         self.game = game
         self.app: Ursina = None
         self.disc_entities = []
@@ -20,6 +20,7 @@ class GameRenderer(object):
         self.UI_strings = []
         self.UI_fixed_entities = []
         self.enable_vsync = enable_vsync
+        self.fov = fov
 
     def get_disc_player(self, disc: Disc):
         if not hasattr(disc, "player_id"):
@@ -45,7 +46,7 @@ class GameRenderer(object):
         window.exit_button.visible = False
         camera.orthographic = True
         camera.position = Vec2(0, 0)
-        camera.fov = 550
+        camera.fov = self.fov
 
         self.disc_entities = [
             disc.get_entity() for disc in self.game.stadium_game.discs
@@ -58,10 +59,21 @@ class GameRenderer(object):
 
         self.app.step()
 
+    def camera_update(self):
+        follow_player = self.game.stadium_store.camera_follow == "player"
+        pos_player_0 = self.game.players[0].disc.position
+        pos_ball = self.game.stadium_store.discs[0].position
+        if follow_player:
+            camera.position = pos_player_0
+        else:
+            pos_ball = pos_ball
+
     def update(self):
         for entity, game_disc in zip(self.disc_entities, self.game.stadium_game.discs):
             entity.position = game_disc.position
             self.handle_shooting(game_disc, entity)
+
+        self.camera_update()
 
         if self.UI_strings[0].text != self.game.score.get_score_string():
             self.UI_strings[0].text = self.game.score.get_score_string()

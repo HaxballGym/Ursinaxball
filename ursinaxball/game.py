@@ -27,6 +27,7 @@ class Game:
         logging_level: int = logging.DEBUG,
         enable_vsync: bool = True,
         enable_renderer: bool = True,
+        fov: int = 550,
         enable_recorder: bool = True,
     ):
 
@@ -45,7 +46,9 @@ class Game:
             GameActionRecorder(self, self.folder_rec) if self.enable_recorder else None
         )
         self.enable_renderer = enable_renderer
-        self.renderer = GameRenderer(self, enable_vsync) if enable_renderer else None
+        self.renderer = (
+            GameRenderer(self, enable_vsync, fov) if enable_renderer else None
+        )
 
     def add_player(self, player: PlayerHandler) -> None:
         self.players.append(player)
@@ -101,7 +104,6 @@ class Game:
         return TeamID.SPECTATOR
 
     def handle_game_state(self, previous_discs_position: List[Disc]) -> bool:
-
         self.score.step(self.state)
 
         if self.state == GameState.KICKOFF:
@@ -170,27 +172,38 @@ class Game:
 
         red_count = 0
         blue_count = 0
+        red_spawns = self.stadium_store.red_spawn_points
+        blue_spawns = self.stadium_store.blue_spawn_points
         for player in self.players:
             player.disc.copy(self.stadium_store.player_physics)
             player.disc.collision_group |= (
                 CollisionFlag.RED if player.team == TeamID.RED else CollisionFlag.BLUE
             )
-            player.set_player_color()
+            player.disc.player_id = player.id
+            player.set_color()
 
             if player.team == TeamID.RED:
-                player.disc.position[0] = -self.stadium_game.spawn_distance
-                if (red_count % 2) == 1:
-                    player.disc.position[1] = -55 * (red_count + 1 >> 1)
+                if len(red_spawns) > 0:
+                    index_red = min(red_count, len(red_spawns))
+                    player.disc.position = red_spawns[index_red]
                 else:
-                    player.disc.position[1] = 55 * (red_count + 1 >> 1)
+                    player.disc.position[0] = -self.stadium_game.spawn_distance
+                    if (red_count % 2) == 1:
+                        player.disc.position[1] = -55 * (red_count + 1 >> 1)
+                    else:
+                        player.disc.position[1] = 55 * (red_count + 1 >> 1)
                 red_count += 1
 
             elif player.team == TeamID.BLUE:
-                player.disc.position[0] = self.stadium_game.spawn_distance
-                if (blue_count % 2) == 1:
-                    player.disc.position[1] = -55 * (blue_count + 1 >> 1)
+                if len(blue_spawns) > 0:
+                    index_blue = min(blue_count, len(blue_spawns))
+                    player.disc.position = blue_spawns[index_blue]
                 else:
-                    player.disc.position[1] = 55 * (blue_count + 1 >> 1)
+                    player.disc.position[0] = self.stadium_game.spawn_distance
+                    if (blue_count % 2) == 1:
+                        player.disc.position[1] = -55 * (blue_count + 1 >> 1)
+                    else:
+                        player.disc.position[1] = 55 * (blue_count + 1 >> 1)
                 blue_count += 1
 
     def start(self) -> None:

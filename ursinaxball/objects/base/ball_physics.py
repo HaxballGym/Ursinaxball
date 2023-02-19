@@ -18,7 +18,6 @@ class BallPhysics(Disc):
 
         self.position = np.array([0, 0], dtype=float)
         self.velocity = np.array([0, 0], dtype=float)
-        self.gravity = np.array([0, 0], dtype=float)
 
         self.collision_group = (
             self.collision_group | CollisionFlag.SCORE | CollisionFlag.KICK
@@ -38,6 +37,8 @@ class BallPhysics(Disc):
             self.collision_group = CollisionFlag.BALL
         if self.collision_mask is None:
             self.collision_mask = CollisionFlag.ALL
+        if len(self.gravity.shape) == 0:
+            self.gravity = np.zeros(2)
         if self.radius is None:
             self.radius = 10
         if self.inverse_mass is None:

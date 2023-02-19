@@ -49,8 +49,10 @@ class Segment(PhysicsObject):
         self.apply_trait(self, data_stadium)
         self.apply_default_values()
 
+        self.get_y_symmetry_before()
         self.curve = self.calculate_curve()
         self.calculate_additional_properties()
+        self.get_y_symmetry_after()
 
     def apply_default_values(self):
         """
@@ -142,6 +144,15 @@ class Segment(PhysicsObject):
 
             if self.curve < 0:
                 self.circle_tangeant = -self.circle_tangeant
+
+    def get_y_symmetry_before(self):
+        self.bias *= -1
+        self.curve *= -1
+        if self._curveF is not None:
+            self._curveF *= -1
+
+    def get_y_symmetry_after(self):
+        self.circle_tangeant = [self.circle_tangeant[1], self.circle_tangeant[0]]
 
     def get_entity(self) -> Entity:
         if self.visible is False:

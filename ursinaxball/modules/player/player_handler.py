@@ -35,12 +35,10 @@ class PlayerHandler(object):
         self.kicking = False
         # kick_cancel is used to make sure you stop kicking after hitting the ball
         self._kick_cancel = False
-        self.disc: PlayerPhysics = PlayerPhysics(self.id)
+        self.disc: PlayerPhysics = PlayerPhysics()
         self.player_data = PlayerData()
 
-        self.set_player_color()
-
-    def set_player_color(self) -> None:
+    def set_color(self) -> None:
         if self.team == TeamID.RED:
             self.disc.color = TeamColor.RED
         elif self.team == TeamID.BLUE:
@@ -60,6 +58,7 @@ class PlayerHandler(object):
             if self.action[ActionBin.KICK] == 0:
                 self._kick_cancel = False
 
+        player_has_kicked = False
         for disc_stadium in stadium_game.discs:
             if (
                 disc_stadium.collision_group & CollisionFlag.KICK
@@ -69,10 +68,16 @@ class PlayerHandler(object):
                     if self.is_kicking():
                         normal = (disc_stadium.position - self.disc.position) / dist
                         disc_stadium.velocity += normal * self.disc.kick_strength
-                        self._kick_cancel = True
+                        self.disc.velocity += (
+                            normal * -self.disc.kickback * self.disc.inverse_mass
+                        )
+                        player_has_kicked = True
                         self.player_data.update_touch(stadium_game, game_score)
                     else:
                         self.player_data.update_touch(stadium_game, game_score)
+
+        if player_has_kicked:
+            self._kick_cancel = True
 
         input_direction = (
             self.action[:2] / np.linalg.norm(self.action[:2])

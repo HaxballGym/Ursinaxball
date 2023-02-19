@@ -23,19 +23,21 @@ class Stadium:
     """
 
     def __init__(self, data: dict):
-
         self.name: str = data.get("name")
         self.spawn_distance: float = data.get("spawnDistance")
-        self.kickoff_reset: str = data.get("kickoffReset")
+        self.kickoff_reset: str = data.get("kickoffReset", "partial")
+        self.camera_follow: str = data.get("cameraFollow")
         self.width: float = data.get("width")
         self.height: float = data.get("height")
         self.kickoff_radius: float = data.get("kickoffRadius")
+        self.red_spawn_points: list[list[float]] = data.get("redSpawnPoints", [])
+        self.blue_spawn_points: list[list[float]] = data.get("blueSpawnPoints", [])
 
         traits: dict = data.get("traits")
         traits_name = [t for t in traits]
         traits_data = [traits.get(t) for t in traits_name]
         self.traits: List[Trait] = [
-            Trait(v, k) for v, k in zip(traits_data, traits_name)
+            Trait(v, name) for v, name in zip(traits_data, traits_name)
         ]
 
         self.background: Background = Background(data.get("bg"))
@@ -52,14 +54,13 @@ class Stadium:
 
         self.discs.insert(0, self.ball_physics)
 
-        self.apply_default_values()
+        self.get_y_symmetry()
 
-    def apply_default_values(self):
-        """
-        Apply default values to the stadium.
-        """
-        if self.kickoff_reset is None:
-            self.kickoff_reset = "partial"
+    def get_y_symmetry(self):
+        for point in self.red_spawn_points:
+            point[1] *= -1
+        for point in self.blue_spawn_points:
+            point[1] *= -1
 
 
 def load_stadium_hbs(file_name: str) -> Stadium:

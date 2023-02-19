@@ -27,6 +27,7 @@ class Plane(PhysicsObject):
 
         self.apply_trait(self, data_stadium)
         self.apply_default_values()
+        self.get_y_symmetry()
 
     def apply_default_values(self):
         """
@@ -38,3 +39,6 @@ class Plane(PhysicsObject):
             self.collision_group = CollisionFlag.WALL
         if self.collision_mask is None:
             self.collision_mask = CollisionFlag.ALL
+
+    def get_y_symmetry(self):
+        self.normal[1] *= -1
