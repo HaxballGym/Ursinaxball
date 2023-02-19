@@ -52,6 +52,7 @@ class BaseMap(str, Enum):
     FUTSAL_CLASSIC = "futsal-classic.hbs"
     FUTSAL_BIG = "futsal-big.hbs"
     PENALTY = "penalty-soccer.hbs"
+    OBSTACLE_WINKY = "obstacle-map-winky.hbs"
 
 
 class TeamColor(str, Enum):
