@@ -1,91 +1,314 @@
 {
-
-	"name" : "HBF Penalty",
-
-	"width" : 500,
-
-	"height" : 620,
-
-	"spawnDistance" : 250,
-
-	"bg" : { "type" : "grass", "width" : 350, "height" : 600, "kickOffRadius" : 1, "cornerRadius" : 0 },
-
-	"playerPhysics" : {
-		"bCoef" : 0.5,
-		"invMass" : 0.5,
-		"damping" : 0.96,
-		"acceleration" : 0.12,
-		"kickingAcceleration" : 0.07,
-		"kickingDamping" : 0.96,
-		"kickStrength" : 5.65
+	"name": "HBF Penalty",
+	"width": 500,
+	"height": 620,
+	"spawnDistance": 250,
+	"bg": {
+		"type": "grass",
+		"width": 350,
+		"height": 600,
+		"kickOffRadius": 1,
+		"cornerRadius": 0
 	},
-
-	"ballPhysics" : {
-		"radius" : 9.8,
-		"bCoef" : 0.5,
-		"invMass" : 1,
-		"damping" : 0.99,
-		"color" : "FFFFFF",
-		"cMask" : ["all"],
-		"cGroup" : ["ball"]
+	"playerPhysics": {
+		"bCoef": 0.5,
+		"invMass": 0.5,
+		"damping": 0.96,
+		"acceleration": 0.12,
+		"kickingAcceleration": 0.07,
+		"kickingDamping": 0.96,
+		"kickStrength": 5.65
 	},
-
-	"vertexes" : [
-		{ "x" : 275, "y" : -110, "trait" : "goalNet" },
-		{ "x" : 215, "y" : -110, "trait" : "goalNet" },
-		{ "x" : 275, "y" : 110, "trait" : "goalNet" },
-		{ "x" : 215, "y" : 110, "trait" : "goalNet" },
-		{ "x" : 215, "y" : 150, "trait" : "line" },
-		{ "x" : 85, "y" : 150, "trait" : "line" },
-		{ "x" : 215, "y" : -150, "trait" : "line" },
-		{ "x" : 85, "y" : -150, "trait" : "line" },
-		{ "x" : 215, "y" : 260, "trait" : "line" },
-		{ "x" : -95, "y" : 260, "trait" : "line" },
-		{ "x" : 215, "y" : -260, "trait" : "line" },
-		{ "x" : -95, "y" : -260, "trait" : "line" },
-		{ "x" : 195, "y" : -600, "trait" : "line" },
-		{ "x" : 195, "y" : 600, "trait" : "line" },
-		{ "x" : 215, "y" : -600, "bCoef" : -0.1, "trait" : "line", "color" : "C7E6BD" },
-		{ "x" : 215, "y" : 600, "bCoef" : -0.1, "trait" : "line", "color" : "C7E6BD" }
+	"ballPhysics": {
+		"radius": 9.8,
+		"bCoef": 0.5,
+		"invMass": 1,
+		"damping": 0.99,
+		"color": "FFFFFF",
+		"cMask": [
+			"all"
+		],
+		"cGroup": [
+			"ball"
+		]
+	},
+	"vertexes": [
+		{
+			"x": 275,
+			"y": -110,
+			"trait": "goalNet"
+		},
+		{
+			"x": 215,
+			"y": -110,
+			"trait": "goalNet"
+		},
+		{
+			"x": 275,
+			"y": 110,
+			"trait": "goalNet"
+		},
+		{
+			"x": 215,
+			"y": 110,
+			"trait": "goalNet"
+		},
+		{
+			"x": 215,
+			"y": 150,
+			"trait": "line"
+		},
+		{
+			"x": 85,
+			"y": 150,
+			"trait": "line"
+		},
+		{
+			"x": 215,
+			"y": -150,
+			"trait": "line"
+		},
+		{
+			"x": 85,
+			"y": -150,
+			"trait": "line"
+		},
+		{
+			"x": 215,
+			"y": 260,
+			"trait": "line"
+		},
+		{
+			"x": -95,
+			"y": 260,
+			"trait": "line"
+		},
+		{
+			"x": 215,
+			"y": -260,
+			"trait": "line"
+		},
+		{
+			"x": -95,
+			"y": -260,
+			"trait": "line"
+		},
+		{
+			"x": 195,
+			"y": -600,
+			"trait": "line"
+		},
+		{
+			"x": 195,
+			"y": 600,
+			"trait": "line"
+		},
+		{
+			"x": 215,
+			"y": -600,
+			"bCoef": -0.1,
+			"trait": "line",
+			"color": "C7E6BD"
+		},
+		{
+			"x": 215,
+			"y": 600,
+			"bCoef": -0.1,
+			"trait": "line",
+			"color": "C7E6BD"
+		}
 	],
-
-	"segments" : [
-		{ "v0" : 0, "v1" : 1, "curve" : -10, "trait" : "goalNet" },
-		{ "v0" : 2, "v1" : 3, "curve" : 10, "trait" : "goalNet" },
-		{ "v0" : 0, "v1" : 2, "curve" : 10, "trait" : "goalNet" },
-		{ "v0" : 4, "v1" : 5, "trait" : "line" },
-		{ "v0" : 6, "v1" : 7, "trait" : "line" },
-		{ "v0" : 5, "v1" : 7, "trait" : "line" },
-		{ "v0" : 8, "v1" : 9, "trait" : "line" },
-		{ "v0" : 10, "v1" : 11, "trait" : "line" },
-		{ "v0" : 9, "v1" : 11, "trait" : "line" },
-		{ "v0" : 12, "v1" : 13, "trait" : "blueLimit" },
-		{ "v0" : 14, "v1" : 15, "vis" : true, "color" : "C7E6BD", "bCoef" : -0.1, "trait" : "line" }
+	"segments": [
+		{
+			"v0": 0,
+			"v1": 1,
+			"curve": -10,
+			"trait": "goalNet"
+		},
+		{
+			"v0": 2,
+			"v1": 3,
+			"curve": 10,
+			"trait": "goalNet"
+		},
+		{
+			"v0": 0,
+			"v1": 2,
+			"curve": 10,
+			"trait": "goalNet"
+		},
+		{
+			"v0": 4,
+			"v1": 5,
+			"trait": "line"
+		},
+		{
+			"v0": 6,
+			"v1": 7,
+			"trait": "line"
+		},
+		{
+			"v0": 5,
+			"v1": 7,
+			"trait": "line"
+		},
+		{
+			"v0": 8,
+			"v1": 9,
+			"trait": "line"
+		},
+		{
+			"v0": 10,
+			"v1": 11,
+			"trait": "line"
+		},
+		{
+			"v0": 9,
+			"v1": 11,
+			"trait": "line"
+		},
+		{
+			"v0": 12,
+			"v1": 13,
+			"trait": "blueLimit"
+		},
+		{
+			"v0": 14,
+			"v1": 15,
+			"vis": true,
+			"color": "C7E6BD",
+			"bCoef": -0.1,
+			"trait": "line"
+		}
 	],
-
-	"goals" : [
-		{ "p0" : [225,-110 ], "p1" : [225,110 ], "team" : "blue" },
-		{ "p0" : [215,-112 ], "p1" : [-10,-10 ], "team" : "red" },
-		{ "p0" : [-10,-10 ], "p1" : [-10,10 ], "team" : "red" },
-		{ "p0" : [-10,10 ], "p1" : [215,112 ], "team" : "red" }
+	"goals": [
+		{
+			"p0": [
+				225,
+				-110
+			],
+			"p1": [
+				225,
+				110
+			],
+			"team": "blue"
+		},
+		{
+			"p0": [
+				215,
+				-112
+			],
+			"p1": [
+				-10,
+				-10
+			],
+			"team": "red"
+		},
+		{
+			"p0": [
+				-10,
+				-10
+			],
+			"p1": [
+				-10,
+				10
+			],
+			"team": "red"
+		},
+		{
+			"p0": [
+				-10,
+				10
+			],
+			"p1": [
+				215,
+				112
+			],
+			"team": "red"
+		}
 	],
-
-	"discs" : [
-		{ "pos" : [215,-110 ], "trait" : "goalPost" },
-		{ "pos" : [215,110 ], "trait" : "goalPost" }
+	"discs": [
+		{
+			"pos": [
+				215,
+				-110
+			],
+			"trait": "goalPost"
+		},
+		{
+			"pos": [
+				215,
+				110
+			],
+			"trait": "goalPost"
+		}
 	],
-
-	"planes" : [
-		{ "normal" : [0,1 ], "dist" : -600, "bCoef" : 0 },
-		{ "normal" : [1,0 ], "dist" : -350, "bCoef" : 0 },
-		{ "normal" : [-1,0 ], "dist" : -20, "bCoef" : 0, "cMask" : ["red" ] },
-		{ "normal" : [-1,0 ], "dist" : -250, "trait" : "blueLimit" }
+	"planes": [
+		{
+			"normal": [
+				0,
+				1
+			],
+			"dist": -600,
+			"bCoef": 0
+		},
+		{
+			"normal": [
+				1,
+				0
+			],
+			"dist": -350,
+			"bCoef": 0
+		},
+		{
+			"normal": [
+				-1,
+				0
+			],
+			"dist": -20,
+			"bCoef": 0,
+			"cMask": [
+				"red"
+			]
+		},
+		{
+			"normal": [
+				-1,
+				0
+			],
+			"dist": -250,
+			"trait": "blueLimit"
+		}
 	],
-
-	"traits" : {
-		"goalPost" : { "radius" : 5, "invMass" : 0, "bCoef" : 0.5, "cMask" : ["all" ], "color" : "FFFFFF" },
-		"goalNet" : { "vis" : true, "bCoef" : 0.1, "cMask" : ["all" ], "color" : "FFFFFF" },
-		"line" : { "vis" : true, "cMask" : [ ], "color" : "C7E6BD" },
-		"blueLimit" : { "vis" : false, "bCoef" : 0, "cMask" : ["blue" ] }
+	"traits": {
+		"goalPost": {
+			"radius": 5,
+			"invMass": 0,
+			"bCoef": 0.5,
+			"cMask": [
+				"all"
+			],
+			"color": "FFFFFF"
+		},
+		"goalNet": {
+			"vis": true,
+			"bCoef": 0.1,
+			"cMask": [
+				"all"
+			],
+			"color": "FFFFFF"
+		},
+		"line": {
+			"vis": true,
+			"cMask": [],
+			"color": "C7E6BD"
+		},
+		"blueLimit": {
+			"vis": false,
+			"bCoef": 0,
+			"cMask": [
+				"blue"
+			]
+		}
 	}
 }
