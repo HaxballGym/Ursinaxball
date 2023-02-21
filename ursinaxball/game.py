@@ -224,7 +224,7 @@ class Game:
             for disc in self.stadium_game.discs
             if disc.collision_group & CollisionFlag.SCORE != 0
         ]
-        update_discs(self.stadium_game)
+        update_discs(self.stadium_game, self.players)
         resolve_collisions(self.stadium_game)
         done = self.handle_game_state(previous_discs_position)
         if self.enable_recorder:

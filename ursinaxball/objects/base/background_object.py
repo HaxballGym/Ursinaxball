@@ -34,7 +34,10 @@ class Background:
             self.border_color = DEFAULT_BORDER_COLOR
             self.fill_color = DEFAULT_FILL_COLOR
 
-    def get_limit_entity(self) -> Entity:
+    def get_limit_entity(self) -> Entity | None:
+        if self.type != "grass" and self.type != "hockey":
+            return None
+
         if self.limit_width is not None and self.limit_height is not None:
             vertices_entity = tuple(
                 [
@@ -60,7 +63,7 @@ class Background:
             )
             return limit_entity
 
-    def get_kickoff_circle_entity(self) -> Entity:
+    def get_kickoff_circle_entity(self) -> Entity | None:
         if self.type == "grass" or self.type == "hockey":
             circle_vertices = PhysicsObject.arc(
                 x=0,
@@ -84,7 +87,10 @@ class Background:
 
             return kickoff_circle_entity
 
-    def get_kickoff_line_entity(self) -> Entity:
+    def get_kickoff_line_entity(self) -> Entity | None:
+        if self.type != "grass" and self.type != "hockey":
+            return None
+
         if self.limit_height is not None:
             vertices_entity = tuple(
                 [

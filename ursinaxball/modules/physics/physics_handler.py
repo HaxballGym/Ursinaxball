@@ -1,17 +1,20 @@
-from typing import Tuple
+from typing import TYPE_CHECKING, Tuple
 
 import numpy as np
+
 from ursinaxball.modules.physics.fn_base import (
     resolve_disc_disc_collision_fn,
-    resolve_disc_vertex_collision_fn,
-    resolve_disc_segment_collision_no_curve_fn,
-    resolve_disc_segment_collision_curve_fn,
-    resolve_disc_segment_final_fn,
     resolve_disc_plane_collision_fn,
+    resolve_disc_segment_collision_curve_fn,
+    resolve_disc_segment_collision_no_curve_fn,
+    resolve_disc_segment_final_fn,
+    resolve_disc_vertex_collision_fn,
 )
-
 from ursinaxball.objects import Stadium
 from ursinaxball.objects.base import Disc, Plane, Segment, Vertex
+
+if TYPE_CHECKING:
+    from ursinaxball.modules import PlayerHandler
 
 
 def resolve_disc_disc_collision(disc_a: Disc, disc_b: Disc) -> None:
@@ -177,10 +180,18 @@ def resolve_collisions(stadium_game: Stadium) -> None:
                     resolve_disc_vertex_collision(d_a, v)
 
 
-def update_discs(stadium_game: Stadium) -> None:
+def update_discs(stadium_game: Stadium, players: "list[PlayerHandler]") -> None:
     """
     Function that updates the position and velocity of the discs
     """
     for disc in stadium_game.discs:
+        if hasattr(disc, "player_id"):
+            continue
         disc.position += disc.velocity
         disc.velocity = (disc.velocity + disc.gravity) * disc.damping
+
+    for player in players:
+        disc = player.disc
+        disc.position += disc.velocity
+        damping = disc.kicking_damping if player.is_kicking() else disc.damping
+        disc.velocity = (disc.velocity + disc.gravity) * damping
