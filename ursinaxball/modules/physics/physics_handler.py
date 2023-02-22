@@ -74,8 +74,8 @@ def segment_apply_bias(
         bias_segment = -bias_segment
         dist = -dist
         normal = -normal
-        if dist < -bias_segment:
-            return np.Infinity, normal
+    if dist < -bias_segment:
+        return np.Infinity, normal
 
     return dist, normal
 

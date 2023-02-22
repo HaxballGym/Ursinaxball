@@ -69,7 +69,7 @@ def load_stadium_hbs_str(file_name: str):
     return Stadium(data)
 
 
-def load_stadium_hbs_base(file_name: str):
+def load_stadium_hbs_base(file_name: BaseMap):
     stadium_file = file_name.value
     with pkg_resources.open_text(stadiums, stadium_file) as f:
         data = json.load(f)
@@ -83,10 +83,10 @@ def load_stadium_hbs(file_name: BaseMap | str):
     if not file_name.endswith(".hbs"):
         raise ValueError("File name must end with .hbs")
 
-    if isinstance(file_name, str):
-        return load_stadium_hbs_str(file_name)
-    else:
+    if isinstance(file_name, BaseMap):
         return load_stadium_hbs_base(file_name)
+    else:
+        return load_stadium_hbs_str(file_name)
 
 
 if __name__ == "__main__":
