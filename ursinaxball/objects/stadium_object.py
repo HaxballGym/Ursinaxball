@@ -63,18 +63,30 @@ class Stadium:
             point[1] *= -1
 
 
-def load_stadium_hbs(file_name: str) -> Stadium:
+def load_stadium_hbs_str(file_name: str):
+    with open(file_name) as f:
+        data = json.load(f)
+    return Stadium(data)
+
+
+def load_stadium_hbs_base(file_name: str):
+    stadium_file = file_name.value
+    with pkg_resources.open_text(stadiums, stadium_file) as f:
+        data = json.load(f)
+    return Stadium(data)
+
+
+def load_stadium_hbs(file_name: BaseMap | str):
     """
     Load a stadium from a file with extension hbs.
     """
-    stadium_file = file_name.value
-    if file_name.endswith(".hbs"):
-        with pkg_resources.open_text(stadiums, stadium_file) as f:
-            data = json.load(f)
-        return Stadium(data)
-
-    else:
+    if not file_name.endswith(".hbs"):
         raise ValueError("File name must end with .hbs")
+
+    if isinstance(file_name, str):
+        return load_stadium_hbs_str(file_name)
+    else:
+        return load_stadium_hbs_base(file_name)
 
 
 if __name__ == "__main__":
