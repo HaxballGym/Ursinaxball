@@ -37,7 +37,6 @@ def input_translate_js(actions: np.ndarray) -> int:
 
 class GameActionRecorder:
     def __init__(self, game: Game, folder_rec: str = ""):
-
         self.game = game
         self.folder_rec = folder_rec
 
@@ -100,7 +99,6 @@ class GameActionRecorder:
 
 class GamePositionRecorder:
     def __init__(self, game: Game, folder_rec: str = ""):
-
         self.game = game
         self.folder_rec = folder_rec
 

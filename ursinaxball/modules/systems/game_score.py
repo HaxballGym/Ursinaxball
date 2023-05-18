@@ -126,7 +126,6 @@ class GameScore:
         return [background_score, red_score_square, blue_score_square]
 
     def get_string_entities(self) -> Entity:
-
         score_text_entity = Text(
             position=Vec2(-0.175, 0.5 - Text.size * 1.35),
             origin=Vec2(0, 0),

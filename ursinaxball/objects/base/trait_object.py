@@ -7,7 +7,6 @@ class Trait(PhysicsObject):
     """
 
     def __init__(self, data_object: dict | None, name: str):
-
         if data_object is None:
             data_object = {}
 

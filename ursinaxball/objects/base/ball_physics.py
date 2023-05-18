@@ -10,7 +10,6 @@ class BallPhysics(Disc):
     """
 
     def __init__(self, data_object: dict | None, data_stadium: dict):
-
         if data_object is None:
             data_object = {}
 
