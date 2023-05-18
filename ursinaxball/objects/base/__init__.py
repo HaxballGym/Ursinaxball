@@ -8,3 +8,16 @@ from .trait_object import Trait
 from .segment_object import Segment
 from .player_physics import PlayerPhysics
 from .background_object import Background
+
+__all__ = [
+    "PhysicsObject",
+    "Disc",
+    "BallPhysics",
+    "Goal",
+    "Plane",
+    "Vertex",
+    "Trait",
+    "Segment",
+    "PlayerPhysics",
+    "Background",
+]

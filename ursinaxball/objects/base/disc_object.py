@@ -15,7 +15,6 @@ class Disc(PhysicsObject):
     def __init__(
         self, data_object: dict | None = None, data_stadium: dict | None = None
     ):
-
         if data_object is None:
             data_object = {}
 
