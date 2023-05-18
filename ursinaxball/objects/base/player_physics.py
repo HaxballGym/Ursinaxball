@@ -12,7 +12,6 @@ class PlayerPhysics(Disc):
     """
 
     def __init__(self, data_object: dict | None = None, data_stadium=None):
-
         if data_object is None:
             data_object = {}
 

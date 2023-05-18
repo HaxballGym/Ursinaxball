@@ -14,7 +14,6 @@ class Segment(PhysicsObject):
     """
 
     def __init__(self, data_object: dict | None, data_stadium: dict):
-
         if data_object is None:
             data_object = {}
 
@@ -74,9 +73,6 @@ class Segment(PhysicsObject):
             self.visible = "true"
 
     def calculate_curve(self) -> float:
-        # TODO: Figure out why this works. In the dev notes, it says it's to keep the correct float value.
-        # Dev notes on curveF: This value is only useful for exporting stadiums without precision loss.
-
         if self._curveF is not None:
             return self._curveF
 

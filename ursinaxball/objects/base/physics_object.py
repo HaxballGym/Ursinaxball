@@ -26,7 +26,6 @@ class PhysicsObject(ABC):
                     key_object = DICT_KEYS.get(key)
                     if key_object is not None and hasattr(self, key_object):
                         if getattr(self, key_object) is None:
-
                             if (
                                 key_object == "collision_group"
                                 or key_object == "collision_mask"

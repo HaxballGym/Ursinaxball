@@ -30,7 +30,6 @@ class Game:
         fov: int = 550,
         enable_recorder: bool = True,
     ):
-
         logging.basicConfig(level=logging_level, format="%(levelname)s - %(message)s")
 
         self.folder_rec = folder_rec
