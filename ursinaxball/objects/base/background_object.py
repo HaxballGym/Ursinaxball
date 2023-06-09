@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from numpy import pi
 from ursina import Entity, Mesh, Pipe, Sky
 
