@@ -105,20 +105,19 @@ def multiple_games_pyperf(n=5):
     )
 
     assert isinstance(res_pyperf, Benchmark)
-
-    path_output = PATH_PROJECT / "benchmarks/multiple_games_pyperf.json"
-    res_pyperf.dump(path_output.as_posix(), replace=True)
+    output_path = PATH_PROJECT / "benchmarks/multiple_games_pyperf.html"
+    output_pyperf(res_pyperf, output_path)
 
 
 def multiple_games_pyinstrument(n=5):
     profiler = Profiler()
     profiler.start()
+
     multiple_games(n)
+
     profiler.stop()
     html = profiler.output_html()
-
-    path_project = Path(__file__).parent.parent
-    with open(path_project / "benchmarks/multiple_game_pyinstrument.html", "w") as f:
+    with open(PATH_PROJECT / "benchmarks/multiple_games_pyinstrument.html", "w") as f:
         f.write(html)
 
 
