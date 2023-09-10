@@ -29,6 +29,22 @@ def init_game(enable_renderer: bool) -> Game:
     return game
 
 
+def init_game_obstacle(enable_renderer: bool) -> Game:
+    game = Game(
+        folder_rec="./recordings/",
+        enable_vsync=False,
+        stadium_file=BaseMap.OBSTACLE_WINKY,
+        enable_renderer=enable_renderer,
+    )
+    game.score = GameScore(time_limit=1)
+
+    player_red = PlayerHandler("P1", TeamID.RED)
+    game.add_players([player_red])
+    game.reset(save_recording=False)
+
+    return game
+
+
 def generate_random_actions(rng: np.random.Generator):
     array_1 = rng.integers(-1, 2, size=2)
     array_2 = rng.integers(0, 2, size=1)
@@ -106,6 +122,38 @@ def multiple_games_pyinstrument(n=5):
         f.write(html)
 
 
+def obstacle_map():
+    game = init_game_obstacle(enable_renderer=False)
+
+    rng = np.random.default_rng(54321)
+    nb_frames = 60 * 30 * 1  # 1 minute
+
+    for _ in range(nb_frames):
+        actions = np.stack((generate_random_actions(rng),))
+        game.step(actions)
+
+
+def obstacle_map_pyperf():
+    runner = Runner()
+    res_pyperf = runner.bench_func(name="obstacle_map", func=obstacle_map)
+
+    assert isinstance(res_pyperf, Benchmark)
+
+    path_output = PATH_PROJECT / "benchmarks/obstacle_map_pyperf.html"
+    output_pyperf(res_pyperf, path_output)
+
+
+def obstacle_map_pyinstrument():
+    profiler = Profiler()
+    profiler.start()
+    obstacle_map()
+    profiler.stop()
+    html = profiler.output_html()
+
+    with open(PATH_PROJECT / "benchmarks/obstacle_map_pyinstrument.html", "w") as f:
+        f.write(html)
+
+
 def output_pyperf(bench: Benchmark, output_path: Path):
     values = bench.get_values()
 
@@ -157,8 +205,14 @@ def output_pyperf(bench: Benchmark, output_path: Path):
 
 
 def main():
-    single_game_pyperf()
-    single_game_pyinstrument()
+    # single_game_pyperf()
+    # single_game_pyinstrument()
+
+    # multiple_games_pyperf()
+    # multiple_games_pyinstrument()
+
+    obstacle_map_pyinstrument()
+    obstacle_map_pyperf()
 
 
 if __name__ == "__main__":
