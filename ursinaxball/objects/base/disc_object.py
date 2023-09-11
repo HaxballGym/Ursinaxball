@@ -54,7 +54,7 @@ class Disc(PhysicsObject):
         if self.radius is None:
             self.radius = 10
         if self.inverse_mass is None:
-            self.inverse_mass = 0
+            self.inverse_mass = 1
         if self.damping is None:
             self.damping = 0.99
         if self.color is None:

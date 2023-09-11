@@ -129,3 +129,4 @@ requirements.txt
 # ursinaxball
 *.hbar
 stadiums/*
+benchmarks/*.html
