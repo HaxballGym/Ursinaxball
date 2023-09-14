@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING
 import msgspec
 import numpy as np
 import numpy.typing as npt
-import pyjson5
 from ursinaxball.common_values import CollisionFlag
 
 if TYPE_CHECKING:
@@ -73,44 +72,3 @@ class Vertex(msgspec.Struct, rename="camel"):
     b_coef: float
     c_group: CollisionFlag
     c_mask: CollisionFlag
-
-
-if __name__ == "__main__":
-    vertexes_raw = """
-    [
-        {
-            "x": -401.4,
-            "y": -200,
-            "trait": "vertexDefault"
-        },
-        {
-            "x": 0,
-            "y": 80,
-            "cMask": [
-                "red",
-                "blue"
-            ],
-            "cGroup": [
-                "redKO",
-                "blueKO"
-            ],
-            "trait": "vertexDefault"
-        },
-        {
-            "x": 0,
-            "y": 80,
-            "cMask": [
-            ],
-            "cGroup": [
-                "redKO",
-                "blueKO"
-            ],
-            "trait": "vertexDefault"
-        },
-    ]
-    """
-    vertexes_raw_dict = pyjson5.decode(vertexes_raw)
-    vertexes_raw = msgspec.convert(vertexes_raw_dict, list[VertexRaw])
-    vertexes = [vertex_raw.to_vertex({}) for vertex_raw in vertexes_raw]
-
-    print(vertexes)
