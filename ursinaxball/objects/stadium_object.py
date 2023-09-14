@@ -82,8 +82,8 @@ def load_stadium_hbs(file_name: BaseMap | str):
     """
     Load a stadium from a file with extension hbs.
     """
-    if not file_name.endswith(".hbs"):
-        raise ValueError("File name must end with .hbs")
+    if not file_name.endswith(".json5"):
+        raise ValueError("File name must end with .json5")
 
     if isinstance(file_name, BaseMap):
         return load_stadium_hbs_base(file_name)

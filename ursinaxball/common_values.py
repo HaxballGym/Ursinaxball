@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from enum import Enum, IntEnum, IntFlag
 
 
@@ -16,6 +18,13 @@ class CollisionFlag(IntFlag):
     C1 = 536870912
     C2 = 1073741824
     C3 = -2147483648
+
+    @staticmethod
+    def from_list(collision_list: list[str]) -> CollisionFlag:
+        if collision_list is None:
+            raise ValueError("collision_list is None")
+
+        return CollisionFlag(sum([DICT_COLLISION[c] for c in collision_list]))
 
 
 class TeamID(IntEnum):
@@ -46,13 +55,13 @@ class Input(IntEnum):
 
 
 class BaseMap(str, Enum):
-    CLASSIC = "classic.hbs"
-    ROUNDED = "rounded.hbs"
-    BIG = "big.hbs"
-    FUTSAL_CLASSIC = "futsal-classic.hbs"
-    FUTSAL_BIG = "futsal-big.hbs"
-    PENALTY = "penalty-soccer.hbs"
-    OBSTACLE_WINKY = "obstacle-map-winky.hbs"
+    CLASSIC = "classic.json5"
+    ROUNDED = "rounded.json5"
+    BIG = "big.json5"
+    FUTSAL_CLASSIC = "futsal-classic.json5"
+    FUTSAL_BIG = "futsal-big.json5"
+    PENALTY = "penalty-soccer.json5"
+    OBSTACLE_WINKY = "obstacle-map-winky.json5"
 
 
 class TeamColor(str, Enum):

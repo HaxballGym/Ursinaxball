@@ -13,6 +13,8 @@ panda3d = "1.10.13"
 ursina = "5.0.0"
 scipy = "^1.10.0"
 screeninfo = "^0.8.1"
+msgspec = "^0.18.2"
+pyjson5 = "^1.6.4"
 
 [tool.poetry.group.dev]
 optional = true
