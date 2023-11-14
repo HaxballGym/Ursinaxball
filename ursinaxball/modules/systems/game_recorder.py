@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 import msgpack
 import numpy as np
 
-from ursinaxball.common_values import Input
+from ursinaxball.utils import Input
 
 if TYPE_CHECKING:
     from ursinaxball import Game

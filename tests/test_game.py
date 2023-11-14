@@ -1,7 +1,7 @@
 from ursinaxball.modules.bots import ConstantActionBot
 from ursinaxball.game import Game, GameScore
 from ursinaxball.modules import PlayerHandler
-from ursinaxball.common_values import TeamID
+from ursinaxball.utils import TeamID
 
 
 def test_game():

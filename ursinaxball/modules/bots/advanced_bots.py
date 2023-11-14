@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from ursinaxball.common_values import ActionBin, TeamID, GameState
+from ursinaxball.utils import ActionBin, TeamID, GameState
 from ursinaxball.modules.bots import Bot
 from ursinaxball.objects.base import Disc, Goal
 

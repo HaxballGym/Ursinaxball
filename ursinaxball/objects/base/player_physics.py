@@ -1,78 +1,83 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING
 
-import copy
-
+import msgspec
 import numpy as np
+import numpy.typing as npt
+from ursinaxball.utils import CollisionFlag, replace_none_values
 
-from ursinaxball.common_values import CollisionFlag
-from ursinaxball.objects.base import Disc
+if TYPE_CHECKING:
+    from typing import Self
 
 
-class PlayerPhysics(Disc):
-    """
-    A class to represent the player disc object from the game.
-    """
+class PlayerPhysicsRaw(msgspec.Struct, rename="camel"):
+    gravity: list[float] | None = None
+    radius: float | None = None
+    inv_mass: float | None = None
+    damping: float | None = None
+    b_coef: float | None = None
+    c_group: list[str] | None = None
+    acceleration: float | None = None
+    kicking_acceleration: float | None = None
+    kicking_damping: float | None = None
+    kick_strength: float | None = None
+    kickback: float | None = None
 
-    def __init__(self, data_object: dict | None = None, data_stadium=None):
-        if data_object is None:
-            data_object = {}
+    def apply_default(self) -> Self:
+        player_default = PlayerPhysicsRaw(
+            gravity=[0.0, 0.0],
+            radius=15,
+            inv_mass=1,
+            damping=0.96,
+            c_group=[],
+            acceleration=0.1,
+            kicking_acceleration=0.07,
+            kicking_damping=0.96,
+            kick_strength=5,
+            kickback=0,
+        )
+        replace_none_values(self, player_default)
+        return self
 
-        self.player_id = -1
-        self.acceleration: float = data_object.get("acceleration")
-        self.kicking_acceleration: float = data_object.get("kickingAcceleration")
-        self.kicking_damping: float = data_object.get("kickingDamping")
-        self.kick_strength: float = data_object.get("kickStrength")
-        self.kickback: float = data_object.get("kickback")
+    def to_player_physics(self) -> PlayerPhysics:
+        player_raw_final = self.apply_default()
 
-        super().__init__(data_object, data_stadium)
+        assert player_raw_final.gravity is not None
+        assert player_raw_final.radius is not None
+        assert player_raw_final.inv_mass is not None
+        assert player_raw_final.damping is not None
+        assert player_raw_final.b_coef is not None
+        assert player_raw_final.c_group is not None
+        assert player_raw_final.acceleration is not None
+        assert player_raw_final.kicking_acceleration is not None
+        assert player_raw_final.kicking_damping is not None
+        assert player_raw_final.kick_strength is not None
+        assert player_raw_final.kickback is not None
 
-        self.position = np.array([0, 0], dtype=float)
-        self.velocity = np.array([0, 0], dtype=float)
-        self.color = "FFFFFF"
-        del self.trait
+        return PlayerPhysics(
+            gravity=np.array(player_raw_final.gravity),
+            radius=player_raw_final.radius,
+            inv_mass=player_raw_final.inv_mass,
+            damping=player_raw_final.damping,
+            b_coef=player_raw_final.b_coef,
+            c_group=CollisionFlag.from_list(player_raw_final.c_group),
+            acceleration=player_raw_final.acceleration,
+            kicking_acceleration=player_raw_final.kicking_acceleration,
+            kicking_damping=player_raw_final.kicking_damping,
+            kick_strength=player_raw_final.kick_strength,
+            kickback=player_raw_final.kickback,
+        )
 
-    def apply_default_values(self):
-        """
-        Applies the default values to the player if they are none
-        """
-        if self.bouncing_coefficient is None:
-            self.bouncing_coefficient = 0.5
-        if self.collision_group is None:
-            self.collision_group = CollisionFlag.NONE
-        if self.collision_mask is None:
-            self.collision_mask = CollisionFlag.ALL
-        if len(self.gravity.shape) == 0:
-            self.gravity = np.zeros(2)
-        if self.radius is None:
-            self.radius = 15
-        if self.inverse_mass is None:
-            self.inverse_mass = 0.5
-        if self.damping is None:
-            self.damping = 0.96
-        if self.acceleration is None:
-            self.acceleration = 0.1
-        if self.kicking_acceleration is None:
-            self.kicking_acceleration = 0.07
-        if self.kicking_damping is None:
-            self.kicking_damping = 0.96
-        if self.kick_strength is None:
-            self.kick_strength = 5
-        if self.kickback is None:
-            self.kickback = 0
 
-    def copy(self, other: "PlayerPhysics") -> None:
-        self.collision_group = copy.copy(other.collision_group)
-        self.collision_mask = copy.copy(other.collision_mask)
-        self.position = copy.copy(other.position)
-        self.velocity = copy.copy(other.velocity)
-        self.gravity = copy.copy(other.gravity)
-        self.bouncing_coefficient = copy.copy(other.bouncing_coefficient)
-        self.radius = copy.copy(other.radius)
-        self.inverse_mass = copy.copy(other.inverse_mass)
-        self.damping = copy.copy(other.damping)
-        self.color = copy.copy(other.color)
-        self.acceleration = copy.copy(other.acceleration)
-        self.kicking_acceleration: float = copy.copy(other.kicking_acceleration)
-        self.kicking_damping: float = copy.copy(other.kicking_damping)
-        self.kick_strength: float = copy.copy(other.kick_strength)
-        self.kickback: float = copy.copy(other.kickback)
+class PlayerPhysics(msgspec.Struct, rename="camel"):
+    gravity: npt.NDArray[np.float64]
+    radius: float
+    inv_mass: float
+    damping: float
+    b_coef: float
+    c_group: CollisionFlag
+    acceleration: float
+    kicking_acceleration: float
+    kicking_damping: float
+    kick_strength: float
+    kickback: float

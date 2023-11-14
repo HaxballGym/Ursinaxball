@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from ursina import Entity, Quad, Text, Vec2, Vec3, camera
 
-from ursinaxball.common_values import GameState, TeamColor, TeamID
+from ursinaxball.utils import GameState, TeamColor, TeamID
 from ursinaxball.objects.base import PhysicsObject
 
 

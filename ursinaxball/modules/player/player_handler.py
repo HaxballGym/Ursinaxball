@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from ursinaxball.common_values import (
+from ursinaxball.utils import (
     ActionBin,
     CollisionFlag,
     TeamColor,

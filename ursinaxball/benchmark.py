@@ -6,7 +6,7 @@ from pyinstrument import Profiler
 from pyperf import Benchmark, Runner
 
 from ursinaxball import Game
-from ursinaxball.common_values import BaseMap, TeamID
+from ursinaxball.utils import BaseMap, TeamID
 from ursinaxball.modules import GameScore, PlayerHandler
 
 PATH_PROJECT = Path(__file__).parent.parent

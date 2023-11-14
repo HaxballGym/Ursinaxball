@@ -1,4 +1,4 @@
-from ursinaxball.common_values import BaseMap
+from ursinaxball.utils import BaseMap
 from ursinaxball.objects import load_stadium_hbs
 
 

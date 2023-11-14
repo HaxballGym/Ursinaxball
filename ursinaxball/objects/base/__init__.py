@@ -1,20 +1,16 @@
-# from .physics_object import PhysicsObject
-# from .disc_object import Disc
-# from .ball_physics import BallPhysics
-# from .goal_object import Goal
-# from .plane_object import Plane
-
-# from .vertex_object import Vertex
-# from .trait_object import Trait
-
-# from .segment_object import Segment
-# from .player_physics import PlayerPhysics
-# from .background_object import Background
+from .disc import Disc
+from .ball import Ball
+from .goal import Goal
+from .plane import Plane
+from .vertex import Vertex
+from .trait import Trait
+from .segment import Segment
+from .player_physics import PlayerPhysics
+from .background import Background
 
 __all__ = [
-    "PhysicsObject",
     "Disc",
-    "BallPhysics",
+    "Ball",
     "Goal",
     "Plane",
     "Vertex",

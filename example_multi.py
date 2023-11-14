@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from ursina import Keys, held_keys
 
 from ursinaxball import Game
-from ursinaxball.common_values import BaseMap, TeamID
+from ursinaxball.utils import BaseMap, TeamID
 from ursinaxball.modules import GameScore, PlayerHandler
 
 game = Game(

@@ -4,11 +4,11 @@ from typing import TYPE_CHECKING
 import msgspec
 import numpy as np
 import numpy.typing as npt
-from ursinaxball.common_values import CollisionFlag
+from ursinaxball.utils import CollisionFlag, replace_none_values
 
 if TYPE_CHECKING:
     from typing import Self
-    from ursinaxball.objects.base.trait_object import Trait
+    from ursinaxball.objects.base.trait import Trait
 
 
 class VertexRaw(msgspec.Struct, rename="camel"):
@@ -18,11 +18,6 @@ class VertexRaw(msgspec.Struct, rename="camel"):
     c_group: list[str] | None = None
     c_mask: list[str] | None = None
     trait: str | None = None
-
-    def replace_none_values(self, other: VertexRaw) -> None:
-        self.b_coef = self.b_coef if self.b_coef is not None else other.b_coef
-        self.c_group = self.c_group if self.c_group is not None else other.c_group
-        self.c_mask = self.c_mask if self.c_mask is not None else other.c_mask
 
     def apply_trait(self, traits: dict[str, Trait]) -> Self:
         if self.trait is None:
@@ -38,7 +33,7 @@ class VertexRaw(msgspec.Struct, rename="camel"):
             c_group=trait.c_group,
             c_mask=trait.c_mask,
         )
-        self.replace_none_values(vertex_trait)
+        replace_none_values(self, vertex_trait)
         return self
 
     def apply_default(self) -> Self:
@@ -49,7 +44,7 @@ class VertexRaw(msgspec.Struct, rename="camel"):
             c_group=["wall"],
             c_mask=["all"],
         )
-        self.replace_none_values(vertex_default)
+        replace_none_values(self, vertex_default)
         return self
 
     def to_vertex(self, traits: dict[str, Trait]) -> Vertex:

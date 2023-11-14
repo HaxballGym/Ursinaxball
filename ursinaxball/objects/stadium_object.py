@@ -5,7 +5,7 @@ import json
 from typing import List
 
 from ursinaxball import stadiums
-from ursinaxball.common_values import BaseMap
+from ursinaxball.utils import BaseMap
 from ursinaxball.objects.base import (
     Background,
     BallPhysics,

@@ -6,7 +6,7 @@ from typing import List
 
 import numpy as np
 
-from ursinaxball.common_values import BaseMap, CollisionFlag, GameState, TeamID
+from ursinaxball.utils import BaseMap, CollisionFlag, GameState, TeamID
 from ursinaxball.modules import (
     GameActionRecorder,
     GameRenderer,

@@ -6,7 +6,7 @@ from random import randint
 import numpy as np
 
 from ursinaxball.modules.bots import Bot
-from ursinaxball.common_values import ActionBin
+from ursinaxball.utils import ActionBin
 
 if TYPE_CHECKING:
     from ursinaxball import Game
