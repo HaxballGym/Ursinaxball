@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 class GameRenderer(object):
     def __init__(self, game: Game, enable_vsync=True, fov: int = 550) -> None:
         self.game = game
-        self.app: Ursina = None
+        self.app: Ursina | None = None
         self.disc_entities = []
         self.segment_entities = []
         self.background_entities = []
@@ -25,7 +25,7 @@ class GameRenderer(object):
     def get_disc_player(self, disc: Disc):
         if not hasattr(disc, "player_id"):
             return None
-        return self.game.get_player_by_id(disc.player_id)
+        return self.game.get_player_by_id(getattr(disc, "player_id"))
 
     def handle_shooting(self, disc: Disc, entity: Entity) -> None:
         player = self.get_disc_player(disc)
@@ -39,7 +39,7 @@ class GameRenderer(object):
     def start(self) -> None:
         if self.app is None:
             window.borderless = False
-            window.vsync = 60 if self.enable_vsync else False
+            window.vsync = 60 if self.enable_vsync else False # type: ignore
             self.app = Ursina(title="HaxballGym")
             self.UI_fixed_entities = self.game.score.get_fixed_entities()
 
@@ -80,6 +80,7 @@ class GameRenderer(object):
         if self.UI_strings[1].text != self.game.score.get_time_string():
             self.UI_strings[1].text = self.game.score.get_time_string()
 
+        assert self.app is not None
         self.app.step()
 
     def stop(self):

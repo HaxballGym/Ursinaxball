@@ -87,6 +87,8 @@ class GameActionRecorder:
     def save(self, file_name: str) -> None:
         with open(os.path.join(os.path.curdir, self.folder_rec, file_name), "wb+") as f:
             encoded_recording = msgpack.packb(self.recording)
+            if not encoded_recording:
+                raise ValueError("The recording is empty.")
             f.write(encoded_recording)
 
     def read_from_file(self, file_name: str) -> None:
@@ -168,6 +170,8 @@ class GamePositionRecorder:
     def save(self, file_name: str) -> None:
         with open(os.path.join(os.path.curdir, self.folder_rec, file_name), "wb+") as f:
             encoded_recording = msgpack.packb(self.recording)
+            if not encoded_recording:
+                raise ValueError("The recording is empty.")
             f.write(encoded_recording)
 
     def read_from_file(self, file_name: str) -> None:

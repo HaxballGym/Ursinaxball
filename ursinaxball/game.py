@@ -5,6 +5,7 @@ import logging
 from typing import List
 
 import numpy as np
+import numpy.typing as npt
 
 from ursinaxball.common_values import BaseMap, CollisionFlag, GameState, TeamID
 from ursinaxball.modules import (
@@ -40,8 +41,8 @@ class Game:
         self.players: List[PlayerHandler] = []
         self.team_kickoff = TeamID.RED
         self.stadium_file = stadium_file
-        self.stadium_store: Stadium = load_stadium_hbs(self.stadium_file)
-        self.stadium_game: Stadium = copy.deepcopy(self.stadium_store)
+        self.stadium_store = load_stadium_hbs(self.stadium_file)
+        self.stadium_game = copy.deepcopy(self.stadium_store)
         self.enable_recorder = enable_recorder
         self.recorder = (
             GameActionRecorder(self, self.folder_rec) if self.enable_recorder else None
@@ -58,7 +59,7 @@ class Game:
         for player in players:
             self.add_player(player)
 
-    def make_player_action(self, player: PlayerHandler, action: np.ndarray) -> None:
+    def make_player_action(self, player: PlayerHandler, action: npt.NDArray) -> None:
         player.action = action
         player.resolve_movement(self.stadium_game, self.score)
 
@@ -186,7 +187,7 @@ class Game:
             if player.team == TeamID.RED:
                 if len(red_spawns) > 0:
                     index_red = min(red_count, len(red_spawns))
-                    player.disc.position = red_spawns[index_red]
+                    player.disc.position = np.array(red_spawns[index_red])
                 else:
                     player.disc.position[0] = -self.stadium_game.spawn_distance
                     if (red_count % 2) == 1:
@@ -198,7 +199,7 @@ class Game:
             elif player.team == TeamID.BLUE:
                 if len(blue_spawns) > 0:
                     index_blue = min(blue_count, len(blue_spawns))
-                    player.disc.position = blue_spawns[index_blue]
+                    player.disc.position = np.array(blue_spawns[index_blue])
                 else:
                     player.disc.position[0] = self.stadium_game.spawn_distance
                     if (blue_count % 2) == 1:
@@ -211,9 +212,9 @@ class Game:
         for player in self.players:
             self.stadium_game.discs.append(player.disc)
         self.reset_discs_positions()
-        if self.enable_recorder:
+        if self.enable_recorder and self.recorder is not None:
             self.recorder.start()
-        if self.enable_renderer:
+        if self.enable_renderer and self.renderer is not None:
             self.renderer.start()
 
     def step(self, actions: np.ndarray) -> bool:
@@ -228,19 +229,19 @@ class Game:
         update_discs(self.stadium_game, self.players)
         resolve_collisions(self.stadium_game)
         done = self.handle_game_state(previous_discs_position)
-        if self.enable_recorder:
+        if self.enable_recorder and self.recorder is not None:
             self.recorder.step(actions)
-        if self.enable_renderer:
+        if self.enable_renderer and self.renderer is not None:
             self.renderer.update()
 
         return done
 
     def stop(self, save_recording: bool) -> None:
-        if self.enable_recorder:
+        if self.enable_recorder and self.recorder is not None:
             self.recorder.stop(save=save_recording)
+            if save_recording:
+                log.debug(f"Recording saved under {self.recorder.filename}")
 
-        if save_recording and self.enable_recorder:
-            log.debug(f"Recording saved under {self.recorder.filename}")
         log.debug(
             f"Game stopped with score {self.score.red}-{self.score.blue}"
             + f" at {round(self.score.time, 2)}s\n",
@@ -252,7 +253,7 @@ class Game:
         self.stadium_game: Stadium = copy.deepcopy(self.stadium_store)
         if self.enable_recorder:
             self.recorder = GameActionRecorder(self, self.folder_rec)
-        if self.enable_renderer:
+        if self.enable_renderer and self.renderer is not None:
             self.renderer.stop()
 
     def reset(self, save_recording: bool) -> None:
@@ -281,6 +282,6 @@ if __name__ == "__main__":
     while not done:
         actions_player_1 = player_red.step(game)
         actions_player_2 = player_blue.step(game)
-        done = game.step([actions_player_1, actions_player_2])
+        done = game.step(np.array([actions_player_1, actions_player_2]))
 
     game.stop(save_recording=False)

@@ -34,7 +34,7 @@ class RandomBot(Bot):
     def __init__(self, tick_skip: int):
         super().__init__(tick_skip=tick_skip)
 
-    def step_game(self, player: PlayerHandler, game: Game) -> None:
+    def step_game(self, player: PlayerHandler, game: Game) -> list[int]:
         RA = randint(-1, 1)
         UA = randint(-1, 1)
         SA = randint(0, 1)

@@ -80,7 +80,7 @@ class GameScore:
 
     def get_time_entity(self) -> Entity:
         text_time = self.get_time_string()
-        text_time_width = Text.get_width(text_time)
+        text_time_width = Text.get_width(Text(text_time))
 
         time_text_entity = Text(
             position=Vec2(0.3 - 1.5 * text_time_width / 2, 0.5 - Text.size * 1.35),
@@ -91,13 +91,13 @@ class GameScore:
 
         return time_text_entity
 
-    def get_fixed_entities(self) -> Entity:
+    def get_fixed_entities(self) -> list[Entity]:
         background_score = Entity(
             parent=camera.ui,
             position=Vec3(0, 0.5 - Text.size * 1.25, 1),
             scale=(0.6, Text.size * 2.5),
             model=Quad(
-                aspect=(0.6 / Text.size * 2.5),
+                aspect=int(0.6 / Text.size * 2.5),
                 radius=0.1,
             ),
             color=PhysicsObject.parse_color_entity("1A2125"),
@@ -127,7 +127,7 @@ class GameScore:
 
         return [background_score, red_score_square, blue_score_square]
 
-    def get_string_entities(self) -> Entity:
+    def get_string_entities(self) -> list[Entity]:
         score_text_entity = Text(
             position=Vec2(-0.175, 0.5 - Text.size * 1.35),
             origin=Vec2(0, 0),

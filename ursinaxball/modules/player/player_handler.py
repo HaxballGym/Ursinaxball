@@ -4,6 +4,7 @@ import itertools
 from typing import TYPE_CHECKING
 
 import numpy as np
+import numpy.typing as npt
 
 from ursinaxball.common_values import (
     ActionBin,
@@ -31,7 +32,7 @@ class PlayerHandler(object):
         self.name = name
         self.team = team
         self.bot = bot
-        self.action: list[int] = []
+        self.action: npt.NDArray = np.zeros(3, dtype=int)
         self.kicking = False
         # kick_cancel is used to make sure you stop kicking after hitting the ball
         self._kick_cancel = False

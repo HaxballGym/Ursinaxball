@@ -1,10 +1,12 @@
 from dataclasses import dataclass
 
-from ursina import Keys, held_keys
+import numpy as np
+from ursina.input_handler import held_keys, Keys
 
 from ursinaxball import Game
 from ursinaxball.common_values import BaseMap, TeamID
-from ursinaxball.modules import GameScore, PlayerHandler, ChaseBot
+from ursinaxball.modules import GameScore, PlayerHandler
+import ursinaxball.modules.bots as bot
 
 game = Game(
     folder_rec="./recordings/",
@@ -14,7 +16,7 @@ game = Game(
 game.score = GameScore(time_limit=3, score_limit=3)
 tick_skip = 2
 
-bot_blue = ChaseBot(tick_skip)
+bot_blue = bot.GoalkeeperBot(tick_skip=tick_skip)
 
 player_red = PlayerHandler("P1", TeamID.RED)
 player_blue = PlayerHandler("P2", TeamID.BLUE, bot=bot_blue)
@@ -23,11 +25,11 @@ game.add_players([player_red, player_blue])
 
 @dataclass
 class InputPlayer:
-    left: list[str]
-    right: list[str]
-    up: list[str]
-    down: list[str]
-    shoot: list[str]
+    left: list[str] | list[Keys]
+    right: list[str] | list[Keys]
+    up: list[str] | list[Keys]
+    down: list[str] | list[Keys]
+    shoot: list[str] | list[Keys]
 
 
 input_player = InputPlayer(
@@ -63,5 +65,5 @@ while True:
     actions = [[0, 0, 0], [0, 0, 0]]
     while not done:
         actions[0] = action_handle(actions[0], input_player)
-        actions[1] = player_blue.step(game)
-        done = game.step(actions)
+        actions[1] = player_blue.step(game) or [0, 0, 0]
+        done = game.step(np.array(actions))

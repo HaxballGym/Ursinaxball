@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
-from ursina import Keys, held_keys
+import numpy as np
+from ursina.input_handler import Keys, held_keys
 
 from ursinaxball import Game
 from ursinaxball.common_values import BaseMap, TeamID
@@ -19,11 +20,11 @@ game.add_players([player_red])
 
 @dataclass
 class InputPlayer:
-    left: list[str]
-    right: list[str]
-    up: list[str]
-    down: list[str]
-    shoot: list[str]
+    left: list[str] | list[Keys]
+    right: list[str] | list[Keys]
+    up: list[str] | list[Keys]
+    down: list[str] | list[Keys]
+    shoot: list[str] | list[Keys]
 
 
 input_player = InputPlayer(
@@ -59,4 +60,4 @@ while True:
     actions = [[0, 0, 0]]
     while not done:
         actions[0] = action_handle(actions[0], input_player)
-        done = game.step(actions)
+        done = game.step(np.array(actions))
