@@ -2,10 +2,9 @@ from __future__ import annotations
 
 import importlib.resources as pkg_resources
 import json
-from typing import List
+from pathlib import Path
 
 from ursinaxball import stadiums
-from ursinaxball.utils import BaseMap
 from ursinaxball.objects.base import (
     Background,
     BallPhysics,
@@ -17,6 +16,7 @@ from ursinaxball.objects.base import (
     Trait,
     Vertex,
 )
+from ursinaxball.utils.enums import BaseMap
 
 
 class Stadium:
@@ -36,18 +36,17 @@ class Stadium:
         self.blue_spawn_points: list[list[float]] = data.get("blueSpawnPoints", [])
 
         traits: dict = data.get("traits")
-        traits_name = [t for t in traits]
-        traits_data = [traits.get(t) for t in traits_name]
-        self.traits: List[Trait] = [
-            Trait(v, name) for v, name in zip(traits_data, traits_name)
+        traits_data = [traits.get(t) for t in traits]
+        self.traits: list[Trait] = [
+            Trait(v, name) for v, name in zip(traits_data, traits)
         ]
 
         self.background: Background = Background(data.get("bg"))
-        self.vertices: List[Vertex] = [Vertex(v, data) for v in data.get("vertexes")]
-        self.segments: List[Segment] = [Segment(s, data) for s in data.get("segments")]
-        self.goals: List[Goal] = [Goal(g, data) for g in data.get("goals")]
-        self.discs: List[Disc] = [Disc(d, data) for d in data.get("discs")]
-        self.planes: List[Plane] = [Plane(p, data) for p in data.get("planes")]
+        self.vertices: list[Vertex] = [Vertex(v, data) for v in data.get("vertexes")]
+        self.segments: list[Segment] = [Segment(s, data) for s in data.get("segments")]
+        self.goals: list[Goal] = [Goal(g, data) for g in data.get("goals")]
+        self.discs: list[Disc] = [Disc(d, data) for d in data.get("discs")]
+        self.planes: list[Plane] = [Plane(p, data) for p in data.get("planes")]
 
         self.player_physics: PlayerPhysics = PlayerPhysics(
             data.get("playerPhysics"), data
@@ -66,7 +65,7 @@ class Stadium:
 
 
 def load_stadium_hbs_str(file_name: str):
-    with open(file_name) as f:
+    with Path.open(Path(file_name)) as f:
         data = json.load(f)
     return Stadium(data)
 

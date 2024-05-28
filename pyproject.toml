@@ -4,6 +4,7 @@ version = "0.2.3"
 description = ""
 authors = ["Wazarr <jeje_04@live.com>"]
 readme = "README.md"
+packages = [{ include = "ursinaxball" }]
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.12"

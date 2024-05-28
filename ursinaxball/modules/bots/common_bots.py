@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
 from random import randint
+from typing import TYPE_CHECKING
 
 import numpy as np
 
 from ursinaxball.modules.bots import Bot
-from ursinaxball.utils import ActionBin
+from ursinaxball.utils.enums import ActionBin
 
 if TYPE_CHECKING:
     from ursinaxball import Game
@@ -34,7 +34,7 @@ class RandomBot(Bot):
     def __init__(self, tick_skip: int):
         super().__init__(tick_skip=tick_skip)
 
-    def step_game(self, player: PlayerHandler, game: Game) -> None:
+    def step_game(self, player: PlayerHandler, game: Game) -> list[int]:
         RA = randint(-1, 1)
         UA = randint(-1, 1)
         SA = randint(0, 1)

@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Tuple
+from typing import TYPE_CHECKING
 
 import numpy as np
 
@@ -24,21 +24,19 @@ def resolve_disc_disc_collision(disc_a: Disc, disc_b: Disc) -> None:
     disc_a_res, disc_b_res = resolve_disc_disc_collision_fn(
         disc_a.position,
         disc_b.position,
-        disc_a.velocity,
-        disc_b.velocity,
+        disc_a.speed,
+        disc_b.speed,
         disc_a.radius,
         disc_b.radius,
-        disc_a.inverse_mass,
-        disc_b.inverse_mass,
-        disc_a.bouncing_coefficient,
-        disc_b.bouncing_coefficient,
+        disc_a.inv_mass,
+        disc_b.inv_mass,
+        disc_a.b_coef,
+        disc_b.b_coef,
     )
     disc_a.position = disc_a_res[0]
-    disc_a.velocity = disc_a_res[1]
+    disc_a.speed = disc_a_res[1]
     disc_b.position = disc_b_res[0]
-    disc_b.velocity = disc_b_res[1]
-
-    return
+    disc_b.speed = disc_b_res[1]
 
 
 def resolve_disc_vertex_collision(disc: Disc, vertex: Vertex) -> None:
@@ -48,20 +46,18 @@ def resolve_disc_vertex_collision(disc: Disc, vertex: Vertex) -> None:
     disc_res = resolve_disc_vertex_collision_fn(
         disc.position,
         vertex.position,
-        disc.velocity,
+        disc.speed,
         disc.radius,
-        disc.bouncing_coefficient,
-        vertex.bouncing_coefficient,
+        disc.b_coef,
+        vertex.b_coef,
     )
     disc.position = disc_res[0]
-    disc.velocity = disc_res[1]
-
-    return
+    disc.speed = disc_res[1]
 
 
 def segment_apply_bias(
     segment: Segment, dist: float, normal: np.ndarray
-) -> Tuple[float, np.ndarray]:
+) -> tuple[float, np.ndarray]:
     """
     Applies the bias property during the collision between a segment and a disc
     """
@@ -76,25 +72,26 @@ def segment_apply_bias(
         normal = -normal
 
     if dist < -bias_segment:
-        return np.Infinity, normal
+        return np.inf, normal
 
     return dist, normal
 
 
 def resolve_disc_segment_collision_no_curve(
     disc: Disc, segment: Segment
-) -> Tuple[float, np.ndarray]:
+) -> tuple[float, np.ndarray] | tuple[None, None]:
     res = resolve_disc_segment_collision_no_curve_fn(
         disc.position,
         segment.vertices[0].position,
         segment.vertices[1].position,
     )
+
     return res
 
 
 def resolve_disc_segment_collision_curve(
     disc: Disc, segment: Segment
-) -> Tuple[float, np.ndarray]:
+) -> tuple[float, np.ndarray] | tuple[None, None]:
     res = resolve_disc_segment_collision_curve_fn(
         disc.position,
         segment.circle_center,
@@ -121,15 +118,13 @@ def resolve_disc_segment_collision(disc: Disc, segment: Segment) -> None:
             dist,
             normal,
             disc.position,
-            disc.velocity,
+            disc.speed,
             disc.radius,
-            disc.bouncing_coefficient,
+            disc.b_coef,
             segment.bouncing_coefficient,
         )
         disc.position = res[0]
-        disc.velocity = res[1]
-
-    return
+        disc.speed = res[1]
 
 
 def resolve_disc_plane_collision(disc: Disc, plane: Plane) -> None:
@@ -139,45 +134,34 @@ def resolve_disc_plane_collision(disc: Disc, plane: Plane) -> None:
     disc_res = resolve_disc_plane_collision_fn(
         disc.position,
         plane.normal,
-        disc.velocity,
-        plane.distance_origin,
+        disc.speed,
+        plane.dist,
         disc.radius,
-        disc.bouncing_coefficient,
-        plane.bouncing_coefficient,
+        disc.b_coef,
+        plane.b_coef,
     )
     disc.position = disc_res[0]
-    disc.velocity = disc_res[1]
-
-    return
+    disc.speed = disc_res[1]
 
 
 def resolve_collisions(stadium_game: Stadium) -> None:
     """
     Function that resolves the collisions between the discs and the other objects
     """
-    for i in range(len(stadium_game.discs)):
-        d_a = stadium_game.discs[i]
+    for i, d_a in enumerate(stadium_game.discs):
         for j in range(i + 1, len(stadium_game.discs)):
             d_b = stadium_game.discs[j]
-            if ((d_a.collision_group & d_b.collision_mask) != 0) and (
-                (d_a.collision_mask & d_b.collision_group) != 0
-            ):
+            if ((d_a.c_group & d_b.c_mask) != 0) and ((d_a.c_mask & d_b.c_group) != 0):
                 resolve_disc_disc_collision(d_a, d_b)
-        if d_a.inverse_mass != 0:
+        if d_a.inv_mass != 0:
             for p in stadium_game.planes:
-                if ((d_a.collision_group & p.collision_mask) != 0) and (
-                    (d_a.collision_mask & p.collision_group) != 0
-                ):
+                if ((d_a.c_group & p.c_mask) != 0) and ((d_a.c_mask & p.c_group) != 0):
                     resolve_disc_plane_collision(d_a, p)
             for s in stadium_game.segments:
-                if ((d_a.collision_group & s.collision_mask) != 0) and (
-                    (d_a.collision_mask & s.collision_group) != 0
-                ):
+                if ((d_a.c_group & s.c_mask) != 0) and ((d_a.c_mask & s.c_group) != 0):
                     resolve_disc_segment_collision(d_a, s)
             for v in stadium_game.vertices:
-                if ((d_a.collision_group & v.collision_mask) != 0) and (
-                    (d_a.collision_mask & v.collision_group) != 0
-                ):
+                if ((d_a.c_group & v.c_mask) != 0) and ((d_a.c_mask & v.c_group) != 0):
                     resolve_disc_vertex_collision(d_a, v)
 
 
@@ -188,11 +172,11 @@ def update_discs(stadium_game: Stadium, players: "list[PlayerHandler]") -> None:
     for disc in stadium_game.discs:
         if hasattr(disc, "player_id"):
             continue
-        disc.position += disc.velocity
-        disc.velocity = (disc.velocity + disc.gravity) * disc.damping
+        disc.position += disc.speed
+        disc.speed = (disc.speed + disc.gravity) * disc.damping
 
     for player in players:
         disc = player.disc
-        disc.position += disc.velocity
+        disc.position += disc.speed
         damping = disc.kicking_damping if player.is_kicking() else disc.damping
-        disc.velocity = (disc.velocity + disc.gravity) * damping
+        disc.speed = (disc.speed + disc.gravity) * damping

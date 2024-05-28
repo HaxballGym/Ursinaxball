@@ -13,7 +13,6 @@ class Bot(ABC):
         self.symmetry = symmetry
         self.tick_skip = tick_skip
         self.game_ticks = 0
-        pass
 
     @staticmethod
     def symmetry_action(action: list[int]) -> list[int]:

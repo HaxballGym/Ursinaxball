@@ -1,53 +1,37 @@
 from dataclasses import dataclass
 
-from ursina import Keys, held_keys
+from ursina.input_handler import Keys, held_keys
 
 from ursinaxball import Game
-from ursinaxball.utils import BaseMap, TeamID
 from ursinaxball.modules import GameScore, PlayerHandler
+from ursinaxball.utils.enums import BaseMap, TeamID
 
 game = Game(
     folder_rec="./recordings/",
     enable_vsync=True,
-    stadium_file=BaseMap.CLASSIC,
+    stadium_file=BaseMap.OBSTACLE_WINKY,
 )
-team_size = 1
+game.score = GameScore(time_limit=0, score_limit=0)
 
-
-game.score = GameScore(time_limit=3, score_limit=3)
-
-players_red = [PlayerHandler(f"P{i}", TeamID.RED) for i in range(team_size)]
-players_blue = [
-    PlayerHandler(f"P{team_size + i}", TeamID.BLUE) for i in range(team_size)
-]
-players = players_red + players_blue
-
-game.add_players(players)
+player_red = PlayerHandler("P1", TeamID.RED)
+game.add_players([player_red])
 
 
 @dataclass
 class InputPlayer:
-    left: list[str]
-    right: list[str]
-    up: list[str]
-    down: list[str]
-    shoot: list[str]
+    left: list[str] | list[Keys]
+    right: list[str] | list[Keys]
+    up: list[str] | list[Keys]
+    down: list[str] | list[Keys]
+    shoot: list[str] | list[Keys]
 
 
-input_player_1 = InputPlayer(
+input_player = InputPlayer(
     left=[Keys.left_arrow],
     right=[Keys.right_arrow],
     up=[Keys.up_arrow],
     down=[Keys.down_arrow],
-    shoot=["l"],
-)
-
-input_player_2 = InputPlayer(
-    left=["a"],
-    right=["d"],
-    up=["w"],
-    down=["s"],
-    shoot=["b"],
+    shoot=["x"],
 )
 
 
@@ -72,8 +56,7 @@ while True:
     save_rec = False
     game.reset(save_recording=save_rec)
     done = False
-    actions = [[0, 0, 0], [0, 0, 0]]
+    actions = [[0, 0, 0]]
     while not done:
-        actions[0] = action_handle(actions[0], input_player_1)
-        actions[1] = action_handle(actions[1], input_player_2)
+        actions[0] = action_handle(actions[0], input_player)
         done = game.step(actions)

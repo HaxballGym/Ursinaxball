@@ -2,11 +2,10 @@ from __future__ import annotations
 
 import copy
 import logging
-from typing import List
+from typing import TYPE_CHECKING, List
 
 import numpy as np
 
-from ursinaxball.utils import BaseMap, CollisionFlag, GameState, TeamID
 from ursinaxball.modules import (
     GameActionRecorder,
     GameRenderer,
@@ -15,8 +14,12 @@ from ursinaxball.modules import (
     resolve_collisions,
     update_discs,
 )
-from ursinaxball.objects.base import Disc
 from ursinaxball.objects.stadium_object import Stadium, load_stadium_hbs
+from ursinaxball.utils.constants import CollisionFlag
+from ursinaxball.utils.enums import BaseMap, GameState, TeamID
+
+if TYPE_CHECKING:
+    from ursinaxball.objects.base import Disc
 
 log = logging.getLogger(__name__)
 
@@ -37,7 +40,7 @@ class Game:
         self.folder_rec = folder_rec
         self.score = GameScore()
         self.state = GameState.KICKOFF
-        self.players: List[PlayerHandler] = []
+        self.players: list[PlayerHandler] = []
         self.team_kickoff = TeamID.RED
         self.stadium_file = stadium_file
         self.stadium_store: Stadium = load_stadium_hbs(self.stadium_file)
@@ -54,7 +57,7 @@ class Game:
     def add_player(self, player: PlayerHandler) -> None:
         self.players.append(player)
 
-    def add_players(self, players: List[PlayerHandler]) -> None:
+    def add_players(self, players: list[PlayerHandler]) -> None:
         for player in players:
             self.add_player(player)
 

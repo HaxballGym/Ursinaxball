@@ -4,14 +4,13 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from ursinaxball.utils import ActionBin, TeamID, GameState
 from ursinaxball.modules.bots import Bot
-from ursinaxball.objects.base import Disc, Goal
-
+from ursinaxball.utils.enums import ActionBin, GameState, TeamID
 
 if TYPE_CHECKING:
     from ursinaxball import Game
     from ursinaxball.modules import PlayerHandler
+    from ursinaxball.objects.base import Disc, Goal
 
 
 def segment_intersection(
@@ -69,9 +68,12 @@ def position_keeper(goal: Goal, ball: Disc) -> list[float]:
         ],
     )
     if intersection is not None:
-        if intersection[0] < default_x and center_goal[0] < 0:
-            intersection[0] = default_x
-        elif intersection[0] > default_x and center_goal[0] > 0:
+        if (
+            intersection[0] < default_x
+            and center_goal[0] < 0
+            or intersection[0] > default_x
+            and center_goal[0] > 0
+        ):
             intersection[0] = default_x
         return intersection
 
@@ -83,9 +85,12 @@ def position_keeper(goal: Goal, ball: Disc) -> list[float]:
         ],
     )
     if intersection is not None:
-        if intersection[0] < default_x and center_goal[0] < 0:
-            intersection[0] = default_x
-        elif intersection[0] > default_x and center_goal[0] > 0:
+        if (
+            intersection[0] < default_x
+            and center_goal[0] < 0
+            or intersection[0] > default_x
+            and center_goal[0] > 0
+        ):
             intersection[0] = default_x
         return intersection
 

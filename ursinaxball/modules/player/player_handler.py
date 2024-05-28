@@ -5,23 +5,18 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from ursinaxball.utils import (
-    ActionBin,
-    CollisionFlag,
-    TeamColor,
-    TeamID,
-)
-from ursinaxball.modules import GameScore
-from ursinaxball.modules.bots import Bot
 from ursinaxball.modules.player import PlayerData
-from ursinaxball.objects import Stadium
 from ursinaxball.objects.base import PlayerPhysics
+from ursinaxball.utils.enums import ActionBin, TeamColor, TeamID
 
 if TYPE_CHECKING:
     from ursinaxball import Game
+    from ursinaxball.modules import GameScore
+    from ursinaxball.modules.bots import Bot
+    from ursinaxball.objects import Stadium
 
 
-class PlayerHandler(object):
+class PlayerHandler:
     id_iterate = itertools.count()
 
     def __init__(

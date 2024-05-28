@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from ursina import Entity, Quad, Text, Vec2, Vec3, camera
 
-from ursinaxball.utils import GameState, TeamColor, TeamID
-from ursinaxball.objects.base import PhysicsObject
+from ursinaxball.utils.enums import GameState, TeamColor, TeamID
+from ursinaxball.utils.misc import parse_color_entity
 
 
 class GameScore:
@@ -41,7 +41,7 @@ class GameScore:
         elif team_id == TeamID.RED:
             self.blue += 1
         else:
-            raise ValueError("Invalid team_id: {}".format(team_id))
+            raise ValueError(f"Invalid team_id: {team_id}")
         self.animation_timeout = 150
 
     def is_score_limit_reached(self) -> bool:
@@ -59,7 +59,6 @@ class GameScore:
 
     def end_animation(self) -> None:
         self.animation_timeout = 300
-        return
 
     def is_game_over(self) -> bool:
         return self.is_score_limit_reached() or self.is_time_limit_reached()
@@ -80,7 +79,7 @@ class GameScore:
 
     def get_time_entity(self) -> Entity:
         text_time = self.get_time_string()
-        text_time_width = Text.get_width(text_time)
+        text_time_width = Text.get_width(Text(text_time))
 
         time_text_entity = Text(
             position=Vec2(0.3 - 1.5 * text_time_width / 2, 0.5 - Text.size * 1.35),
@@ -91,16 +90,16 @@ class GameScore:
 
         return time_text_entity
 
-    def get_fixed_entities(self) -> Entity:
+    def get_fixed_entities(self) -> list[Entity]:
         background_score = Entity(
             parent=camera.ui,
             position=Vec3(0, 0.5 - Text.size * 1.25, 1),
             scale=(0.6, Text.size * 2.5),
             model=Quad(
-                aspect=(0.6 / Text.size * 2.5),
+                aspect=int(0.6 / Text.size * 2.5),
                 radius=0.1,
             ),
-            color=PhysicsObject.parse_color_entity("1A2125"),
+            color=parse_color_entity("1A2125"),
         )
 
         red_score_square = Entity(
@@ -127,7 +126,7 @@ class GameScore:
 
         return [background_score, red_score_square, blue_score_square]
 
-    def get_string_entities(self) -> Entity:
+    def get_string_entities(self) -> list[Entity]:
         score_text_entity = Text(
             position=Vec2(-0.175, 0.5 - Text.size * 1.35),
             origin=Vec2(0, 0),

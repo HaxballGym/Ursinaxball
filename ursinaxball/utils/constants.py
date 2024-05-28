@@ -1,4 +1,4 @@
-from ursinaxball.utils import CollisionFlag
+from ursinaxball.utils.enums import CollisionFlag
 
 GRASS_BORDER_COLOR = "C7E6BD"
 HOCKEY_BORDER_COLOR = "E9CC6E"

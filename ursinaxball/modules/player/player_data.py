@@ -1,8 +1,8 @@
-from ursinaxball.objects import Stadium
 from ursinaxball.modules import GameScore
+from ursinaxball.objects import Stadium
 
 
-class PlayerData(object):
+class PlayerData:
     def __init__(self) -> None:
         self.number_touch = 0
         self.number_kick = 0

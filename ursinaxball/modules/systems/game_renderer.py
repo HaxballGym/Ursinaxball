@@ -4,13 +4,12 @@ from typing import TYPE_CHECKING
 
 from ursina import Entity, Ursina, Vec2, camera, color, destroy, window
 
-from ursinaxball.objects.base import Disc
-
 if TYPE_CHECKING:
     from ursinaxball import Game
+    from ursinaxball.objects.base import Disc
 
 
-class GameRenderer(object):
+class GameRenderer:
     def __init__(self, game: Game, enable_vsync=True, fov: int = 550) -> None:
         self.game = game
         self.app: Ursina = None

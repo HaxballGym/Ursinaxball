@@ -55,7 +55,7 @@ def resolve_disc_segment_collision_no_curve_fn(
     position_disc: npt.NDArray[np.float64],
     position_vertex_0: npt.NDArray[np.float64],
     position_vertex_1: npt.NDArray[np.float64],
-):
+) -> tuple[float, np.ndarray] | tuple[None, None]:
     normal_segment = position_vertex_1 - position_vertex_0
     normal_disc_v0 = position_disc - position_vertex_0
     normal_disc_v1 = position_disc - position_vertex_1
@@ -80,7 +80,7 @@ def resolve_disc_segment_collision_curve_fn(
     circle_tangeant_0: npt.NDArray[np.float64],
     circle_tangeant_1: npt.NDArray[np.float64],
     curve: float,
-):
+) -> tuple[float, np.ndarray] | tuple[None, None]:
     dist, normal = None, None
     normal_circle = position_disc - circle_center
     if (
@@ -89,10 +89,11 @@ def resolve_disc_segment_collision_curve_fn(
     ) != (curve < 0):
         dist_norm = np.linalg.norm(normal_circle)
         if dist_norm > 0:
-            dist = dist_norm - circle_radius
+            dist = float(dist_norm - circle_radius)
             normal = normal_circle / dist_norm
+            return dist, normal
 
-    return dist, normal
+    return None, None
 
 
 def resolve_disc_segment_final_fn(
@@ -103,7 +104,7 @@ def resolve_disc_segment_final_fn(
     radius: float,
     bouncing_disc: float,
     bouncing_segment: float,
-):
+) -> tuple[npt.NDArray, npt.NDArray]:
     if dist < radius:
         position_disc += normal * (radius - dist)
         normal_velocity = np.dot(velocity, normal)
@@ -122,7 +123,7 @@ def resolve_disc_plane_collision_fn(
     radius: float,
     bouncing_disc: float,
     bouncing_plane: float,
-):
+) -> tuple[npt.NDArray, npt.NDArray]:
     norm_plane = normal_plane / np.linalg.norm(normal_plane)
     dist = distance_plane - np.dot(position_disc, norm_plane) + radius
     if dist > 0:
