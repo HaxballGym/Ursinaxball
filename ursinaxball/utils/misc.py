@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TypeVar
 
 import msgspec
+from ursina import Color
 
 T = TypeVar("T", bound=msgspec.Struct)
 
@@ -32,3 +33,10 @@ def parse_color_entity(
         return (r, g, b, 255)
     else:
         raise ValueError("color is not a tuple or a string")
+
+
+def parse_color_entity_ursina(
+    color: str | tuple[int, int, int], transparent_supported: bool
+) -> Color:
+    color_tuple = parse_color_entity(color, transparent_supported)
+    return Color(*color_tuple)

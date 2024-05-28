@@ -3,7 +3,8 @@ from __future__ import annotations
 import msgspec
 import numpy as np
 import numpy.typing as npt
-from ursinaxball.utils import TeamID
+
+from ursinaxball.utils.enums import TeamID
 
 
 class GoalRaw(msgspec.Struct, rename="camel"):

@@ -1,12 +1,11 @@
 from __future__ import annotations
 
+import msgspec
 import numpy as np
 
-from ursinaxball.utils import CollisionFlag
 from ursinaxball.objects.base import Disc, Trait
 from ursinaxball.objects.base.disc import DiscRaw
-import msgspec
-
+from ursinaxball.utils.enums import CollisionFlag
 
 Ball = Disc
 

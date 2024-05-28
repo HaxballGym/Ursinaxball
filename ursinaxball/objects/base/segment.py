@@ -6,8 +6,8 @@ from typing import List
 import numpy as np
 from ursina import Entity, Pipe
 
-from ursinaxball.utils import CollisionFlag
 from ursinaxball.objects.base import PhysicsObject, Vertex
+from ursinaxball.utils import CollisionFlag
 
 
 class Segment(PhysicsObject):

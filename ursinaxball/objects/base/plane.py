@@ -1,13 +1,17 @@
 from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 import msgspec
 import numpy as np
 import numpy.typing as npt
-from ursinaxball.utils import CollisionFlag, replace_none_values
+
+from ursinaxball.utils.enums import CollisionFlag
+from ursinaxball.utils.misc import replace_none_values
 
 if TYPE_CHECKING:
     from typing import Self
+
     from ursinaxball.objects.base.trait import Trait
 
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 from ursina import Entity, Quad, Text, Vec2, Vec3, camera
 
 from ursinaxball.utils.enums import GameState, TeamColor, TeamID
-from ursinaxball.utils.misc import parse_color_entity
+from ursinaxball.utils.misc import parse_color_entity_ursina
 
 
 class GameScore:
@@ -99,7 +99,7 @@ class GameScore:
                 aspect=int(0.6 / Text.size * 2.5),
                 radius=0.1,
             ),
-            color=parse_color_entity("1A2125"),
+            color=parse_color_entity_ursina("1A2125", False),
         )
 
         red_score_square = Entity(
@@ -110,7 +110,7 @@ class GameScore:
                 aspect=1,
                 radius=0.1,
             ),
-            color=PhysicsObject.parse_color_entity(TeamColor.RED),
+            color=parse_color_entity_ursina(TeamColor.RED, False),
         )
 
         blue_score_square = Entity(
@@ -121,7 +121,7 @@ class GameScore:
                 aspect=1,
                 radius=0.1,
             ),
-            color=PhysicsObject.parse_color_entity(TeamColor.BLUE),
+            color=parse_color_entity_ursina(TeamColor.BLUE, False),
         )
 
         return [background_score, red_score_square, blue_score_square]
