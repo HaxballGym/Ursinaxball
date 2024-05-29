@@ -1,7 +1,5 @@
 from enum import Enum, IntEnum, IntFlag
 
-from ursinaxball.utils.constants import DICT_COLLISION
-
 
 class CollisionFlag(IntFlag):
     NONE = 0
@@ -25,6 +23,24 @@ class CollisionFlag(IntFlag):
             raise ValueError("collision_list is None")
 
         return CollisionFlag(sum([DICT_COLLISION[c] for c in collision_list]))
+
+
+DICT_COLLISION = {
+    "": CollisionFlag.NONE,
+    "ball": CollisionFlag.BALL,
+    "red": CollisionFlag.RED,
+    "blue": CollisionFlag.BLUE,
+    "redKO": CollisionFlag.REDKO,
+    "blueKO": CollisionFlag.BLUEKO,
+    "wall": CollisionFlag.WALL,
+    "all": CollisionFlag.ALL,
+    "kick": CollisionFlag.KICK,
+    "score": CollisionFlag.SCORE,
+    "c0": CollisionFlag.C0,
+    "c1": CollisionFlag.C1,
+    "c2": CollisionFlag.C2,
+    "c3": CollisionFlag.C3,
+}
 
 
 class TeamID(IntEnum):

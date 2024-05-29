@@ -9,7 +9,7 @@ T = TypeVar("T", bound=msgspec.Struct)
 
 
 def replace_none_values(self: T, other: T) -> None:
-    for key in self.__dict__:
+    for key, _ in self.__rich_repr__():
         if getattr(self, key) is None:
             setattr(self, key, getattr(other, key))
 

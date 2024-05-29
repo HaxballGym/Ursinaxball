@@ -10,7 +10,7 @@ from ursinaxball.utils.enums import CollisionFlag
 from ursinaxball.utils.misc import replace_none_values
 
 if TYPE_CHECKING:
-    from typing import Self
+    from typing_extensions import Self
 
 
 class PlayerPhysicsRaw(msgspec.Struct, rename="camel"):
@@ -32,6 +32,7 @@ class PlayerPhysicsRaw(msgspec.Struct, rename="camel"):
             radius=15,
             inv_mass=1,
             damping=0.96,
+            b_coef=0.5,
             c_group=[],
             acceleration=0.1,
             kicking_acceleration=0.07,

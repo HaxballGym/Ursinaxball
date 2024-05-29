@@ -1,12 +1,12 @@
-from .disc import Disc
-from .ball import Ball
-from .goal import Goal
-from .plane import Plane
-from .vertex import Vertex
+from .background import Background, BackgroundRaw
+from .ball import Ball, get_ball
+from .disc import Disc, DiscRaw
+from .goal import Goal, GoalRaw
+from .plane import Plane, PlaneRaw
+from .player_physics import PlayerPhysics, PlayerPhysicsRaw
+from .segment import CurvedSegment, SegmentRaw, StraightSegment
 from .trait import Trait
-from .segment import Segment
-from .player_physics import PlayerPhysics
-from .background import Background
+from .vertex import Vertex, VertexRaw
 
 __all__ = [
     "Disc",
@@ -15,7 +15,16 @@ __all__ = [
     "Plane",
     "Vertex",
     "Trait",
-    "Segment",
+    "CurvedSegment",
+    "StraightSegment",
     "PlayerPhysics",
     "Background",
+    "DiscRaw",
+    "GoalRaw",
+    "PlaneRaw",
+    "VertexRaw",
+    "SegmentRaw",
+    "PlayerPhysicsRaw",
+    "BackgroundRaw",
+    "get_ball",
 ]

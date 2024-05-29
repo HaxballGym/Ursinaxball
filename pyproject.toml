@@ -16,6 +16,7 @@ scipy = "^1.10.0"
 screeninfo = "^0.8.1"
 msgspec = "^0.18.2"
 pyjson5 = "^1.6.4"
+typing-extensions = "^4.12.0"
 
 [tool.poetry.group.dev]
 optional = true

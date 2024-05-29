@@ -1,11 +1,15 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import msgspec
 import numpy as np
 
-from ursinaxball.objects.base import Disc, Trait
-from ursinaxball.objects.base.disc import DiscRaw
+from ursinaxball.objects.base.disc import Disc, DiscRaw
 from ursinaxball.utils.enums import CollisionFlag
+
+if TYPE_CHECKING:
+    from ursinaxball.objects.base.trait import Trait
 
 Ball = Disc
 
@@ -43,4 +47,7 @@ def get_ball(
         disc_raw = msgspec.convert(ball, DiscRaw)
         disc = disc_raw.to_disc(traits)
         disc.c_group |= CollisionFlag.KICK | CollisionFlag.SCORE
-        return Ball(**disc.__dict__)
+
+        ball_dict_tuple = disc.__rich_repr__()
+        ball_dict = dict(ball_dict_tuple)
+        return Ball(**ball_dict)

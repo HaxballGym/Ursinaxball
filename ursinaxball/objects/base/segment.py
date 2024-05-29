@@ -1,187 +1,145 @@
 from __future__ import annotations
 
-from math import pi, tan
-from typing import List
+from typing import TYPE_CHECKING
 
+import msgspec
 import numpy as np
-from ursina import Entity, Pipe
+import numpy.typing as npt
 
-from ursinaxball.objects.base import PhysicsObject, Vertex
-from ursinaxball.utils import CollisionFlag
+from ursinaxball.utils.enums import CollisionFlag
+from ursinaxball.utils.misc import parse_color_entity, replace_none_values
+
+if TYPE_CHECKING:
+    from typing_extensions import Self
+
+    from ursinaxball.objects.base.trait import Trait
 
 
-class Segment(PhysicsObject):
-    """
-    A class to represent the state of a segment from the game.
-    """
+class SegmentRaw(msgspec.Struct, rename="camel"):
+    v0: int
+    v1: int
+    b_coef: float | None = None
+    curve: float | None = None
+    curve_f: float | None = None
+    bias: float | None = None
+    c_group: list[str] | None = None
+    c_mask: list[str] | None = None
+    vis: bool | None = None
+    color: str | tuple[int, int, int] | None = None
+    trait: str | None = None
 
-    def __init__(self, data_object: dict | None, data_stadium: dict):
-        if data_object is None:
-            data_object = {}
+    def apply_trait(self, traits: dict[str, Trait]) -> Self:
+        if self.trait is None:
+            return self
+        trait = traits.get(self.trait)
+        if trait is None:
+            return self
 
-        self.collision_group: int = self.transform_collision_dict(
-            data_object.get("cGroup")
-        )
-        self.collision_mask: int = self.transform_collision_dict(
-            data_object.get("cMask")
-        )
-        self.vertices_index: List[int] = [data_object.get("v0"), data_object.get("v1")]
-        self.vertices: List[Vertex] = [
-            Vertex(data_stadium.get("vertexes")[i], data_stadium)
-            for i in self.vertices_index
-        ]
-
-        self.bouncing_coefficient: float = data_object.get("bCoef")
-        self.curve: float = data_object.get("curve")
-        self._curveF: float = data_object.get("curveF")
-        self.bias: float = data_object.get("bias")
-        self.color: str = data_object.get("color")
-        self.visible: bool = data_object.get("vis")
-        self.trait: str = data_object.get("trait")
-
-        # Additional properties
-        self.circle_center: np.ndarray = np.zeros(2)
-        self.circle_radius: float = 0
-        self.circle_tangeant: List[np.ndarray] = np.array(
-            [np.zeros(2), np.zeros(2)], dtype=float
-        )
-        self.circle_angle: np.ndarray = np.zeros(2)
-
-        self.apply_trait(self, data_stadium)
-        self.apply_default_values()
-
-        self.get_y_symmetry_before()
-        self.curve = self.calculate_curve()
-        self.calculate_additional_properties()
-        self.get_y_symmetry_after()
-
-    def apply_default_values(self):
-        """
-        Applies the default values to the segment if they are none
-        """
-        if self.bouncing_coefficient is None:
-            self.bouncing_coefficient = 1
-        if self.collision_group is None:
-            self.collision_group = CollisionFlag.WALL
-        if self.collision_mask is None:
-            self.collision_mask = CollisionFlag.ALL
-        if self.curve is None:
-            self.curve = 0
-        if self.bias is None:
-            self.bias = 0
-        if self.color is None:
-            self.color = "000000"
-        if self.visible is None:
-            self.visible = "true"
-
-    def calculate_curve(self) -> float:
-        if self._curveF is not None:
-            return self._curveF
-
-        if self.curve is not None:
-            curve_value = self.curve * pi / 180
-            if curve_value < 0:
-                curve_value *= -1
-                self.vertices = [self.vertices[1], self.vertices[0]]
-                self.bias = -self.bias
-
-            liminf = 0.17435839227423353
-            limsup = 340 * pi / 180
-            if liminf < curve_value < limsup:
-                curve_value = 1 / tan(curve_value / 2)
-
-            return curve_value
-
-        return 0
-
-    def calculate_additional_properties(self) -> None:
-        """
-        Calculate the additional properties of the segment
-        """
-        if self.curve != 0:
-            vector_center = (self.vertices[1].position - self.vertices[0].position) / 2
-            self.circle_center[0] = (
-                self.vertices[0].position[0]
-                + vector_center[0]
-                - vector_center[1] * self.curve
-            )
-            self.circle_center[1] = (
-                self.vertices[0].position[1]
-                + vector_center[1]
-                + vector_center[0] * self.curve
-            )
-            self.circle_radius = np.linalg.norm(
-                self.vertices[1].position - self.circle_center
-            )
-
-            self.circle_tangeant[0][0] = -(
-                self.vertices[0].position[1] - self.circle_center[1]
-            )
-            self.circle_tangeant[0][1] = (
-                self.vertices[0].position[0] - self.circle_center[0]
-            )
-            self.circle_tangeant[1][0] = (
-                self.vertices[1].position[1] - self.circle_center[1]
-            )
-            self.circle_tangeant[1][1] = -(
-                self.vertices[1].position[0] - self.circle_center[0]
-            )
-
-            self.circle_angle[0] = np.arctan2(
-                self.vertices[0].position[1] - self.circle_center[1],
-                self.vertices[0].position[0] - self.circle_center[0],
-            )
-            self.circle_angle[1] = np.arctan2(
-                self.vertices[1].position[1] - self.circle_center[1],
-                self.vertices[1].position[0] - self.circle_center[0],
-            )
-
-            # Arc is always clockwise
-            while self.circle_angle[1] < self.circle_angle[0]:
-                self.circle_angle[1] += 2 * pi
-
-            if self.curve < 0:
-                self.circle_tangeant = -self.circle_tangeant
-
-    def get_y_symmetry_before(self):
-        self.bias *= -1
-        self.curve *= -1
-        if self._curveF is not None:
-            self._curveF *= -1
-
-    def get_y_symmetry_after(self):
-        self.circle_tangeant = [self.circle_tangeant[1], self.circle_tangeant[0]]
-
-    def get_entity(self) -> Entity:
-        if self.visible is False:
-            return None
-
-        if self.curve != 0:
-            # TODO: add the radius as a parameter
-            # this is to draw enough segments, but not too many depending on the angle
-            nb_segments = int(
-                (self.circle_angle[1] - self.circle_angle[0]) / (2 * pi) * 64
-            )
-
-            arc_vertices = self.arc(
-                x=self.circle_center[0],
-                y=self.circle_center[1],
-                radius=self.circle_radius,
-                start_angle=self.circle_angle[0],
-                end_angle=self.circle_angle[1],
-                segments=nb_segments,
-                clockwise=True,
-            )
-            vert_mesh = tuple((v[0], v[1], 0) for (k, v) in enumerate(arc_vertices))
-        else:
-            vert_mesh = tuple((v.position[0], v.position[1], 0) for v in self.vertices)
-
-        line_entity_mesh = Entity(
-            model=Pipe(
-                path=vert_mesh,
-                thicknesses=[3],
-            ),
-            color=self.parse_color_entity(self.color),
+        segment_trait = SegmentRaw(
+            v0=-1,
+            v1=-1,
+            b_coef=trait.b_coef,
+            curve=trait.curve,
+            curve_f=trait.curve_f,
+            bias=trait.bias,
+            c_group=trait.c_group,
+            c_mask=trait.c_mask,
+            vis=trait.vis,
+            color=trait.color,
         )
 
-        return line_entity_mesh
+        replace_none_values(self, segment_trait)
+        return self
+
+    def apply_default(self) -> Self:
+        segment_default = SegmentRaw(
+            v0=-1,
+            v1=-1,
+            b_coef=1,
+            curve=0,
+            curve_f=0,
+            bias=0,
+            c_group=["wall"],
+            c_mask=["all"],
+            vis=True,
+            color="000000",
+        )
+        replace_none_values(self, segment_default)
+        return self
+
+    def to_segment(self, traits: dict[str, Trait]) -> CurvedSegment | StraightSegment:
+        segment_raw_final = self.apply_trait(traits).apply_default()
+
+        assert segment_raw_final.v0 >= 0
+        assert segment_raw_final.v1 >= 0
+        assert segment_raw_final.b_coef is not None
+        assert segment_raw_final.curve is not None
+        assert segment_raw_final.curve_f is not None
+        assert segment_raw_final.bias is not None
+        assert segment_raw_final.c_group is not None
+        assert segment_raw_final.c_mask is not None
+        assert segment_raw_final.vis is not None
+        assert segment_raw_final.color is not None
+
+        kwargs = {
+            "vertex_indices": (segment_raw_final.v0, segment_raw_final.v1),
+            "b_coef": segment_raw_final.b_coef,
+            "bias": segment_raw_final.bias,
+            "c_group": CollisionFlag.from_list(segment_raw_final.c_group),
+            "c_mask": CollisionFlag.from_list(segment_raw_final.c_mask),
+            "vis": segment_raw_final.vis,
+            "color": parse_color_entity(segment_raw_final.color, False),
+        }
+
+        if self.curve != 0 or self.curve_f != 0:
+            curved_segment = CurvedSegment(**kwargs).get_curve(
+                segment_raw_final.curve, segment_raw_final.curve_f
+            )
+            return curved_segment
+
+        return StraightSegment(**kwargs)
+
+
+class StraightSegment(msgspec.Struct, rename="camel"):
+    vertex_indices: tuple[int, int]
+    b_coef: float
+    bias: float
+    c_group: CollisionFlag
+    c_mask: CollisionFlag
+    vis: bool
+    color: tuple[int, int, int]
+
+
+class CurvedSegment(StraightSegment, rename="camel"):
+    curve: float = msgspec.field(default=0)
+
+    def get_curve(self, curve: float, curve_f: float) -> Self:
+        if curve_f != 0:
+            self.curve = curve_f
+            return self
+
+        curve_final = curve
+        if curve_final < 0:
+            curve_final *= -1
+            self.bias *= -1
+            self.vertex_indices = (self.vertex_indices[1], self.vertex_indices[0])
+
+        curve_final *= np.pi / 180
+        lim_inf = 10 * np.pi / 180
+        lim_sup = 170 * np.pi / 180
+        if lim_inf < curve_final < lim_sup:
+            curve_final = 1 / np.tan(curve_final / 2)
+
+        self.curve = curve_final
+        return self
+
+    def circle_center(
+        self,
+        v0_pos: npt.NDArray[np.float64],
+        v1_pos: npt.NDArray[np.float64],
+        curve: float,
+    ) -> npt.NDArray[np.float64]:
+        vec_center = (v1_pos - v0_pos) / 2
+        circle_center_x: float = v0_pos[0] + vec_center[0] - vec_center[1] * curve
+        circle_center_y: float = v0_pos[1] + vec_center[1] + vec_center[0] * curve
+        return np.array([circle_center_x, circle_center_y])

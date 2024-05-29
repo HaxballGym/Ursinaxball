@@ -9,8 +9,6 @@ from ursinaxball import Game
 from ursinaxball.modules import GameScore, PlayerHandler
 from ursinaxball.utils.enums import BaseMap, TeamID
 
-PATH_PROJECT = Path(__file__).parent.parent
-
 
 def init_game(enable_renderer: bool) -> Game:
     game = Game(
