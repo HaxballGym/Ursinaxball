@@ -19,12 +19,15 @@ from ursinaxball.objects.base import (
     StraightSegment,
     Vertex,
 )
+from ursinaxball.objects.base.player import PlayerDisc
 
 if TYPE_CHECKING:
     from ursinaxball.modules import PlayerHandler
 
 
-def resolve_disc_disc_collision(disc_a: Disc, disc_b: Disc) -> None:
+def resolve_disc_disc_collision(
+    disc_a: Disc | PlayerDisc, disc_b: Disc | PlayerDisc
+) -> None:
     """
     Resolves the collision between two discs
     """
@@ -46,7 +49,7 @@ def resolve_disc_disc_collision(disc_a: Disc, disc_b: Disc) -> None:
     disc_b.speed = disc_b_res[1]
 
 
-def resolve_disc_vertex_collision(disc: Disc, vertex: Vertex) -> None:
+def resolve_disc_vertex_collision(disc: Disc | PlayerDisc, vertex: Vertex) -> None:
     """
     Resolves the collision between a disc and a vertex
     """
@@ -85,7 +88,7 @@ def segment_apply_bias(
 
 
 def resolve_disc_segment_collision_no_curve(
-    disc: Disc, segment: StraightSegment, vertexes: list[Vertex]
+    disc: Disc | PlayerDisc, segment: StraightSegment, vertexes: list[Vertex]
 ) -> tuple[float, np.ndarray] | tuple[None, None]:
     v0 = vertexes[segment.vertex_indices[0]]
     v1 = vertexes[segment.vertex_indices[1]]
@@ -100,7 +103,7 @@ def resolve_disc_segment_collision_no_curve(
 
 
 def resolve_disc_segment_collision_curve(
-    disc: Disc, segment: CurvedSegment, vertexes: list[Vertex]
+    disc: Disc | PlayerDisc, segment: CurvedSegment, vertexes: list[Vertex]
 ) -> tuple[float, np.ndarray] | tuple[None, None]:
     v0 = vertexes[segment.vertex_indices[0]]
     v1 = vertexes[segment.vertex_indices[1]]
@@ -118,7 +121,7 @@ def resolve_disc_segment_collision_curve(
 
 
 def resolve_disc_segment_collision(
-    disc: Disc, segment: Segment, vertexes: list[Vertex]
+    disc: Disc | PlayerDisc, segment: Segment, vertexes: list[Vertex]
 ) -> None:
     """
     Resolves the collision between a disc and a segment
@@ -143,7 +146,7 @@ def resolve_disc_segment_collision(
         disc.speed = res[1]
 
 
-def resolve_disc_plane_collision(disc: Disc, plane: Plane) -> None:
+def resolve_disc_plane_collision(disc: Disc | PlayerDisc, plane: Plane) -> None:
     """
     Resolves the collision between a disc and a plane
     """

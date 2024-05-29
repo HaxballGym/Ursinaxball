@@ -3,7 +3,7 @@ from .ball import Ball, get_ball
 from .disc import Disc, DiscRaw
 from .goal import Goal, GoalRaw
 from .plane import Plane, PlaneRaw
-from .player_physics import PlayerPhysics, PlayerPhysicsRaw
+from .player import PlayerDisc, PlayerPhysics, PlayerPhysicsRaw, get_player_disc
 from .segment import CurvedSegment, Segment, SegmentRaw, StraightSegment
 from .trait import Trait
 from .vertex import Vertex, VertexRaw
@@ -28,4 +28,6 @@ __all__ = [
     "PlayerPhysicsRaw",
     "BackgroundRaw",
     "get_ball",
+    "get_player_disc",
+    "PlayerDisc",
 ]

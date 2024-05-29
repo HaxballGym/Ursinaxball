@@ -7,8 +7,9 @@ import numpy as np
 import numpy.typing as npt
 
 from ursinaxball.modules.player import PlayerData
-from ursinaxball.objects.base import PlayerPhysics, PlayerPhysicsRaw
-from ursinaxball.utils.enums import ActionBin, TeamColor, TeamID
+from ursinaxball.objects.base import PlayerDisc, PlayerPhysics, get_player_disc
+from ursinaxball.utils.enums import ActionBin, CollisionFlag, TeamColor, TeamID
+from ursinaxball.utils.misc import parse_color_entity
 
 if TYPE_CHECKING:
     from ursinaxball import Game
@@ -21,7 +22,11 @@ class PlayerHandler:
     id_iterate = itertools.count()
 
     def __init__(
-        self, name: str, team: int = TeamID.SPECTATOR, bot: Bot | None = None
+        self,
+        name: str,
+        player_physics: PlayerPhysics,
+        team: int = TeamID.SPECTATOR,
+        bot: Bot | None = None,
     ) -> None:
         self.id = next(PlayerHandler.id_iterate)
         self.name = name
@@ -31,16 +36,14 @@ class PlayerHandler:
         self.kicking = False
         # kick_cancel is used to make sure you stop kicking after hitting the ball
         self._kick_cancel = False
-        self.disc: PlayerPhysics = (
-            PlayerPhysicsRaw().apply_default().to_player_physics()
-        )
+        self.disc: PlayerDisc = get_player_disc(self.id, player_physics)
         self.player_data = PlayerData()
 
     def set_color(self) -> None:
         if self.team == TeamID.RED:
-            self.disc.color = TeamColor.RED
+            self.disc.color = parse_color_entity(TeamColor.RED, True)
         elif self.team == TeamID.BLUE:
-            self.disc.color = TeamColor.BLUE
+            self.disc.color = parse_color_entity(TeamColor.BLUE, True)
 
     def is_kicking(self) -> bool:
         return self.kicking and not self._kick_cancel
@@ -59,15 +62,15 @@ class PlayerHandler:
         player_has_kicked = False
         for disc_stadium in stadium_game.discs:
             if (
-                disc_stadium.collision_group & CollisionFlag.KICK
+                disc_stadium.c_group & CollisionFlag.KICK
             ) != 0 and disc_stadium != self.disc:
                 dist = np.linalg.norm(disc_stadium.position - self.disc.position)
                 if (dist - self.disc.radius - disc_stadium.radius) < 4:
                     if self.is_kicking():
                         normal = (disc_stadium.position - self.disc.position) / dist
-                        disc_stadium.velocity += normal * self.disc.kick_strength
-                        self.disc.velocity += (
-                            normal * -self.disc.kickback * self.disc.inverse_mass
+                        disc_stadium.speed += normal * self.disc.kick_strength
+                        self.disc.speed += (
+                            normal * -self.disc.kickback * self.disc.inv_mass
                         )
                         player_has_kicked = True
                         self.player_data.update_touch(stadium_game, game_score)
@@ -87,4 +90,4 @@ class PlayerHandler:
             if self.is_kicking()
             else self.disc.acceleration
         )
-        self.disc.velocity += input_direction * player_acceleration
+        self.disc.speed += input_direction * player_acceleration

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 from typing import TYPE_CHECKING
 
 import msgspec
@@ -85,3 +86,61 @@ class PlayerPhysics(msgspec.Struct, rename="camel"):
     kicking_damping: float
     kick_strength: float
     kickback: float
+
+
+class PlayerDisc(msgspec.Struct, rename="camel"):
+    player_id: int
+    position: npt.NDArray[np.float64]
+    speed: npt.NDArray[np.float64]
+    gravity: npt.NDArray[np.float64]
+    radius: float
+    inv_mass: float
+    damping: float
+    b_coef: float
+    color: tuple[int, int, int, int]
+    c_group: CollisionFlag
+    c_mask: CollisionFlag
+    acceleration: float
+    kicking_acceleration: float
+    kicking_damping: float
+    kick_strength: float
+    kickback: float
+
+    def copy(self, other: PlayerDisc) -> None:
+        self.position = copy.copy(other.position)
+        self.speed = copy.copy(other.speed)
+        self.gravity = copy.copy(other.gravity)
+        self.radius = copy.copy(other.radius)
+        self.inv_mass = copy.copy(other.inv_mass)
+        self.damping = copy.copy(other.damping)
+        self.b_coef = copy.copy(other.b_coef)
+        self.color = copy.copy(other.color)
+        self.c_group = copy.copy(other.c_group)
+        self.c_mask = copy.copy(other.c_mask)
+        self.acceleration = copy.copy(other.acceleration)
+        self.kicking_acceleration = copy.copy(other.kicking_acceleration)
+        self.kicking_damping = copy.copy(other.kicking_damping)
+        self.kick_strength = copy.copy(other.kick_strength)
+        self.kickback = copy.copy(other.kickback)
+
+
+def get_player_disc(player_id: int, player_physics: PlayerPhysics):
+    player_disc = PlayerDisc(
+        player_id=player_id,
+        position=np.array([0.0, 0.0]),
+        speed=np.array([0.0, 0.0]),
+        gravity=player_physics.gravity,
+        radius=player_physics.radius,
+        inv_mass=player_physics.inv_mass,
+        damping=player_physics.damping,
+        b_coef=player_physics.b_coef,
+        color=(255, 255, 255, 255),
+        c_group=CollisionFlag.from_list([]),
+        c_mask=CollisionFlag.from_list([]),
+        acceleration=player_physics.acceleration,
+        kicking_acceleration=player_physics.kicking_acceleration,
+        kicking_damping=player_physics.kicking_damping,
+        kick_strength=player_physics.kick_strength,
+        kickback=player_physics.kickback,
+    )
+    return player_disc

@@ -7,20 +7,22 @@ from pyperf import Benchmark, Runner
 
 from ursinaxball import Game
 from ursinaxball.modules import GameScore, PlayerHandler
+from ursinaxball.utils.constants import PATH_PROJECT, PATH_RECORDINGS
 from ursinaxball.utils.enums import BaseMap, TeamID
 
 
 def init_game(enable_renderer: bool) -> Game:
     game = Game(
-        folder_rec="./recordings/",
+        folder_rec=PATH_RECORDINGS,
         enable_vsync=False,
         stadium_file=BaseMap.CLASSIC,
         enable_renderer=enable_renderer,
     )
+    player_physics = game.stadium_game.player_physics
     game.score = GameScore(time_limit=1)
 
-    player_red = PlayerHandler("P1", TeamID.RED)
-    player_blue = PlayerHandler("P2", TeamID.BLUE)
+    player_red = PlayerHandler("P1", player_physics, TeamID.RED)
+    player_blue = PlayerHandler("P2", player_physics, TeamID.BLUE)
     game.add_players([player_red, player_blue])
     game.reset(save_recording=False)
 
@@ -29,14 +31,15 @@ def init_game(enable_renderer: bool) -> Game:
 
 def init_game_obstacle(enable_renderer: bool) -> Game:
     game = Game(
-        folder_rec="./recordings/",
+        folder_rec=PATH_RECORDINGS,
         enable_vsync=False,
         stadium_file=BaseMap.OBSTACLE_WINKY,
         enable_renderer=enable_renderer,
     )
+    player_physics = game.stadium_game.player_physics
     game.score = GameScore(time_limit=1)
 
-    player_red = PlayerHandler("P1", TeamID.RED)
+    player_red = PlayerHandler("P1", player_physics, TeamID.RED)
     game.add_players([player_red])
     game.reset(save_recording=False)
 
@@ -69,7 +72,9 @@ def single_game_pyinstrument():
 
     profiler.stop()
     html = profiler.output_html()
-    with Path.open(PATH_PROJECT / "benchmarks/single_game_pyinstrument.html", "w") as f:
+    with Path.open(
+        PATH_PROJECT / "benchmarks" / "single_game_pyinstrument.html", "w"
+    ) as f:
         f.write(html)
 
 
@@ -103,7 +108,7 @@ def multiple_games_pyperf(n=5):
     )
 
     assert isinstance(res_pyperf, Benchmark)
-    output_path = PATH_PROJECT / "benchmarks/multiple_games_pyperf.html"
+    output_path = PATH_PROJECT / "benchmarks" / "multiple_games_pyperf.html"
     output_pyperf(res_pyperf, output_path)
 
 
@@ -116,7 +121,7 @@ def multiple_games_pyinstrument(n=5):
     profiler.stop()
     html = profiler.output_html()
     with Path.open(
-        PATH_PROJECT / "benchmarks/multiple_games_pyinstrument.html", "w"
+        PATH_PROJECT / "benchmarks" / "multiple_games_pyinstrument.html", "w"
     ) as f:
         f.write(html)
 
@@ -138,7 +143,7 @@ def obstacle_map_pyperf():
 
     assert isinstance(res_pyperf, Benchmark)
 
-    path_output = PATH_PROJECT / "benchmarks/obstacle_map_pyperf.html"
+    path_output = PATH_PROJECT / "benchmarks" / " obstacle_map_pyperf.html"
     output_pyperf(res_pyperf, path_output)
 
 
@@ -150,7 +155,7 @@ def obstacle_map_pyinstrument():
     html = profiler.output_html()
 
     with Path.open(
-        PATH_PROJECT / "benchmarks/obstacle_map_pyinstrument.html", "w"
+        PATH_PROJECT / "benchmarks" / "obstacle_map_pyinstrument.html", "w"
     ) as f:
         f.write(html)
 

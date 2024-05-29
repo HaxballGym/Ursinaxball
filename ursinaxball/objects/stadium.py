@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import msgspec
+import numpy as np
 
 from ursinaxball import stadiums
 from ursinaxball.objects.base import (
@@ -19,6 +20,7 @@ from ursinaxball.objects.base import (
     GoalRaw,
     Plane,
     PlaneRaw,
+    PlayerDisc,
     PlayerPhysics,
     PlayerPhysicsRaw,
     SegmentRaw,
@@ -32,6 +34,7 @@ from ursinaxball.utils.enums import BaseMap
 from ursinaxball.utils.misc import replace_none_values
 
 if TYPE_CHECKING:
+    import numpy.typing as npt
     from typing_extensions import Self
 
 
@@ -137,10 +140,12 @@ class StadiumRaw(msgspec.Struct, rename="camel"):
             vertexes=[v.to_vertex(traits) for v in stadium_raw_final.vertexes],
             segments=[seg.to_segment(traits) for seg in stadium_raw_final.segments],
             goals=[goal.to_goal() for goal in stadium_raw_final.goals],
-            discs=discs,
+            discs=discs,  # type: ignore
             planes=[plane.to_plane(traits) for plane in stadium_raw_final.planes],
-            red_spawn_points=stadium_raw_final.red_spawn_points,
-            blue_spawn_points=stadium_raw_final.blue_spawn_points,
+            red_spawn_points=[np.array(p) for p in stadium_raw_final.red_spawn_points],
+            blue_spawn_points=[
+                np.array(p) for p in stadium_raw_final.blue_spawn_points
+            ],
             player_physics=stadium_raw_final.player_physics.to_player_physics(),
             ball_physics=ball_physics,
         )
@@ -162,10 +167,10 @@ class Stadium(msgspec.Struct, rename="camel"):
     vertexes: list[Vertex]
     segments: list[CurvedSegment | StraightSegment]
     goals: list[Goal]
-    discs: list[Disc]
+    discs: list[Disc | PlayerDisc]
     planes: list[Plane]
-    red_spawn_points: list[list[float]]
-    blue_spawn_points: list[list[float]]
+    red_spawn_points: list[npt.NDArray]
+    blue_spawn_points: list[npt.NDArray]
     player_physics: PlayerPhysics
     ball_physics: Ball
 

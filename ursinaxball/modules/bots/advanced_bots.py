@@ -5,12 +5,12 @@ from typing import TYPE_CHECKING
 import numpy as np
 
 from ursinaxball.modules.bots import Bot
+from ursinaxball.objects.base import Disc, Goal
 from ursinaxball.utils.enums import ActionBin, GameState, TeamID
 
 if TYPE_CHECKING:
     from ursinaxball import Game
     from ursinaxball.modules import PlayerHandler
-    from ursinaxball.objects.base import Disc, Goal
 
 
 def segment_intersection(
@@ -149,6 +149,8 @@ class GoalkeeperBot(Bot):
 
     def step_game_kickoff(self, player: PlayerHandler, game: Game) -> list[int]:
         ball = game.stadium_game.discs[0]
+        assert isinstance(ball, Disc)
+
         rng = np.random.default_rng()
         threshold = 2
         if game.team_kickoff == player.team:
@@ -166,6 +168,8 @@ class GoalkeeperBot(Bot):
 
     def step_game_play(self, player: PlayerHandler, game: Game) -> list[int]:
         ball = game.stadium_game.discs[0]
+        assert isinstance(ball, Disc)
+
         threshold = 2
         goal = (
             game.stadium_game.goals[0]

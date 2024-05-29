@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 from typing import TYPE_CHECKING
 
 import msgspec
@@ -104,3 +105,15 @@ class Disc(msgspec.Struct, rename="camel"):
     color: tuple[int, int, int, int]
     c_group: CollisionFlag
     c_mask: CollisionFlag
+
+    def copy(self, other: Disc) -> None:
+        self.position = copy.copy(other.position)
+        self.speed = copy.copy(other.speed)
+        self.gravity = copy.copy(other.gravity)
+        self.radius = other.radius
+        self.inv_mass = other.inv_mass
+        self.damping = other.damping
+        self.b_coef = other.b_coef
+        self.color = copy.copy(other.color)
+        self.c_group = copy.copy(other.c_group)
+        self.c_mask = copy.copy(other.c_mask)
