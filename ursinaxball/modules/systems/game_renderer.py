@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 class GameRenderer:
     def __init__(self, game: Game, enable_vsync=True, fov: int = 550) -> None:
         self.game = game
-        self.app: Ursina = None
+        self.app: Ursina | None = None
         self.disc_entities = []
         self.segment_entities = []
         self.background_entities = []
@@ -79,6 +79,7 @@ class GameRenderer:
         if self.UI_strings[1].text != self.game.score.get_time_string():
             self.UI_strings[1].text = self.game.score.get_time_string()
 
+        assert self.app is not None
         self.app.step()
 
     def stop(self):

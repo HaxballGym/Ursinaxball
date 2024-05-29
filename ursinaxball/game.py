@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import logging
+from pathlib import Path
 from typing import TYPE_CHECKING, List
 
 import numpy as np
@@ -14,8 +15,7 @@ from ursinaxball.modules import (
     resolve_collisions,
     update_discs,
 )
-from ursinaxball.objects.stadium_object import Stadium, load_stadium_hbs
-from ursinaxball.utils.constants import CollisionFlag
+from ursinaxball.objects.stadium import Stadium, load_stadium
 from ursinaxball.utils.enums import BaseMap, GameState, TeamID
 
 if TYPE_CHECKING:
@@ -27,7 +27,7 @@ log = logging.getLogger(__name__)
 class Game:
     def __init__(
         self,
-        stadium_file: str = BaseMap.CLASSIC,
+        stadium_file: BaseMap | Path = BaseMap.CLASSIC,
         folder_rec: str = "",
         logging_level: int = logging.DEBUG,
         enable_vsync: bool = True,
@@ -43,7 +43,7 @@ class Game:
         self.players: list[PlayerHandler] = []
         self.team_kickoff = TeamID.RED
         self.stadium_file = stadium_file
-        self.stadium_store: Stadium = load_stadium_hbs(self.stadium_file)
+        self.stadium_store: Stadium = load_stadium(self.stadium_file)
         self.stadium_game: Stadium = copy.deepcopy(self.stadium_store)
         self.enable_recorder = enable_recorder
         self.recorder = (
@@ -284,6 +284,6 @@ if __name__ == "__main__":
     while not done:
         actions_player_1 = player_red.step(game)
         actions_player_2 = player_blue.step(game)
-        done = game.step([actions_player_1, actions_player_2])
+        done = game.step(np.array([actions_player_1, actions_player_2]))
 
     game.stop(save_recording=False)

@@ -11,7 +11,14 @@ from ursinaxball.modules.physics.fn_base import (
     resolve_disc_vertex_collision_fn,
 )
 from ursinaxball.objects import Stadium
-from ursinaxball.objects.base import Disc, Plane, Segment, Vertex
+from ursinaxball.objects.base import (
+    CurvedSegment,
+    Disc,
+    Plane,
+    Segment,
+    StraightSegment,
+    Vertex,
+)
 
 if TYPE_CHECKING:
     from ursinaxball.modules import PlayerHandler
@@ -78,39 +85,48 @@ def segment_apply_bias(
 
 
 def resolve_disc_segment_collision_no_curve(
-    disc: Disc, segment: Segment
+    disc: Disc, segment: StraightSegment, vertexes: list[Vertex]
 ) -> tuple[float, np.ndarray] | tuple[None, None]:
+    v0 = vertexes[segment.vertex_indices[0]]
+    v1 = vertexes[segment.vertex_indices[1]]
+
     res = resolve_disc_segment_collision_no_curve_fn(
         disc.position,
-        segment.vertices[0].position,
-        segment.vertices[1].position,
+        v0.position,
+        v1.position,
     )
 
     return res
 
 
 def resolve_disc_segment_collision_curve(
-    disc: Disc, segment: Segment
+    disc: Disc, segment: CurvedSegment, vertexes: list[Vertex]
 ) -> tuple[float, np.ndarray] | tuple[None, None]:
+    v0 = vertexes[segment.vertex_indices[0]]
+    v1 = vertexes[segment.vertex_indices[1]]
+
+    tangeants = segment.circle_tangeants(v0.position, v1.position, segment.curve)
     res = resolve_disc_segment_collision_curve_fn(
         disc.position,
-        segment.circle_center,
-        segment.circle_radius,
-        segment.circle_tangeant[0],
-        segment.circle_tangeant[1],
+        segment.circle_center(v0.position, v1.position, segment.curve),
+        segment.circle_radius(v0.position, v1.position, segment.curve),
+        tangeants[0],
+        tangeants[1],
         segment.curve,
     )
     return res
 
 
-def resolve_disc_segment_collision(disc: Disc, segment: Segment) -> None:
+def resolve_disc_segment_collision(
+    disc: Disc, segment: Segment, vertexes: list[Vertex]
+) -> None:
     """
     Resolves the collision between a disc and a segment
     """
-    if segment.curve == 0:
-        dist, normal = resolve_disc_segment_collision_no_curve(disc, segment)
+    if isinstance(segment, StraightSegment):
+        dist, normal = resolve_disc_segment_collision_no_curve(disc, segment, vertexes)
     else:
-        dist, normal = resolve_disc_segment_collision_curve(disc, segment)
+        dist, normal = resolve_disc_segment_collision_curve(disc, segment, vertexes)
 
     if dist is not None and normal is not None:
         dist, normal = segment_apply_bias(segment, dist, normal)
@@ -121,7 +137,7 @@ def resolve_disc_segment_collision(disc: Disc, segment: Segment) -> None:
             disc.speed,
             disc.radius,
             disc.b_coef,
-            segment.bouncing_coefficient,
+            segment.b_coef,
         )
         disc.position = res[0]
         disc.speed = res[1]
@@ -159,8 +175,8 @@ def resolve_collisions(stadium_game: Stadium) -> None:
                     resolve_disc_plane_collision(d_a, p)
             for s in stadium_game.segments:
                 if ((d_a.c_group & s.c_mask) != 0) and ((d_a.c_mask & s.c_group) != 0):
-                    resolve_disc_segment_collision(d_a, s)
-            for v in stadium_game.vertices:
+                    resolve_disc_segment_collision(d_a, s, stadium_game.vertexes)
+            for v in stadium_game.vertexes:
                 if ((d_a.c_group & v.c_mask) != 0) and ((d_a.c_mask & v.c_group) != 0):
                     resolve_disc_vertex_collision(d_a, v)
 

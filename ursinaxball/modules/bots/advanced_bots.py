@@ -46,16 +46,16 @@ def segment_intersection(
 
 def position_keeper(goal: Goal, ball: Disc) -> list[float]:
     center_goal = (
-        (goal.points[0][0] + goal.points[1][0]) / 2,
-        (goal.points[0][1] + goal.points[1][1]) / 2,
+        (goal.p0[0] + goal.p1[0]) / 2,
+        (goal.p0[1] + goal.p1[1]) / 2,
     )
 
     x_keeper = (abs(center_goal[0]) - 60) * np.sign(center_goal[0])
-    default_x = (abs(goal.points[0][0]) - 25) * np.sign(center_goal[0])
+    default_x = (abs(goal.p0[0]) - 25) * np.sign(center_goal[0])
 
     intersection = segment_intersection(
         segment1=[center_goal, tuple(ball.position)],
-        segment2=[(x_keeper, goal.points[0][1]), (x_keeper, goal.points[1][1])],
+        segment2=[(x_keeper, goal.p0[1]), (x_keeper, goal.p1[1])],
     )
     if intersection is not None:
         return intersection
@@ -63,8 +63,8 @@ def position_keeper(goal: Goal, ball: Disc) -> list[float]:
     intersection = segment_intersection(
         segment1=[center_goal, tuple(ball.position)],
         segment2=[
-            (goal.points[0][0], goal.points[0][1]),
-            (x_keeper, goal.points[0][1]),
+            (goal.p0[0], goal.p0[1]),
+            (x_keeper, goal.p0[1]),
         ],
     )
     if intersection is not None:
@@ -80,8 +80,8 @@ def position_keeper(goal: Goal, ball: Disc) -> list[float]:
     intersection = segment_intersection(
         segment1=[center_goal, tuple(ball.position)],
         segment2=[
-            (goal.points[1][0], goal.points[1][1]),
-            (x_keeper, goal.points[1][1]),
+            (goal.p1[0], goal.p1[1]),
+            (x_keeper, goal.p1[1]),
         ],
     )
     if intersection is not None:
@@ -97,8 +97,8 @@ def position_keeper(goal: Goal, ball: Disc) -> list[float]:
     intersection = segment_intersection(
         segment1=[center_goal, tuple(ball.position)],
         segment2=[
-            (goal.points[0][0], goal.points[0][1]),
-            (goal.points[1][0], goal.points[1][1]),
+            (goal.p0[0], goal.p0[1]),
+            (goal.p1[0], goal.p1[1]),
         ],
     )
 
@@ -149,9 +149,10 @@ class GoalkeeperBot(Bot):
 
     def step_game_kickoff(self, player: PlayerHandler, game: Game) -> list[int]:
         ball = game.stadium_game.discs[0]
+        rng = np.random.default_rng()
         threshold = 2
         if game.team_kickoff == player.team:
-            random_kick = np.random.uniform(-ball.radius / 2, ball.radius / 2)
+            random_kick = rng.uniform(-ball.radius / 2, ball.radius / 2)
             point = [ball.position[0], ball.position[1] + random_kick]
             inputs_player = follow_point(player, point, threshold)
             inputs_player[ActionBin.KICK] = shoot_disc_close(

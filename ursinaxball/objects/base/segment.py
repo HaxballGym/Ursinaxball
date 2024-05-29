@@ -143,3 +143,37 @@ class CurvedSegment(StraightSegment, rename="camel"):
         circle_center_x: float = v0_pos[0] + vec_center[0] - vec_center[1] * curve
         circle_center_y: float = v0_pos[1] + vec_center[1] + vec_center[0] * curve
         return np.array([circle_center_x, circle_center_y])
+
+    def circle_radius(
+        self,
+        v0_pos: npt.NDArray[np.float64],
+        v1_pos: npt.NDArray[np.float64],
+        curve: float,
+    ) -> float:
+        center = self.circle_center(v0_pos, v1_pos, curve)
+        return float(np.linalg.norm(center - v0_pos))
+
+    def circle_tangeants(
+        self,
+        v0_pos: npt.NDArray[np.float64],
+        v1_pos: npt.NDArray[np.float64],
+        curve: float,
+    ) -> tuple[np.ndarray, np.ndarray]:
+        center = self.circle_center(v0_pos, v1_pos, curve)
+        return v1_pos - center, v0_pos - center
+
+    def circle_angles(
+        self,
+        v0_pos: npt.NDArray[np.float64],
+        v1_pos: npt.NDArray[np.float64],
+        curve: float,
+    ) -> tuple[float, float]:
+        center = self.circle_center(v0_pos, v1_pos, curve)
+        angle_0 = np.arctan2(v0_pos[1] - center[1], v0_pos[0] - center[0])
+        angle_1 = np.arctan2(v1_pos[1] - center[1], v1_pos[0] - center[0])
+        while angle_1 < angle_0:
+            angle_1 += 2 * np.pi
+        return angle_0, angle_1
+
+
+Segment = CurvedSegment | StraightSegment

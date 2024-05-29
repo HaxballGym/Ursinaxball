@@ -1,7 +1,9 @@
-from ursinaxball.modules.bots import ConstantActionBot
+import numpy as np
+
 from ursinaxball.game import Game, GameScore
 from ursinaxball.modules import PlayerHandler
-from ursinaxball.utils import TeamID
+from ursinaxball.modules.bots import ConstantActionBot
+from ursinaxball.utils.enums import TeamID
 
 
 def test_game():
@@ -23,6 +25,6 @@ def test_game():
     while not done:
         actions_player_1 = player_red.step(game)
         actions_player_2 = player_blue.step(game)
-        done = game.step([actions_player_1, actions_player_2])
+        done = game.step(np.array([actions_player_1, actions_player_2]))
 
     assert game.score.ticks == 176

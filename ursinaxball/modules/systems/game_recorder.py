@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-import os
 import time
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 import msgpack
 
+from ursinaxball.utils.constants import PATH_RECORDINGS
 from ursinaxball.utils.enums import Input
 
 if TYPE_CHECKING:
@@ -39,7 +39,7 @@ def input_translate_js(actions: np.ndarray) -> int:
 
 
 class GameActionRecorder:
-    def __init__(self, game: Game, folder_rec: str = ""):
+    def __init__(self, game: Game, folder_rec=PATH_RECORDINGS):
         self.game = game
         self.folder_rec = folder_rec
 
@@ -88,9 +88,7 @@ class GameActionRecorder:
         self.options = []
 
     def save(self, file_name: str) -> None:
-        with Path.open(
-            Path(os.path.join(os.path.curdir, self.folder_rec, file_name)), "wb+"
-        ) as f:
+        with Path.open(self.folder_rec / file_name, "wb+") as f:
             encoded_recording = msgpack.packb(self.recording)
             assert encoded_recording is not None
             f.write(encoded_recording)
@@ -104,7 +102,7 @@ class GameActionRecorder:
 
 
 class GamePositionRecorder:
-    def __init__(self, game: Game, folder_rec: str = ""):
+    def __init__(self, game: Game, folder_rec=PATH_RECORDINGS):
         self.game = game
         self.folder_rec = folder_rec
 
@@ -141,8 +139,8 @@ class GamePositionRecorder:
             disc_value = [
                 disc.position[0],
                 disc.position[1],
-                disc.velocity[0],
-                disc.velocity[1],
+                disc.speed[0],
+                disc.speed[1],
                 int(player.kicking),
                 int(player._kick_cancel),
             ]
@@ -151,8 +149,8 @@ class GamePositionRecorder:
         ball_value = [
             ball.position[0],
             ball.position[1],
-            ball.velocity[0],
-            ball.velocity[1],
+            ball.speed[0],
+            ball.speed[1],
         ]
         self.player_action[-1].append(ball_value)
 
@@ -172,9 +170,7 @@ class GamePositionRecorder:
         self.options = []
 
     def save(self, file_name: str) -> None:
-        with Path.open(
-            Path(os.path.join(os.path.curdir, self.folder_rec, file_name)), "wb+"
-        ) as f:
+        with Path.open(PATH_RECORDINGS / file_name, "wb+") as f:
             encoded_recording = msgpack.packb(self.recording)
             assert encoded_recording is not None
             f.write(encoded_recording)

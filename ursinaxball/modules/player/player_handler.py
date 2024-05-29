@@ -4,9 +4,10 @@ import itertools
 from typing import TYPE_CHECKING
 
 import numpy as np
+import numpy.typing as npt
 
 from ursinaxball.modules.player import PlayerData
-from ursinaxball.objects.base import PlayerPhysics
+from ursinaxball.objects.base import PlayerPhysics, PlayerPhysicsRaw
 from ursinaxball.utils.enums import ActionBin, TeamColor, TeamID
 
 if TYPE_CHECKING:
@@ -26,11 +27,13 @@ class PlayerHandler:
         self.name = name
         self.team = team
         self.bot = bot
-        self.action: list[int] = []
+        self.action: npt.NDArray = np.array([])
         self.kicking = False
         # kick_cancel is used to make sure you stop kicking after hitting the ball
         self._kick_cancel = False
-        self.disc: PlayerPhysics = PlayerPhysics()
+        self.disc: PlayerPhysics = (
+            PlayerPhysicsRaw().apply_default().to_player_physics()
+        )
         self.player_data = PlayerData()
 
     def set_color(self) -> None:
