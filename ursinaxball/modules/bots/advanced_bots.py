@@ -111,6 +111,9 @@ def position_keeper(goal: Goal, ball: Disc) -> list[float]:
 def follow_point(
     player: PlayerHandler, point: list[float], precision: int
 ) -> list[int]:
+    if player.disc is None:
+        return [0, 0, 0]
+
     inputs_player = [0, 0, 0]
     if player.disc.position[0] - point[0] > precision:
         inputs_player[ActionBin.RIGHT] -= 1
@@ -128,6 +131,9 @@ def follow_point(
 def shoot_disc_close(
     player: PlayerHandler, disc: Disc, precision: int, previous_actions: list[int]
 ) -> int:
+    if player.disc is None:
+        return 0
+
     dist = np.linalg.norm(disc.position - player.disc.position)
     if (dist - player.disc.radius - disc.radius) < precision:
         if player._kick_cancel and previous_actions[ActionBin.KICK] == 1:

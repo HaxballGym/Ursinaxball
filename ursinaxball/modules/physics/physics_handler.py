@@ -195,6 +195,9 @@ def update_discs(stadium_game: Stadium, players: "list[PlayerHandler]") -> None:
         disc.speed = (disc.speed + disc.gravity) * disc.damping
 
     for player in players:
+        if player.disc is None:
+            continue
+
         disc = player.disc
         disc.position += disc.speed
         damping = disc.kicking_damping if player.is_kicking() else disc.damping

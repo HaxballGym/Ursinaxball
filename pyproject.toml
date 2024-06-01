@@ -7,11 +7,11 @@ readme = "README.md"
 packages = [{ include = "ursinaxball" }]
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.12"
+python = ">=3.10,<3.12"
 numpy = "^1.23.5"
 msgpack = "^1.0.4"
-panda3d = "1.10.13"
-ursina = "5.0.0"
+panda3d = "^1.10.13"
+ursina = "^7.0.0"
 scipy = "^1.10.0"
 screeninfo = "^0.8.1"
 msgspec = "^0.18.2"

@@ -66,7 +66,10 @@ class GameRenderer:
 
         follow_player = self.game.stadium_store.camera_follow == "player"
         if follow_player:
-            pos_player_0 = self.game.players[0].disc.position
+            players_discs = [
+                player.disc for player in self.game.players if player.disc is not None
+            ]
+            pos_player_0 = players_discs[0].position
             camera.position = pos_player_0
 
     def update(self):

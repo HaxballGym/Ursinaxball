@@ -51,6 +51,9 @@ class ChaseBot(Bot):
         self.previous_actions = []
 
     def step_game(self, player: PlayerHandler, game: Game) -> list[int]:
+        if player.disc is None:
+            return [0, 0, 0]
+
         inputs_player = [0, 0, 0]
         ball = game.stadium_game.discs[0]
         threshold = 2

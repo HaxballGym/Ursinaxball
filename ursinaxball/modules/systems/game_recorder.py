@@ -136,14 +136,17 @@ class GamePositionRecorder:
     def step(self, actions: npt.NDArray):
         for i, player in enumerate(self.game.players):
             disc = player.disc
-            disc_value = [
-                disc.position[0],
-                disc.position[1],
-                disc.speed[0],
-                disc.speed[1],
-                int(player.kicking),
-                int(player._kick_cancel),
-            ]
+            if disc is None:
+                disc_value = [0, 0, 0, 0, 0, 0]
+            else:
+                disc_value = [
+                    disc.position[0],
+                    disc.position[1],
+                    disc.speed[0],
+                    disc.speed[1],
+                    int(player.kicking),
+                    int(player._kick_cancel),
+                ]
             self.player_action[i].append(disc_value)
         ball = self.game.stadium_game.discs[0]
         ball_value = [

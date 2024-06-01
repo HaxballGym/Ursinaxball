@@ -6,7 +6,8 @@ from typing import TYPE_CHECKING
 import msgspec
 import numpy as np
 import numpy.typing as npt
-from ursina import Entity, Pipe, rgb
+from ursina import Entity, Pipe
+from ursina.color import rgba32
 
 from ursinaxball.utils.enums import CollisionFlag
 from ursinaxball.utils.misc import parse_color_entity, replace_none_values
@@ -126,7 +127,7 @@ class StraightSegment(msgspec.Struct, rename="camel"):
                 path=vert_mesh,
                 thicknesses=[3],
             ),
-            color=rgb(*self.color),
+            color=rgba32(*self.color),
         )
 
         return line_entity_mesh
@@ -228,7 +229,7 @@ class CurvedSegment(StraightSegment, rename="camel"):
                 path=vert_mesh,
                 thicknesses=[3],
             ),
-            color=rgb(*self.color),
+            color=rgba32(*self.color),
         )
 
         return line_entity_mesh
