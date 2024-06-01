@@ -4,9 +4,10 @@ from typing import TYPE_CHECKING
 
 from ursina import Entity, Ursina, Vec2, camera, color, destroy, window
 
+from ursinaxball.objects.base import PlayerDisc
+
 if TYPE_CHECKING:
     from ursinaxball import Game
-    from ursinaxball.objects.base import PlayerDisc
 
 
 class GameRenderer:
