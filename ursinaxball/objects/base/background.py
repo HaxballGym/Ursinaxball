@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 from enum import Enum
+from math import pi
 
 import msgspec
 from typing_extensions import Self
+from ursina import Color, Entity, Mesh, Pipe, Sky
 
 from ursinaxball.utils.misc import parse_color_entity, replace_none_values
+from ursinaxball.utils.rendering import arc
 
 
 class BackgroundType(str, Enum):
@@ -21,6 +24,13 @@ class BackgroundType(str, Enum):
             return BackgroundType.Hockey
         else:
             return BackgroundType.Empty
+
+
+BACKGROUND_COLORS = {
+    "grass": (113, 140, 90, 255),
+    "hockey": (113, 140, 90, 255),
+    "none": (0, 0, 0, 0),
+}
 
 
 class BackgroundRaw(msgspec.Struct, rename="camel"):
@@ -75,3 +85,96 @@ class Background(msgspec.Struct, rename="camel"):
     corner_radius: float
     goal_line: float
     color: tuple[int, int, int, int]
+
+    def get_limit_entity(self) -> Entity | None:
+        if self.bg_type not in [BackgroundType.Grass, BackgroundType.Hockey]:
+            return None
+
+        if self.width is not None and self.height is not None:
+            vertices_entity = (
+                (-self.width - 1.25, -self.height, 0),
+                (self.width + 1.25, -self.height, 0),
+                (self.width, -self.height, 0),
+                (self.width, self.height, 0),
+                (self.width + 1.25, self.height, 0),
+                (-self.width - 1.25, self.height, 0),
+                (-self.width, self.height, 0),
+                (-self.width, -self.height, 0),
+            )
+
+            limit_entity = Entity(
+                model=Mesh(
+                    vertices=vertices_entity,
+                    mode="line",
+                    thickness=6,
+                ),
+                z=0.1,
+                color=Color(*self.color),
+            )
+            return limit_entity
+
+    def get_kickoff_circle_entity(self) -> Entity | None:
+        if self.bg_type in [BackgroundType.Grass, BackgroundType.Hockey]:
+            circle_vertices = arc(
+                x=0,
+                y=0,
+                radius=self.kick_off_radius,
+                start_angle=0,
+                end_angle=2 * pi,
+                segments=64,
+                clockwise=True,
+            )
+            vert_mesh = tuple((v[0], v[1], 0.1) for v in circle_vertices)
+
+            kickoff_circle_entity = Entity(
+                model=Pipe(
+                    path=vert_mesh,
+                    thicknesses=[3],
+                ),
+                z=0.1,
+                color=Color(*self.color),
+            )
+
+            return kickoff_circle_entity
+
+    def get_kickoff_line_entity(self) -> Entity | None:
+        if self.bg_type not in [BackgroundType.Grass, BackgroundType.Hockey]:
+            return None
+
+        if self.height is not None:
+            vertices_entity = (
+                (0, -self.height, 0),
+                (0, self.height, 0),
+            )
+
+            limit_entity = Entity(
+                model=Mesh(
+                    vertices=vertices_entity,
+                    mode="line",
+                    thickness=6,
+                ),
+                z=0.1,
+                color=Color(*self.color),
+            )
+            return limit_entity
+
+    def get_fill_canvas(self) -> Entity:
+        color = (
+            self.color if self.color is not None else BACKGROUND_COLORS[self.bg_type]
+        )
+        sky = Sky()
+        sky = Entity(
+            scale=9900,
+            model="quad",
+            color=color,
+            z=2,
+        )
+        return sky
+
+    def get_entities(self):
+        return [
+            self.get_limit_entity(),
+            self.get_kickoff_circle_entity(),
+            self.get_kickoff_line_entity(),
+            self.get_fill_canvas(),
+        ]

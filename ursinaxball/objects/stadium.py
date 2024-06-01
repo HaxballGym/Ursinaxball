@@ -60,7 +60,7 @@ class StadiumRaw(msgspec.Struct, rename="camel"):
     spawn_distance: float | None = None
     can_be_stored: bool | None = None
     kick_off_reset: str | None = None
-    traits: dict[str, Trait] | None = None
+    traits: dict[str, Trait] | list | None = None
     vertexes: list[VertexRaw] | None = None
     segments: list[SegmentRaw] | None = None
     goals: list[GoalRaw] | None = None
@@ -120,7 +120,11 @@ class StadiumRaw(msgspec.Struct, rename="camel"):
         assert stadium_raw_final.blue_spawn_points is not None
         assert stadium_raw_final.player_physics is not None
 
-        traits = stadium_raw_final.traits
+        traits = (
+            stadium_raw_final.traits
+            if isinstance(stadium_raw_final.traits, dict)
+            else {}
+        )
         discs = [disc.to_disc(traits) for disc in stadium_raw_final.discs]
         ball_physics = get_ball(self.ball_physics, discs, traits)
 

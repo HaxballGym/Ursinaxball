@@ -6,9 +6,14 @@ from typing import TYPE_CHECKING
 import msgspec
 import numpy as np
 import numpy.typing as npt
+from ursina import Color, Entity
 
 from ursinaxball.utils.enums import CollisionFlag
-from ursinaxball.utils.misc import parse_color_entity, replace_none_values
+from ursinaxball.utils.misc import (
+    parse_color_entity,
+    parse_color_entity_ursina,
+    replace_none_values,
+)
 
 if TYPE_CHECKING:
     from typing_extensions import Self
@@ -117,3 +122,27 @@ class Disc(msgspec.Struct, rename="camel"):
         self.color = copy.copy(other.color)
         self.c_group = copy.copy(other.c_group)
         self.c_mask = copy.copy(other.c_mask)
+
+    def get_entity(self) -> Entity:
+        disc_parent = Entity(
+            x=self.position[0],
+            y=self.position[1],
+            z=0,
+            always_on_top=True,
+        )
+
+        Entity(
+            parent=disc_parent,
+            model="circle",
+            color=parse_color_entity_ursina("000000", False),
+            scale=(self.radius + 0.75) * 2,
+        )
+
+        Entity(
+            parent=disc_parent,
+            model="circle",
+            color=Color(*self.color),
+            scale=(self.radius - 0.75) * 2,
+        )
+
+        return disc_parent

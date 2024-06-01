@@ -1,18 +1,22 @@
 from __future__ import annotations
 
+from math import pi
 from typing import TYPE_CHECKING
 
 import msgspec
 import numpy as np
 import numpy.typing as npt
+from ursina import Color, Entity, Pipe
 
 from ursinaxball.utils.enums import CollisionFlag
 from ursinaxball.utils.misc import parse_color_entity, replace_none_values
+from ursinaxball.utils.rendering import arc
 
 if TYPE_CHECKING:
     from typing_extensions import Self
 
     from ursinaxball.objects.base.trait import Trait
+    from ursinaxball.objects.base.vertex import Vertex
 
 
 class SegmentRaw(msgspec.Struct, rename="camel"):
@@ -107,7 +111,25 @@ class StraightSegment(msgspec.Struct, rename="camel"):
     c_group: CollisionFlag
     c_mask: CollisionFlag
     vis: bool
-    color: tuple[int, int, int]
+    color: tuple[int, int, int, int]
+
+    def get_entity(self, vertexes: list[Vertex]) -> Entity | None:
+        if self.vis is False:
+            return None
+
+        vert_mesh = tuple(
+            (vertexes[v].position[0], vertexes[v].position[0], 0)
+            for v in self.vertex_indices
+        )
+        line_entity_mesh = Entity(
+            model=Pipe(
+                path=vert_mesh,
+                thicknesses=[3],
+            ),
+            color=Color(*self.color),
+        )
+
+        return line_entity_mesh
 
 
 class CurvedSegment(StraightSegment, rename="camel"):
@@ -174,6 +196,42 @@ class CurvedSegment(StraightSegment, rename="camel"):
         while angle_1 < angle_0:
             angle_1 += 2 * np.pi
         return angle_0, angle_1
+
+    def get_entity(self, vertexes: list[Vertex]) -> Entity | None:
+        if self.vis is False:
+            return None
+
+        args_fn = (
+            vertexes[self.vertex_indices[0]].position,
+            vertexes[self.vertex_indices[1]].position,
+            self.curve,
+        )
+        circle_center = self.circle_center(*args_fn)
+        circle_angles = self.circle_angles(*args_fn)
+        circle_radius = self.circle_radius(*args_fn)
+
+        nb_segments = int((circle_angles[1] - circle_angles[0]) / (2 * pi) * 64)
+
+        arc_vertices = arc(
+            x=circle_center[0],
+            y=circle_center[1],
+            radius=circle_radius,
+            start_angle=circle_angles[0],
+            end_angle=circle_angles[1],
+            segments=nb_segments,
+            clockwise=True,
+        )
+        vert_mesh = tuple((v[0], v[1], 0) for (_, v) in enumerate(arc_vertices))
+
+        line_entity_mesh = Entity(
+            model=Pipe(
+                path=vert_mesh,
+                thicknesses=[3],
+            ),
+            color=Color(*self.color),
+        )
+
+        return line_entity_mesh
 
 
 Segment = CurvedSegment | StraightSegment

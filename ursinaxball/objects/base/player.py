@@ -7,6 +7,7 @@ import msgspec
 import numpy as np
 import numpy.typing as npt
 
+from ursinaxball.objects.base.disc import Disc
 from ursinaxball.utils.enums import CollisionFlag
 from ursinaxball.utils.misc import replace_none_values
 
@@ -88,18 +89,8 @@ class PlayerPhysics(msgspec.Struct, rename="camel"):
     kickback: float
 
 
-class PlayerDisc(msgspec.Struct, rename="camel"):
+class PlayerDisc(Disc, rename="camel"):
     player_id: int
-    position: npt.NDArray[np.float64]
-    speed: npt.NDArray[np.float64]
-    gravity: npt.NDArray[np.float64]
-    radius: float
-    inv_mass: float
-    damping: float
-    b_coef: float
-    color: tuple[int, int, int, int]
-    c_group: CollisionFlag
-    c_mask: CollisionFlag
     acceleration: float
     kicking_acceleration: float
     kicking_damping: float

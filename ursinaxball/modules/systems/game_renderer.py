@@ -52,7 +52,8 @@ class GameRenderer:
             disc.get_entity() for disc in self.game.stadium_game.discs
         ]
         self.segment_entities = [
-            segment.get_entity() for segment in self.game.stadium_game.segments
+            segment.get_entity(self.game.stadium_game.vertexes)
+            for segment in self.game.stadium_game.segments
         ]
         self.background_entities = self.game.stadium_game.bg.get_entities()
         self.UI_strings = self.game.score.get_string_entities()
