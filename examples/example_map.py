@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+import numpy as np
 from ursina.input_handler import Keys, held_keys
 
 from ursinaxball import Game
@@ -7,13 +8,13 @@ from ursinaxball.modules import GameScore, PlayerHandler
 from ursinaxball.utils.enums import BaseMap, TeamID
 
 game = Game(
-    folder_rec="./recordings/",
     enable_vsync=True,
     stadium_file=BaseMap.OBSTACLE_WINKY,
 )
 game.score = GameScore(time_limit=0, score_limit=0)
+player_physics = game.stadium_store.player_physics
 
-player_red = PlayerHandler("P1", TeamID.RED)
+player_red = PlayerHandler("P1", player_physics, TeamID.RED)
 game.add_players([player_red])
 
 
@@ -59,4 +60,4 @@ while True:
     actions = [[0, 0, 0]]
     while not done:
         actions[0] = action_handle(actions[0], input_player)
-        done = game.step(actions)
+        done = game.step(np.array(actions))
