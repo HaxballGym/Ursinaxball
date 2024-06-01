@@ -16,8 +16,8 @@ def test_game():
     bot_1 = ConstantActionBot([1, 0, 0])
     bot_2 = ConstantActionBot([1, 1, 1], symmetry=True)
 
-    player_red = PlayerHandler("P0", player_physics, TeamID.RED, bot=bot_1)
-    player_blue = PlayerHandler("P1", player_physics, TeamID.BLUE, bot=bot_2)
+    player_red = PlayerHandler("P0", TeamID.RED, bot=bot_1)
+    player_blue = PlayerHandler("P1", TeamID.BLUE, bot=bot_2)
     game.add_players([player_red, player_blue])
 
     game.start()

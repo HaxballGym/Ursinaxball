@@ -9,7 +9,7 @@ from ursinaxball.utils.enums import BaseMap, TeamID
 
 game = Game(
     enable_vsync=True,
-    stadium_file=BaseMap.FUTSAL_CLASSIC,
+    stadium_file=BaseMap.CLASSIC,
 )
 game.score = GameScore(time_limit=3, score_limit=3)
 player_physics = game.stadium_store.player_physics
@@ -19,7 +19,6 @@ bot_blue = ChaseBot(tick_skip)
 
 player_red = PlayerHandler("P1", TeamID.RED)
 player_blue = PlayerHandler("P2", TeamID.BLUE, bot=bot_blue)
-game.add_players([player_red, player_blue])
 
 
 @dataclass
@@ -61,8 +60,6 @@ while True:
     save_rec = False
     game.reset(save_recording=save_rec)
     done = False
-    actions = [[0, 0, 0], [0, 0, 0]]
+    actions = []
     while not done:
-        actions[0] = action_handle(actions[0], input_player)
-        actions[1] = player_blue.step(game) or [0, 0, 0]
         done = game.step(np.array(actions))

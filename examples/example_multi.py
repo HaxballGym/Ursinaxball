@@ -14,11 +14,10 @@ game = Game(
 team_size = 1
 
 game.score = GameScore(time_limit=3, score_limit=3)
-player_physics = game.stadium_store.player_physics
 
-players_red = [PlayerHandler(f"P{i}", player_physics, TeamID.RED) for i in range(team_size)]
+players_red = [PlayerHandler(f"P{i}", TeamID.RED) for i in range(team_size)]
 players_blue = [
-    PlayerHandler(f"P{team_size + i}", player_physics, TeamID.BLUE) for i in range(team_size)
+    PlayerHandler(f"P{team_size + i}", TeamID.BLUE) for i in range(team_size)
 ]
 players = players_red + players_blue
 

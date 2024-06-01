@@ -125,8 +125,9 @@ class StadiumRaw(msgspec.Struct, rename="camel"):
             if isinstance(stadium_raw_final.traits, dict)
             else {}
         )
-        discs = [disc.to_disc(traits) for disc in stadium_raw_final.discs]
-        ball_physics = get_ball(self.ball_physics, discs, traits)
+        stad_discs = [disc.to_disc(traits) for disc in stadium_raw_final.discs]
+        ball_physics = get_ball(self.ball_physics, stad_discs, traits)
+        discs = [ball_physics, *stad_discs]
 
         return Stadium(
             name=stadium_raw_final.name,

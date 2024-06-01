@@ -7,7 +7,6 @@ import numpy as np
 import numpy.typing as npt
 
 from ursinaxball.modules.player import PlayerData
-from ursinaxball.objects.base import PlayerDisc, PlayerPhysics, get_player_disc
 from ursinaxball.utils.enums import ActionBin, CollisionFlag, TeamColor, TeamID
 from ursinaxball.utils.misc import parse_color_entity
 
@@ -16,6 +15,7 @@ if TYPE_CHECKING:
     from ursinaxball.modules import GameScore
     from ursinaxball.modules.bots import Bot
     from ursinaxball.objects import Stadium
+    from ursinaxball.objects.base import PlayerDisc
 
 
 class PlayerHandler:
@@ -24,7 +24,6 @@ class PlayerHandler:
     def __init__(
         self,
         name: str,
-        player_physics: PlayerPhysics,
         team: int = TeamID.SPECTATOR,
         bot: Bot | None = None,
     ) -> None:
@@ -36,10 +35,13 @@ class PlayerHandler:
         self.kicking = False
         # kick_cancel is used to make sure you stop kicking after hitting the ball
         self._kick_cancel = False
-        self.disc: PlayerDisc = get_player_disc(self.id, player_physics)
+        self.disc: PlayerDisc | None = None
         self.player_data = PlayerData()
 
     def set_color(self) -> None:
+        if self.disc is None:
+            return
+
         if self.team == TeamID.RED:
             self.disc.color = parse_color_entity(TeamColor.RED, True)
         elif self.team == TeamID.BLUE:
@@ -54,10 +56,12 @@ class PlayerHandler:
         return None
 
     def resolve_movement(self, stadium_game: Stadium, game_score: GameScore) -> None:
-        if self.disc is not None:
-            self.kicking = self.action[ActionBin.KICK] == 1
-            if self.action[ActionBin.KICK] == 0:
-                self._kick_cancel = False
+        if self.disc is None:
+            return
+
+        self.kicking = self.action[ActionBin.KICK] == 1
+        if self.action[ActionBin.KICK] == 0:
+            self._kick_cancel = False
 
         player_has_kicked = False
         for disc_stadium in stadium_game.discs:

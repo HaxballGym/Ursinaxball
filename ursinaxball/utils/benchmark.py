@@ -21,8 +21,8 @@ def init_game(enable_renderer: bool) -> Game:
     player_physics = game.stadium_game.player_physics
     game.score = GameScore(time_limit=1)
 
-    player_red = PlayerHandler("P1", player_physics, TeamID.RED)
-    player_blue = PlayerHandler("P2", player_physics, TeamID.BLUE)
+    player_red = PlayerHandler("P1", TeamID.RED)
+    player_blue = PlayerHandler("P2", TeamID.BLUE)
     game.add_players([player_red, player_blue])
     game.reset(save_recording=False)
 
@@ -39,7 +39,7 @@ def init_game_obstacle(enable_renderer: bool) -> Game:
     player_physics = game.stadium_game.player_physics
     game.score = GameScore(time_limit=1)
 
-    player_red = PlayerHandler("P1", player_physics, TeamID.RED)
+    player_red = PlayerHandler("P1", TeamID.RED)
     game.add_players([player_red])
     game.reset(save_recording=False)
 

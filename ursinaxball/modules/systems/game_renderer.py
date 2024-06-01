@@ -39,7 +39,7 @@ class GameRenderer:
     def start(self) -> None:
         if self.app is None:
             window.borderless = False
-            window.vsync = 60 if self.enable_vsync else False
+            window.vsync = 60 if self.enable_vsync else False  # type: ignore
             self.app = Ursina(title="HaxballGym")
             self.UI_fixed_entities = self.game.score.get_fixed_entities()
 
@@ -61,13 +61,13 @@ class GameRenderer:
         self.app.step()
 
     def camera_update(self):
+        if len(self.game.players) == 0:
+            return
+
         follow_player = self.game.stadium_store.camera_follow == "player"
-        pos_player_0 = self.game.players[0].disc.position
-        pos_ball = self.game.stadium_store.discs[0].position
         if follow_player:
+            pos_player_0 = self.game.players[0].disc.position
             camera.position = pos_player_0
-        else:
-            pos_ball = pos_ball
 
     def update(self):
         for entity, game_disc in zip(self.disc_entities, self.game.stadium_game.discs):

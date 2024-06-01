@@ -8,7 +8,6 @@ from ursinaxball.utils.misc import parse_color_entity_ursina
 
 class GameScore:
     def __init__(self, time_limit: int | None = None, score_limit: int | None = None):
-        # The GameScore object is used to keep track of the score of the game.
         # Score limit = 0 means no score limit, same for time limit.
         self.ticks = 0
         self.total_ticks = 0
@@ -35,7 +34,7 @@ class GameScore:
         self.blue = 0
         self.animation_timeout = 0
 
-    def update_score(self, team_id: int) -> None:
+    def update_score(self, team_id: TeamID) -> None:
         if team_id == TeamID.BLUE:
             self.red += 1
         elif team_id == TeamID.RED:

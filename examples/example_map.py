@@ -14,7 +14,7 @@ game = Game(
 game.score = GameScore(time_limit=0, score_limit=0)
 player_physics = game.stadium_store.player_physics
 
-player_red = PlayerHandler("P1", player_physics, TeamID.RED)
+player_red = PlayerHandler("P1", TeamID.RED)
 game.add_players([player_red])
 
 

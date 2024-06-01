@@ -5,6 +5,7 @@ import logging
 from typing import TYPE_CHECKING
 
 import numpy as np
+import numpy.typing as npt
 
 from ursinaxball.modules import (
     GameActionRecorder,
@@ -15,6 +16,7 @@ from ursinaxball.modules import (
     update_discs,
 )
 from ursinaxball.objects.base import Disc, get_player_disc
+from ursinaxball.objects.base.player import PlayerDisc
 from ursinaxball.objects.stadium import Stadium, load_stadium
 from ursinaxball.utils.constants import PATH_RECORDINGS
 from ursinaxball.utils.enums import BaseMap, CollisionFlag, GameState, TeamID
@@ -80,7 +82,7 @@ class Game:
         self.stadium_store: Stadium = load_stadium(map_file)
         self.stadium_game: Stadium = copy.deepcopy(self.stadium_store)
 
-    def check_goal(self, previous_discs_position: list[Disc]) -> int:
+    def check_goal(self, previous_discs_position: list[Disc]) -> TeamID:
         current_disc_position = [
             disc
             for disc in self.stadium_game.discs
@@ -99,7 +101,8 @@ class Game:
                     np.cross(current_p0, disc_vector)
                     * np.cross(current_p1, disc_vector)
                     <= 0
-                    and np.cross(previous_p0, goal_vector)
+                ) and (
+                    np.cross(previous_p0, goal_vector)
                     * np.cross(current_p0, goal_vector)
                     <= 0
                 ):
@@ -108,59 +111,74 @@ class Game:
 
         return TeamID.SPECTATOR
 
+    def handle_game_state_kickoff(self) -> None:
+        for player in self.players:
+            if player.disc is None:
+                continue
+
+            kickoff_collision = (
+                CollisionFlag.REDKO
+                if self.team_kickoff == TeamID.RED
+                else CollisionFlag.BLUEKO
+            )
+            player.disc.c_mask = CollisionFlag(39 | kickoff_collision)
+
+        ball_disc = self.stadium_game.discs[0]
+        if np.linalg.norm(ball_disc.speed) > 0:
+            log.debug("Kickoff made")
+            self.state = GameState.PLAYING
+
+    def handle_game_state_playing(self, previous_discs_position: list[Disc]) -> None:
+        for player in self.players:
+            if player.disc is None:
+                continue
+
+            if player.disc.position is not None:
+                player.disc.c_mask = CollisionFlag(39)
+        team_goal = self.check_goal(previous_discs_position)
+        if team_goal != TeamID.SPECTATOR:
+            team_goal_string = "Red" if team_goal == TeamID.RED else "Blue"
+            log.debug(f"Team {team_goal_string} conceded a goal")
+            self.state = GameState.GOAL
+            self.score.update_score(team_goal)
+            if not self.score.is_game_over():
+                self.team_kickoff = (
+                    TeamID.BLUE if team_goal == TeamID.BLUE else TeamID.RED
+                )
+        elif self.score.is_game_over():
+            self.state = GameState.END
+            self.score.end_animation()
+
+    def handle_game_state_goal(self) -> None:
+        self.score.animation_timeout -= 1
+        if not self.score.is_animation():
+            if self.score.is_game_over():
+                self.state = GameState.END
+                self.score.end_animation()
+            else:
+                self.reset_discs_positions()
+                self.state = GameState.KICKOFF
+
+    def handle_game_state_end(self) -> bool | None:
+        self.score.animation_timeout -= 1
+        if not self.score.is_animation():
+            return True
+
     def handle_game_state(self, previous_discs_position: list[Disc]) -> bool:
         self.score.step(self.state)
 
         if self.state == GameState.KICKOFF:
-            for player in self.players:
-                if player.disc.position is not None:
-                    kickoff_collision = (
-                        CollisionFlag.REDKO
-                        if self.team_kickoff == TeamID.RED
-                        else CollisionFlag.BLUEKO
-                    )
-                    player.disc.c_mask = CollisionFlag(39 | kickoff_collision)
-            ball_disc = self.stadium_game.discs[0]
-            if np.linalg.norm(ball_disc.speed) > 0:
-                log.debug("Kickoff made")
-                self.state = GameState.PLAYING
-
+            self.handle_game_state_kickoff()
         elif self.state == GameState.PLAYING:
-            for player in self.players:
-                if player.disc.position is not None:
-                    player.disc.c_mask = CollisionFlag(39)
-            team_goal = self.check_goal(previous_discs_position)
-            if team_goal != TeamID.SPECTATOR:
-                team_goal_string = "Red" if team_goal == TeamID.RED else "Blue"
-                log.debug(f"Team {team_goal_string} conceded a goal")
-                self.state = GameState.GOAL
-                self.score.update_score(team_goal)
-                if not self.score.is_game_over():
-                    self.team_kickoff = (
-                        TeamID.BLUE if team_goal == TeamID.BLUE else TeamID.RED
-                    )
-            elif self.score.is_game_over():
-                self.state = GameState.END
-                self.score.end_animation()
-
+            self.handle_game_state_playing(previous_discs_position)
         elif self.state == GameState.GOAL:
-            self.score.animation_timeout -= 1
-            if not self.score.is_animation():
-                if self.score.is_game_over():
-                    self.state = GameState.END
-                    self.score.end_animation()
-                else:
-                    self.reset_discs_positions()
-                    self.state = GameState.KICKOFF
-
+            self.handle_game_state_goal()
         elif self.state == GameState.END:
-            self.score.animation_timeout -= 1
-            if not self.score.is_animation():
-                return True
+            self.handle_game_state_end()
 
         return False
 
-    def reset_discs_positions(self) -> None:
+    def reset_discs_positions_stadium(self) -> None:
         discs_game = (
             self.stadium_game.discs
             if self.stadium_game.kick_off_reset == "full"
@@ -173,15 +191,20 @@ class Game:
         )
 
         for disc_game, disc_store in zip(discs_game, discs_store):
-            if isinstance(disc_store, Disc) and isinstance(disc_game, Disc):
+            if not isinstance(disc_store, PlayerDisc) and not isinstance(
+                disc_game, PlayerDisc
+            ):
                 disc_game.copy(disc_store)
 
+    def reset_discs_positions_players(self) -> None:
         red_count = 0
         blue_count = 0
         red_spawns = self.stadium_store.red_spawn_points
         blue_spawns = self.stadium_store.blue_spawn_points
         for player in self.players:
-            player.disc = get_player_disc(player.id, self.stadium_store.player_physics)
+            if player.disc is None:
+                continue
+
             player.disc.c_group |= (
                 CollisionFlag.RED if player.team == TeamID.RED else CollisionFlag.BLUE
             )
@@ -211,16 +234,24 @@ class Game:
                         player.disc.position[1] = 55 * (blue_count + 1 >> 1)
                 blue_count += 1
 
+    def reset_discs_positions(self) -> None:
+        self.reset_discs_positions_stadium()
+        self.reset_discs_positions_players()
+
     def start(self) -> None:
         for player in self.players:
-            self.stadium_game.discs.append(player.disc)
+            if player.team != TeamID.SPECTATOR:
+                player.disc = get_player_disc(
+                    player.id, self.stadium_store.player_physics
+                )
+                self.stadium_game.discs.append(player.disc)
         self.reset_discs_positions()
         if self.enable_recorder and self.recorder is not None:
             self.recorder.start()
         if self.enable_renderer and self.renderer is not None:
             self.renderer.start()
 
-    def step(self, actions: np.ndarray) -> bool:
+    def step(self, actions: npt.NDArray) -> bool:
         for action, player in zip(actions, self.players):
             self.make_player_action(player, action)
 
@@ -268,7 +299,6 @@ if __name__ == "__main__":
     from ursinaxball.modules.bots import ConstantActionBot
 
     game = Game()
-    player_physics = game.stadium_store.player_physics
 
     custom_score = GameScore(time_limit=1, score_limit=1)
     game.score = custom_score
@@ -276,8 +306,8 @@ if __name__ == "__main__":
     bot_1 = ConstantActionBot([1, 0, 0])
     bot_2 = ConstantActionBot([1, 1, 1], symmetry=True)
 
-    player_red = PlayerHandler("P0", player_physics, TeamID.RED, bot=bot_1)
-    player_blue = PlayerHandler("P1", player_physics, TeamID.BLUE, bot=bot_2)
+    player_red = PlayerHandler("P0", TeamID.RED, bot=bot_1)
+    player_blue = PlayerHandler("P1", TeamID.BLUE, bot=bot_2)
     game.add_players([player_red, player_blue])
 
     game.start()
