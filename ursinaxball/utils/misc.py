@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, TypeVar
 
 import msgspec
-from ursina.color import rgba32
+from ursina.color import rgb
 
 if TYPE_CHECKING:
     from ursina import Color
@@ -42,4 +42,4 @@ def parse_color_entity_ursina(
     color: str | tuple[int, int, int], transparent_supported: bool
 ) -> Color:
     color_tuple = parse_color_entity(color, transparent_supported)
-    return rgba32(*color_tuple)
+    return rgb(*color_tuple)

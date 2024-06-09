@@ -7,7 +7,7 @@ import msgspec
 import numpy as np
 import numpy.typing as npt
 from ursina import Entity
-from ursina.color import rgba32
+from ursina.color import rgb
 
 from ursinaxball.utils.enums import CollisionFlag
 from ursinaxball.utils.misc import (
@@ -142,7 +142,7 @@ class Disc(msgspec.Struct, rename="camel"):
         Entity(
             parent=disc_parent,
             model="circle",
-            color=rgba32(*self.color),
+            color=rgb(*self.color),
             scale=(self.radius - 0.75) * 2,
         )
 

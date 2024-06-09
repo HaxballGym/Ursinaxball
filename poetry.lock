@@ -999,13 +999,13 @@ files = [
 
 [[package]]
 name = "tox"
-version = "4.15.0"
+version = "4.15.1"
 description = "tox is a generic virtualenv management and test command line tool"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "tox-4.15.0-py3-none-any.whl", hash = "sha256:300055f335d855b2ab1b12c5802de7f62a36d4fd53f30bd2835f6a201dda46ea"},
-    {file = "tox-4.15.0.tar.gz", hash = "sha256:7a0beeef166fbe566f54f795b4906c31b428eddafc0102ac00d20998dd1933f6"},
+    {file = "tox-4.15.1-py3-none-any.whl", hash = "sha256:f00a5dc4222b358e69694e47e3da0227ac41253509bca9f45aa8f012053e8d9d"},
+    {file = "tox-4.15.1.tar.gz", hash = "sha256:53a092527d65e873e39213ebd4bd027a64623320b6b0326136384213f95b7076"},
 ]
 
 [package.dependencies]
@@ -1026,24 +1026,24 @@ testing = ["build[virtualenv] (>=1.0.3)", "covdefaults (>=2.3)", "detect-test-po
 
 [[package]]
 name = "typing-extensions"
-version = "4.12.0"
+version = "4.12.2"
 description = "Backported and Experimental Type Hints for Python 3.8+"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "typing_extensions-4.12.0-py3-none-any.whl", hash = "sha256:b349c66bea9016ac22978d800cfff206d5f9816951f12a7d0ec5578b0a819594"},
-    {file = "typing_extensions-4.12.0.tar.gz", hash = "sha256:8cbcdc8606ebcb0d95453ad7dc5065e6237b6aa230a31e81d0f440c30fed5fd8"},
+    {file = "typing_extensions-4.12.2-py3-none-any.whl", hash = "sha256:04e5ca0351e0f3f85c6853954072df659d0d13fac324d0072316b67d7794700d"},
+    {file = "typing_extensions-4.12.2.tar.gz", hash = "sha256:1a7ead55c7e559dd4dee8856e3a88b41225abfe1ce8df57b7c13915fe121ffb8"},
 ]
 
 [[package]]
 name = "ursina"
-version = "7.0.0"
+version = "5.3.0"
 description = "An easy to use game engine/framework for python."
 optional = false
 python-versions = ">=3.10"
 files = [
-    {file = "ursina-7.0.0-py3-none-any.whl", hash = "sha256:f80a8ee84c299b835075d37780fd4607bd20cf85f9dacc59376d9535b51bb7c3"},
-    {file = "ursina-7.0.0.tar.gz", hash = "sha256:838970dadcd4b40d77b4d5c80ab2c99fc869d2b455de75b733b0f1f74a8874d1"},
+    {file = "ursina-5.3.0-py3-none-any.whl", hash = "sha256:4de36ed2e85f9455d6e321e3974268cefec2361ee87c301b9afb81c5ac328904"},
+    {file = "ursina-5.3.0.tar.gz", hash = "sha256:3acabaef9f2630feb90d1f1d2c847e86f7a65acdd0beb8194c89ececa6112534"},
 ]
 
 [package.dependencies]
@@ -1052,6 +1052,9 @@ panda3d-gltf = "*"
 pillow = "*"
 pyperclip = "*"
 screeninfo = "*"
+
+[package.extras]
+extras = ["imageio", "numpy", "psd-tools3", "psutil"]
 
 [[package]]
 name = "virtualenv"
@@ -1076,4 +1079,4 @@ test = ["covdefaults (>=2.3)", "coverage (>=7.2.7)", "coverage-enable-subprocess
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.12"
-content-hash = "885461d24e48c17555f2bcacbb1a5295b8275453946ed2c8a51b129119c5d84b"
+content-hash = "77441f63e882c0e0784053bfbd1d8d43f42a626b60fc56fdb09158cea39c5ecb"

@@ -6,7 +6,7 @@ from math import pi
 import msgspec
 from typing_extensions import Self
 from ursina import Entity, Mesh, Pipe, Sky
-from ursina.color import rgba32
+from ursina.color import rgb
 
 from ursinaxball.utils.constants import BACKGROUND_BORDER_COLORS, BACKGROUND_FILL_COLORS
 from ursinaxball.utils.misc import (
@@ -172,12 +172,12 @@ class Background(msgspec.Struct, rename="camel"):
         fill_color = parse_color_entity_ursina(
             BACKGROUND_FILL_COLORS[self.bg_type], False
         )
-        color = rgba32(*self.color) if self.color is not None else fill_color
+        color = rgb(*self.color) if self.color is not None else fill_color
         sky = Sky()
         sky = Entity(
             scale=9900,
             model="quad",
-            color=rgba32(*color),
+            color=rgb(*color),
             z=2,
         )
         return sky
