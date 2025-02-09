@@ -2,11 +2,12 @@ from __future__ import annotations
 
 import copy
 import logging
-from typing import List
+from typing import List, Optional, Union, Any, Sequence, cast, TypeGuard
 
 import numpy as np
+from numpy.typing import NDArray
 
-from ursinaxball.common_values import BaseMap, CollisionFlag, GameState, TeamID
+from ursinaxball.common_values import CollisionFlag, GameState, TeamID
 from ursinaxball.modules import (
     GameActionRecorder,
     GameRenderer,
@@ -15,40 +16,69 @@ from ursinaxball.modules import (
     resolve_collisions,
     update_discs,
 )
+from ursinaxball.modules.systems.game_config import GameConfig
 from ursinaxball.objects.base import Disc
 from ursinaxball.objects.stadium_object import Stadium, load_stadium_hbs
 
 log = logging.getLogger(__name__)
 
+# Type aliases for better type checking
+ActionArray = NDArray[np.int_]
+ActionType = Union[ActionArray, Sequence[int], Sequence[Optional[int]], None]
+ActionsType = Union[NDArray[np.int_], Sequence[Optional[ActionType]]]
+
+DEFAULT_ACTION = [0, 0, 0]
+
+
+def is_sequence_with_none(action: Any) -> TypeGuard[Sequence[Optional[int]]]:
+    """Type guard to check if an action is a sequence containing None values."""
+    if not isinstance(action, (list, tuple)):
+        return False
+    try:
+        return any(x is None for x in action)
+    except TypeError:
+        return False
+
+
+def normalize_action(action: ActionType) -> List[int]:
+    """Convert any action type to a list of integers."""
+    if action is None:
+        return DEFAULT_ACTION.copy()
+
+    try:
+        if isinstance(action, np.ndarray):
+            return [int(x) for x in action.tolist()]
+        if isinstance(action, (list, tuple)):
+            return [0 if x is None else int(x) for x in action]
+        return DEFAULT_ACTION.copy()
+    except (TypeError, ValueError):
+        return DEFAULT_ACTION.copy()
+
 
 class Game:
-    def __init__(
-        self,
-        stadium_file: str = BaseMap.CLASSIC,
-        folder_rec: str = "",
-        logging_level: int = logging.DEBUG,
-        enable_vsync: bool = True,
-        enable_renderer: bool = True,
-        fov: int = 550,
-        enable_recorder: bool = True,
-    ):
-        logging.basicConfig(level=logging_level, format="%(levelname)s - %(message)s")
+    def __init__(self, config: Optional[GameConfig] = None, **kwargs):
+        if config is None:
+            config = GameConfig(**kwargs)
 
-        self.folder_rec = folder_rec
+        self.config = config  # Store config for reference
         self.score = GameScore()
         self.state = GameState.KICKOFF
         self.players: List[PlayerHandler] = []
         self.team_kickoff = TeamID.RED
-        self.stadium_file = stadium_file
+        self.stadium_file = config.stadium_file
         self.stadium_store: Stadium = load_stadium_hbs(self.stadium_file)
         self.stadium_game: Stadium = copy.deepcopy(self.stadium_store)
-        self.enable_recorder = enable_recorder
-        self.recorder = (
-            GameActionRecorder(self, self.folder_rec) if self.enable_recorder else None
+        self.enable_recorder = config.enable_recorder
+        self.recorder: Optional[GameActionRecorder] = (
+            GameActionRecorder(self, config.folder_rec)
+            if config.enable_recorder
+            else None
         )
-        self.enable_renderer = enable_renderer
-        self.renderer = (
-            GameRenderer(self, enable_vsync, fov) if enable_renderer else None
+        self.enable_renderer = config.enable_renderer
+        self.renderer: Optional[GameRenderer] = (
+            GameRenderer(self, config.enable_vsync, config.fov)
+            if config.enable_renderer
+            else None
         )
 
     def add_player(self, player: PlayerHandler) -> None:
@@ -58,8 +88,8 @@ class Game:
         for player in players:
             self.add_player(player)
 
-    def make_player_action(self, player: PlayerHandler, action: np.ndarray) -> None:
-        player.action = action
+    def make_player_action(self, player: PlayerHandler, action: ActionType) -> None:
+        player.action = normalize_action(action)
         player.resolve_movement(self.stadium_game, self.score)
 
     def get_player_by_id(self, player_id: int) -> PlayerHandler | None:
@@ -186,38 +216,52 @@ class Game:
             if player.team == TeamID.RED:
                 if len(red_spawns) > 0:
                     index_red = min(red_count, len(red_spawns))
-                    player.disc.position = red_spawns[index_red]
+                    player.disc.position = np.array(red_spawns[index_red])
                 else:
-                    player.disc.position[0] = -self.stadium_game.spawn_distance
-                    if (red_count % 2) == 1:
-                        player.disc.position[1] = -55 * (red_count + 1 >> 1)
-                    else:
-                        player.disc.position[1] = 55 * (red_count + 1 >> 1)
+                    player.disc.position = np.array(
+                        [
+                            -self.stadium_game.spawn_distance,
+                            -55 * (red_count + 1 >> 1)
+                            if (red_count % 2) == 1
+                            else 55 * (red_count + 1 >> 1),
+                        ]
+                    )
                 red_count += 1
 
             elif player.team == TeamID.BLUE:
                 if len(blue_spawns) > 0:
                     index_blue = min(blue_count, len(blue_spawns))
-                    player.disc.position = blue_spawns[index_blue]
+                    player.disc.position = np.array(blue_spawns[index_blue])
                 else:
-                    player.disc.position[0] = self.stadium_game.spawn_distance
-                    if (blue_count % 2) == 1:
-                        player.disc.position[1] = -55 * (blue_count + 1 >> 1)
-                    else:
-                        player.disc.position[1] = 55 * (blue_count + 1 >> 1)
+                    player.disc.position = np.array(
+                        [
+                            self.stadium_game.spawn_distance,
+                            -55 * (blue_count + 1 >> 1)
+                            if (blue_count % 2) == 1
+                            else 55 * (blue_count + 1 >> 1),
+                        ]
+                    )
                 blue_count += 1
 
     def start(self) -> None:
         for player in self.players:
             self.stadium_game.discs.append(player.disc)
         self.reset_discs_positions()
-        if self.enable_recorder:
+        if self.recorder is not None:
             self.recorder.start()
-        if self.enable_renderer:
+        if self.renderer is not None:
             self.renderer.start()
 
-    def step(self, actions: np.ndarray) -> bool:
-        for action, player in zip(actions, self.players):
+    def step(self, actions: ActionsType) -> bool:
+        if isinstance(actions, (list, tuple)):
+            # Convert sequence of actions to numpy array, handling None values
+            actions_list = [normalize_action(action) for action in actions]
+            actions = np.array(actions_list, dtype=np.int_)
+
+        # Ensure actions is a numpy array for type checking
+        actions_array = cast(NDArray[np.int_], actions)
+
+        for action, player in zip(actions_array, self.players):
             self.make_player_action(player, action)
 
         previous_discs_position = [
@@ -228,19 +272,19 @@ class Game:
         update_discs(self.stadium_game, self.players)
         resolve_collisions(self.stadium_game)
         done = self.handle_game_state(previous_discs_position)
-        if self.enable_recorder:
-            self.recorder.step(actions)
-        if self.enable_renderer:
+        if self.recorder is not None:
+            self.recorder.step(actions_array)  # Pass the numpy array
+        if self.renderer is not None:
             self.renderer.update()
 
         return done
 
     def stop(self, save_recording: bool) -> None:
-        if self.enable_recorder:
+        if self.recorder is not None:
             self.recorder.stop(save=save_recording)
+            if save_recording:
+                log.debug(f"Recording saved under {self.recorder.filename}")
 
-        if save_recording and self.enable_recorder:
-            log.debug(f"Recording saved under {self.recorder.filename}")
         log.debug(
             f"Game stopped with score {self.score.red}-{self.score.blue}"
             + f" at {round(self.score.time, 2)}s\n",
@@ -250,9 +294,9 @@ class Game:
         self.state = GameState.KICKOFF
         self.team_kickoff = TeamID.RED
         self.stadium_game: Stadium = copy.deepcopy(self.stadium_store)
-        if self.enable_recorder:
-            self.recorder = GameActionRecorder(self, self.folder_rec)
-        if self.enable_renderer:
+        if self.recorder is not None:
+            self.recorder = GameActionRecorder(self, self.config.folder_rec)
+        if self.renderer is not None:
             self.renderer.stop()
 
     def reset(self, save_recording: bool) -> None:
