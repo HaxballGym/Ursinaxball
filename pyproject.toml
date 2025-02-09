@@ -6,10 +6,10 @@ authors = ["Wazarr <jeje_04@live.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.11"
+python = ">=3.9,<3.13"
 numpy = "^1.23.5"
 msgpack = "^1.0.4"
-panda3d = "1.10.13"
+panda3d = "^1.10.15"
 ursina = "5.0.0"
 scipy = "^1.10.0"
 screeninfo = "^0.8.1"
