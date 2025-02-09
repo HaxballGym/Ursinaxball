@@ -11,17 +11,17 @@ from ursinaxball.common_values import (
     TeamColor,
     TeamID,
 )
-from ursinaxball.modules import GameScore
 from ursinaxball.modules.bots import Bot
-from ursinaxball.modules.player import PlayerData
-from ursinaxball.objects import Stadium
-from ursinaxball.objects.base import PlayerPhysics
+from ursinaxball.modules.player.player_data import PlayerData
+from ursinaxball.modules.systems.game_score import GameScore
+from ursinaxball.objects.base.player_physics import PlayerPhysics
+from ursinaxball.objects.stadium_object import Stadium
 
 if TYPE_CHECKING:
     from ursinaxball import Game
 
 
-class PlayerHandler(object):
+class PlayerHandler:
     id_iterate = itertools.count()
 
     def __init__(

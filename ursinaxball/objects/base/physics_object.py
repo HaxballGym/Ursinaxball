@@ -9,6 +9,11 @@ from ursinaxball.common_values import DICT_COLLISION, DICT_KEYS
 
 
 class PhysicsObject(ABC):
+    """Base class for all physics objects in the game."""
+
+    trait: str | None = None
+
+    @abstractmethod
     def __init__(self, data_object: dict | None, data_stadium: dict):
         pass
 
@@ -16,32 +21,35 @@ class PhysicsObject(ABC):
     def apply_trait(self, data: dict) -> None:
         """
         Applies the trait to the physics object.
-        """
-        if self.trait is not None:
-            if data.get("traits") is not None and self.trait in data["traits"]:
-                trait_value = data.get("traits").get(self.trait)
-                for key in trait_value:
-                    key_object = DICT_KEYS.get(key)
-                    if key_object is not None and hasattr(self, key_object):
-                        if getattr(self, key_object) is None:
-                            if (
-                                key_object == "collision_group"
-                                or key_object == "collision_mask"
-                            ):
-                                value = self.transform_collision_dict(
-                                    trait_value.get(key)
-                                )
-                            else:
-                                value = trait_value.get(key)
 
-                            setattr(self, key_object, value)
+        Args:
+            data: Dictionary containing traits data
+        """
+        if not data or not data.get("traits") or not self.trait:
+            return
+
+        trait_value = data["traits"].get(self.trait, {})
+        for key, value in trait_value.items():
+            key_object = DICT_KEYS.get(key)
+            if (
+                not key_object
+                or not hasattr(self, key_object)
+                or getattr(self, key_object) is not None
+            ):
+                continue
+
+            final_value = (
+                self.transform_collision_dict(value)
+                if key_object in ("collision_group", "collision_mask")
+                else value
+            )
+            setattr(self, key_object, final_value)
 
     @abstractmethod
     def apply_default_values(self):
         """
         Applies the default values to the physics object if they are none
         """
-        pass
 
     @staticmethod
     def transform_collision_dict(collision_dict: dict) -> int:

@@ -1,7 +1,7 @@
+from .bots import Bot, ChaseBot, ConstantActionBot, GoalkeeperBot, RandomBot
 from .physics import resolve_collisions, update_discs
-from .systems import GameActionRecorder, GamePositionRecorder, GameRenderer, GameScore
 from .player import PlayerData, PlayerHandler
-from .bots import Bot, ConstantActionBot, RandomBot, ChaseBot, GoalkeeperBot
+from .systems import GameActionRecorder, GamePositionRecorder, GameRenderer, GameScore
 
 __all__ = [
     "resolve_collisions",

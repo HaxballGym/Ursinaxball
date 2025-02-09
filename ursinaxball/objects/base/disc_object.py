@@ -6,7 +6,7 @@ import numpy as np
 from ursina import Entity
 
 from ursinaxball.common_values import CollisionFlag
-from ursinaxball.objects.base import PhysicsObject
+from ursinaxball.objects.base.physics_object import PhysicsObject
 
 
 class Disc(PhysicsObject):
@@ -60,7 +60,7 @@ class Disc(PhysicsObject):
         if self.color is None:
             self.color = "FFFFFF"
 
-    def copy(self, other: "Disc") -> None:
+    def copy(self, other: Disc) -> None:
         self.collision_group = copy.copy(other.collision_group)
         self.collision_mask = copy.copy(other.collision_mask)
         self.position = copy.copy(other.position)

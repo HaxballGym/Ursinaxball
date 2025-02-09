@@ -4,10 +4,10 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from ursinaxball.common_values import ActionBin, TeamID, GameState
-from ursinaxball.modules.bots import Bot
-from ursinaxball.objects.base import Disc, Goal
-
+from ursinaxball.common_values import ActionBin, GameState, TeamID
+from ursinaxball.modules.bots.bot import Bot
+from ursinaxball.objects.base.disc_object import Disc
+from ursinaxball.objects.base.goal_object import Goal
 
 if TYPE_CHECKING:
     from ursinaxball import Game
@@ -69,9 +69,12 @@ def position_keeper(goal: Goal, ball: Disc) -> list[float]:
         ],
     )
     if intersection is not None:
-        if intersection[0] < default_x and center_goal[0] < 0:
-            intersection[0] = default_x
-        elif intersection[0] > default_x and center_goal[0] > 0:
+        if (
+            intersection[0] < default_x
+            and center_goal[0] < 0
+            or intersection[0] > default_x
+            and center_goal[0] > 0
+        ):
             intersection[0] = default_x
         return intersection
 
@@ -83,9 +86,12 @@ def position_keeper(goal: Goal, ball: Disc) -> list[float]:
         ],
     )
     if intersection is not None:
-        if intersection[0] < default_x and center_goal[0] < 0:
-            intersection[0] = default_x
-        elif intersection[0] > default_x and center_goal[0] > 0:
+        if (
+            intersection[0] < default_x
+            and center_goal[0] < 0
+            or intersection[0] > default_x
+            and center_goal[0] > 0
+        ):
             intersection[0] = default_x
         return intersection
 
@@ -125,7 +131,7 @@ def shoot_disc_close(
 ) -> int:
     dist = np.linalg.norm(disc.position - player.disc.position)
     if (dist - player.disc.radius - disc.radius) < precision:
-        if player._kick_cancel and previous_actions[ActionBin.KICK] == 1:
+        if player._kick_cancel and previous_actions[ActionBin.KICK] == 1:  # noqa: SLF001
             return 0
         else:
             return 1
@@ -146,7 +152,8 @@ class GoalkeeperBot(Bot):
         ball = game.stadium_game.discs[0]
         threshold = 2
         if game.team_kickoff == player.team:
-            random_kick = np.random.uniform(-ball.radius / 2, ball.radius / 2)
+            rng = np.random.default_rng()
+            random_kick = rng.uniform(-ball.radius / 2, ball.radius / 2)
             point = [ball.position[0], ball.position[1] + random_kick]
             inputs_player = follow_point(player, point, threshold)
             inputs_player[ActionBin.KICK] = shoot_disc_close(

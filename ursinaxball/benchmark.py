@@ -71,7 +71,7 @@ def single_game_pyinstrument():
 
     profiler.stop()
     html = profiler.output_html()
-    with open(PATH_PROJECT / "benchmarks/single_game_pyinstrument.html", "w") as f:
+    with (PATH_PROJECT / "benchmarks/single_game_pyinstrument.html").open("w") as f:
         f.write(html)
 
 
@@ -117,7 +117,7 @@ def multiple_games_pyinstrument(n=5):
 
     profiler.stop()
     html = profiler.output_html()
-    with open(PATH_PROJECT / "benchmarks/multiple_games_pyinstrument.html", "w") as f:
+    with (PATH_PROJECT / "benchmarks/multiple_games_pyinstrument.html").open("w") as f:
         f.write(html)
 
 
@@ -149,7 +149,7 @@ def obstacle_map_pyinstrument():
     profiler.stop()
     html = profiler.output_html()
 
-    with open(PATH_PROJECT / "benchmarks/obstacle_map_pyinstrument.html", "w") as f:
+    with (PATH_PROJECT / "benchmarks/obstacle_map_pyinstrument.html").open("w") as f:
         f.write(html)
 
 
@@ -204,12 +204,6 @@ def output_pyperf(bench: Benchmark, output_path: Path):
 
 
 def main():
-    # single_game_pyperf()
-    # single_game_pyinstrument()
-
-    # multiple_games_pyperf()
-    # multiple_games_pyinstrument()
-
     obstacle_map_pyinstrument()
     obstacle_map_pyperf()
 

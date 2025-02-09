@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 
 from ursinaxball.common_values import CollisionFlag
-from ursinaxball.objects.base import Disc
+from ursinaxball.objects.base.disc_object import Disc
 
 
 class BallPhysics(Disc):

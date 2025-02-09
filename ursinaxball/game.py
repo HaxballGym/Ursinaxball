@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import copy
 import logging
-from typing import List, Optional, Union, Any, Sequence, cast, TypeGuard
+from typing import Any, Optional, Sequence, TypeGuard, Union, cast
 
 import numpy as np
 from numpy.typing import NDArray
@@ -30,7 +30,7 @@ ActionsType = Union[NDArray[np.int_], Sequence[Optional[ActionType]]]
 DEFAULT_ACTION = [0, 0, 0]
 
 
-def is_sequence_with_none(action: Any) -> TypeGuard[Sequence[Optional[int]]]:
+def is_sequence_with_none(action: Any) -> TypeGuard[Sequence[int | None]]:
     """Type guard to check if an action is a sequence containing None values."""
     if not isinstance(action, (list, tuple)):
         return False
@@ -40,7 +40,7 @@ def is_sequence_with_none(action: Any) -> TypeGuard[Sequence[Optional[int]]]:
         return False
 
 
-def normalize_action(action: ActionType) -> List[int]:
+def normalize_action(action: ActionType) -> list[int]:
     """Convert any action type to a list of integers."""
     if action is None:
         return DEFAULT_ACTION.copy()
@@ -56,26 +56,26 @@ def normalize_action(action: ActionType) -> List[int]:
 
 
 class Game:
-    def __init__(self, config: Optional[GameConfig] = None, **kwargs):
+    def __init__(self, config: GameConfig | None = None, **kwargs):
         if config is None:
             config = GameConfig(**kwargs)
 
         self.config = config  # Store config for reference
         self.score = GameScore()
         self.state = GameState.KICKOFF
-        self.players: List[PlayerHandler] = []
+        self.players: list[PlayerHandler] = []
         self.team_kickoff = TeamID.RED
         self.stadium_file = config.stadium_file
         self.stadium_store: Stadium = load_stadium_hbs(self.stadium_file)
         self.stadium_game: Stadium = copy.deepcopy(self.stadium_store)
         self.enable_recorder = config.enable_recorder
-        self.recorder: Optional[GameActionRecorder] = (
+        self.recorder: GameActionRecorder | None = (
             GameActionRecorder(self, config.folder_rec)
             if config.enable_recorder
             else None
         )
         self.enable_renderer = config.enable_renderer
-        self.renderer: Optional[GameRenderer] = (
+        self.renderer: GameRenderer | None = (
             GameRenderer(self, config.enable_vsync, config.fov)
             if config.enable_renderer
             else None
@@ -84,7 +84,7 @@ class Game:
     def add_player(self, player: PlayerHandler) -> None:
         self.players.append(player)
 
-    def add_players(self, players: List[PlayerHandler]) -> None:
+    def add_players(self, players: list[PlayerHandler]) -> None:
         for player in players:
             self.add_player(player)
 
@@ -106,7 +106,7 @@ class Game:
         self.stadium_store: Stadium = load_stadium_hbs(map_file)
         self.stadium_game: Stadium = copy.deepcopy(self.stadium_store)
 
-    def check_goal(self, previous_discs_position: List[Disc]) -> int:
+    def check_goal(self, previous_discs_position: list[Disc]) -> int:
         current_disc_position = [
             disc
             for disc in self.stadium_game.discs
@@ -134,55 +134,80 @@ class Game:
 
         return TeamID.SPECTATOR
 
-    def handle_game_state(self, previous_discs_position: List[Disc]) -> bool:
+    def _handle_kickoff_state(self) -> None:
+        """Handle the KICKOFF state logic."""
+        for player in self.players:
+            if player.disc.position is not None:
+                kickoff_collision = (
+                    CollisionFlag.REDKO
+                    if self.team_kickoff == TeamID.RED
+                    else CollisionFlag.BLUEKO
+                )
+                player.disc.collision_mask = (
+                    CollisionFlag.PLAYER_COLLISION | kickoff_collision
+                )
+
+        ball_disc = self.stadium_game.discs[0]
+        if np.linalg.norm(ball_disc.velocity) > 0:
+            log.debug("Kickoff made")
+            self.state = GameState.PLAYING
+
+    def _handle_playing_state(self, previous_discs_position: list[Disc]) -> None:
+        """Handle the PLAYING state logic."""
+        for player in self.players:
+            if player.disc.position is not None:
+                player.disc.collision_mask = CollisionFlag.PLAYER_COLLISION
+
+        team_goal = self.check_goal(previous_discs_position)
+        if team_goal != TeamID.SPECTATOR:
+            team_goal_string = "Red" if team_goal == TeamID.RED else "Blue"
+            log.debug(f"Team {team_goal_string} conceded a goal")
+            self.state = GameState.GOAL
+            self.score.update_score(team_goal)
+            if not self.score.is_game_over():
+                self.team_kickoff = (
+                    TeamID.BLUE if team_goal == TeamID.BLUE else TeamID.RED
+                )
+        elif self.score.is_game_over():
+            self.state = GameState.END
+            self.score.end_animation()
+
+    def _handle_goal_state(self) -> None:
+        """Handle the GOAL state logic."""
+        self.score.animation_timeout -= 1
+        if not self.score.is_animation():
+            if self.score.is_game_over():
+                self.state = GameState.END
+                self.score.end_animation()
+            else:
+                self.reset_discs_positions()
+                self.state = GameState.KICKOFF
+
+    def _handle_end_state(self) -> bool:
+        """Handle the END state logic."""
+        self.score.animation_timeout -= 1
+        return not self.score.is_animation()
+
+    def handle_game_state(self, previous_discs_position: list[Disc]) -> bool:
+        """
+        Handle the game state machine and transitions.
+
+        Args:
+            previous_discs_position: List of disc positions from previous step
+
+        Returns:
+            bool: True if game is done, False otherwise
+        """
         self.score.step(self.state)
 
         if self.state == GameState.KICKOFF:
-            for player in self.players:
-                if player.disc.position is not None:
-                    kickoff_collision = (
-                        CollisionFlag.REDKO
-                        if self.team_kickoff == TeamID.RED
-                        else CollisionFlag.BLUEKO
-                    )
-                    player.disc.collision_mask = 39 | kickoff_collision
-            ball_disc = self.stadium_game.discs[0]
-            if np.linalg.norm(ball_disc.velocity) > 0:
-                log.debug("Kickoff made")
-                self.state = GameState.PLAYING
-
+            self._handle_kickoff_state()
         elif self.state == GameState.PLAYING:
-            for player in self.players:
-                if player.disc.position is not None:
-                    player.disc.collision_mask = 39
-            team_goal = self.check_goal(previous_discs_position)
-            if team_goal != TeamID.SPECTATOR:
-                team_goal_string = "Red" if team_goal == TeamID.RED else "Blue"
-                log.debug(f"Team {team_goal_string} conceded a goal")
-                self.state = GameState.GOAL
-                self.score.update_score(team_goal)
-                if not self.score.is_game_over():
-                    self.team_kickoff = (
-                        TeamID.BLUE if team_goal == TeamID.BLUE else TeamID.RED
-                    )
-            elif self.score.is_game_over():
-                self.state = GameState.END
-                self.score.end_animation()
-
+            self._handle_playing_state(previous_discs_position)
         elif self.state == GameState.GOAL:
-            self.score.animation_timeout -= 1
-            if not self.score.is_animation():
-                if self.score.is_game_over():
-                    self.state = GameState.END
-                    self.score.end_animation()
-                else:
-                    self.reset_discs_positions()
-                    self.state = GameState.KICKOFF
-
+            self._handle_goal_state()
         elif self.state == GameState.END:
-            self.score.animation_timeout -= 1
-            if not self.score.is_animation():
-                return True
+            return self._handle_end_state()
 
         return False
 

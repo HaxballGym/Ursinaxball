@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from ursinaxball import Game
 
 
-class GameRenderer(object):
+class GameRenderer:
     def __init__(self, game: Game, enable_vsync=True, fov: int = 550) -> None:
         self.game = game
         self.app: Ursina = None
@@ -66,7 +66,7 @@ class GameRenderer(object):
         if follow_player:
             camera.position = pos_player_0
         else:
-            pos_ball = pos_ball
+            pos_ball = pos_ball  # noqa: PLW0127
 
     def update(self):
         for entity, game_disc in zip(self.disc_entities, self.game.stadium_game.discs):

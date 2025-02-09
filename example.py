@@ -4,7 +4,7 @@ from ursina import Keys, held_keys
 
 from ursinaxball import Game
 from ursinaxball.common_values import BaseMap, TeamID
-from ursinaxball.modules import GameScore, PlayerHandler, ChaseBot
+from ursinaxball.modules import ChaseBot, GameScore, PlayerHandler
 
 game = Game(
     folder_rec="./recordings/",

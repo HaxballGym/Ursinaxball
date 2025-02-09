@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-import os
 import time
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import msgpack
@@ -53,7 +53,7 @@ class GameActionRecorder:
         Time stamp is the current time in seconds since 01/01/1970.
         """
         file_name = (
-            f"HBR_{str(int(time.time()))}_{self.game.score.red}-"
+            f"HBR_{int(time.time())!s}_{self.game.score.red}-"
             + f"{self.game.score.blue}_{self.options[0]}.hbar"
         )
         return file_name
@@ -85,12 +85,12 @@ class GameActionRecorder:
         self.options = []
 
     def save(self, file_name: str) -> None:
-        with open(os.path.join(os.path.curdir, self.folder_rec, file_name), "wb+") as f:
+        with (Path(__file__).parent / self.folder_rec / file_name).open("wb+") as f:
             encoded_recording = msgpack.packb(self.recording)
             f.write(encoded_recording)
 
     def read_from_file(self, file_name: str) -> None:
-        with open(file_name, "rb") as f:
+        with Path(file_name).open("rb") as f:
             self.recording = msgpack.unpackb(f.read())
             self.options = [self.recording[0]]
             self.player_info = [info for info, _ in self.recording[1]]
@@ -115,7 +115,7 @@ class GamePositionRecorder:
         Time stamp is the current time in seconds since 01/01/1970.
         """
         file_name = (
-            f"HBR_{str(int(time.time()))}_{self.game.score.red}-"
+            f"HBR_{int(time.time())!s}_{self.game.score.red}-"
             + f"{self.game.score.blue}_{self.options[0]}.hbpr"
         )
         return file_name
@@ -129,7 +129,7 @@ class GamePositionRecorder:
         self.player_action.append([])
         self.options = [self.game.team_kickoff * 8]
 
-    def step(self, actions: np.ndarray):
+    def step(self, _actions: np.ndarray):
         for i, player in enumerate(self.game.players):
             disc = player.disc
             disc_value = [
@@ -138,7 +138,7 @@ class GamePositionRecorder:
                 disc.velocity[0],
                 disc.velocity[1],
                 int(player.kicking),
-                int(player._kick_cancel),
+                int(player._kick_cancel),  # noqa: SLF001
             ]
             self.player_action[i].append(disc_value)
         ball = self.game.stadium_game.discs[0]
@@ -166,12 +166,12 @@ class GamePositionRecorder:
         self.options = []
 
     def save(self, file_name: str) -> None:
-        with open(os.path.join(os.path.curdir, self.folder_rec, file_name), "wb+") as f:
+        with (Path(__file__).parent / self.folder_rec / file_name).open("wb+") as f:
             encoded_recording = msgpack.packb(self.recording)
             f.write(encoded_recording)
 
     def read_from_file(self, file_name: str) -> None:
-        with open(file_name, "rb") as f:
+        with Path(file_name).open("rb") as f:
             self.recording = msgpack.unpackb(f.read())
             self.options = [self.recording[0]]
             self.player_info = [info for info, _ in self.recording[1]]
