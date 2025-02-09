@@ -10,14 +10,14 @@ from .trait_object import Trait
 from .vertex_object import Vertex
 
 __all__ = [
-    "PhysicsObject",
-    "Disc",
-    "BallPhysics",
-    "Goal",
-    "Plane",
-    "Vertex",
-    "Trait",
-    "Segment",
-    "PlayerPhysics",
     "Background",
+    "BallPhysics",
+    "Disc",
+    "Goal",
+    "PhysicsObject",
+    "Plane",
+    "PlayerPhysics",
+    "Segment",
+    "Trait",
+    "Vertex",
 ]

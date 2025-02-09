@@ -4,17 +4,17 @@ from .player import PlayerData, PlayerHandler
 from .systems import GameActionRecorder, GamePositionRecorder, GameRenderer, GameScore
 
 __all__ = [
-    "resolve_collisions",
-    "update_discs",
+    "Bot",
+    "ChaseBot",
+    "ConstantActionBot",
     "GameActionRecorder",
     "GamePositionRecorder",
     "GameRenderer",
     "GameScore",
+    "GoalkeeperBot",
     "PlayerData",
     "PlayerHandler",
-    "Bot",
-    "ConstantActionBot",
     "RandomBot",
-    "ChaseBot",
-    "GoalkeeperBot",
+    "resolve_collisions",
+    "update_discs",
 ]

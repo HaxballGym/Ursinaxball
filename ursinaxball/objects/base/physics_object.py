@@ -18,32 +18,32 @@ class PhysicsObject(ABC):
         pass
 
     @staticmethod
-    def apply_trait(self, data: dict) -> None:
+    def apply_trait(obj: PhysicsObject, data: dict) -> None:
         """
         Applies the trait to the physics object.
 
         Args:
             data: Dictionary containing traits data
         """
-        if not data or not data.get("traits") or not self.trait:
+        if not data or not data.get("traits") or not obj.trait:
             return
 
-        trait_value = data["traits"].get(self.trait, {})
+        trait_value = data["traits"].get(obj.trait, {})
         for key, value in trait_value.items():
             key_object = DICT_KEYS.get(key)
             if (
                 not key_object
-                or not hasattr(self, key_object)
-                or getattr(self, key_object) is not None
+                or not hasattr(obj, key_object)
+                or getattr(obj, key_object) is not None
             ):
                 continue
 
             final_value = (
-                self.transform_collision_dict(value)
+                obj.transform_collision_dict(value)
                 if key_object in ("collision_group", "collision_mask")
                 else value
             )
-            setattr(self, key_object, final_value)
+            setattr(obj, key_object, final_value)
 
     @abstractmethod
     def apply_default_values(self):

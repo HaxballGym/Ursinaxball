@@ -4,8 +4,8 @@ from .common_bots import ChaseBot, ConstantActionBot, RandomBot
 
 __all__ = [
     "Bot",
-    "ConstantActionBot",
-    "RandomBot",
     "ChaseBot",
+    "ConstantActionBot",
     "GoalkeeperBot",
+    "RandomBot",
 ]

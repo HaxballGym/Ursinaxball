@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Tuple
+from typing import TYPE_CHECKING
 
 import numpy as np
 
@@ -57,7 +57,7 @@ def resolve_disc_vertex_collision(disc: Disc, vertex: Vertex) -> None:
 
 def segment_apply_bias(
     segment: Segment, dist: float, normal: np.ndarray
-) -> Tuple[float, np.ndarray]:
+) -> tuple[float, np.ndarray]:
     """
     Applies the bias property during the collision between a segment and a disc
     """
@@ -79,7 +79,7 @@ def segment_apply_bias(
 
 def resolve_disc_segment_collision_no_curve(
     disc: Disc, segment: Segment
-) -> Tuple[float, np.ndarray]:
+) -> tuple[float, np.ndarray]:
     res = resolve_disc_segment_collision_no_curve_fn(
         disc.position,
         segment.vertices[0].position,
@@ -90,7 +90,7 @@ def resolve_disc_segment_collision_no_curve(
 
 def resolve_disc_segment_collision_curve(
     disc: Disc, segment: Segment
-) -> Tuple[float, np.ndarray]:
+) -> tuple[float, np.ndarray]:
     res = resolve_disc_segment_collision_curve_fn(
         disc.position,
         segment.circle_center,

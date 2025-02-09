@@ -70,10 +70,10 @@ def position_keeper(goal: Goal, ball: Disc) -> list[float]:
     )
     if intersection is not None:
         if (
-            intersection[0] < default_x
-            and center_goal[0] < 0
-            or intersection[0] > default_x
-            and center_goal[0] > 0
+            (intersection[0] < default_x
+            and center_goal[0] < 0)
+            or (intersection[0] > default_x
+            and center_goal[0] > 0)
         ):
             intersection[0] = default_x
         return intersection
@@ -87,10 +87,10 @@ def position_keeper(goal: Goal, ball: Disc) -> list[float]:
     )
     if intersection is not None:
         if (
-            intersection[0] < default_x
-            and center_goal[0] < 0
-            or intersection[0] > default_x
-            and center_goal[0] > 0
+            (intersection[0] < default_x
+            and center_goal[0] < 0)
+            or (intersection[0] > default_x
+            and center_goal[0] > 0)
         ):
             intersection[0] = default_x
         return intersection

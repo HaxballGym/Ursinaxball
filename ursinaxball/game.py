@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import copy
 import logging
-from typing import Optional, Sequence, Union
+from collections.abc import Sequence
+from typing import Optional, Union
 
 import numpy as np
 from numpy.typing import NDArray
