@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
 from random import randint
+from typing import TYPE_CHECKING
 
 import numpy as np
 
-from ursinaxball.modules.bots import Bot
 from ursinaxball.common_values import ActionBin
+from ursinaxball.modules.bots import Bot
 
 if TYPE_CHECKING:
     from ursinaxball import Game
@@ -22,7 +22,7 @@ class ConstantActionBot(Bot):
         super().__init__(symmetry=symmetry)
         self.action = action
 
-    def step_game(self, player: PlayerHandler, game: Game) -> list[int]:
+    def step_game(self, _player: PlayerHandler, _game: Game) -> list[int]:
         return self.action
 
 
@@ -34,7 +34,7 @@ class RandomBot(Bot):
     def __init__(self, tick_skip: int):
         super().__init__(tick_skip=tick_skip)
 
-    def step_game(self, player: PlayerHandler, game: Game) -> None:
+    def step_game(self, _player: PlayerHandler, _game: Game) -> list[int]:
         RA = randint(-1, 1)
         UA = randint(-1, 1)
         SA = randint(0, 1)
@@ -67,7 +67,7 @@ class ChaseBot(Bot):
 
         dist = np.linalg.norm(ball.position - player.disc.position)
         if (dist - player.disc.radius - ball.radius) < 15:
-            if ~player._kick_cancel and self.previous_actions[ActionBin.KICK] == 1:
+            if ~player._kick_cancel and self.previous_actions[ActionBin.KICK] == 1:  # noqa: SLF001
                 inputs_player[ActionBin.KICK] = 0
             else:
                 inputs_player[ActionBin.KICK] = 1

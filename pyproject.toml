@@ -1,18 +1,19 @@
 [tool.poetry]
 name = "ursinaxball"
-version = "0.2.3"
+version = "0.2.4"
 description = ""
 authors = ["Wazarr <jeje_04@live.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.11"
+python = ">=3.9,<3.13"
 numpy = "^1.23.5"
 msgpack = "^1.0.4"
-panda3d = "1.10.13"
+panda3d = "^1.10.15"
 ursina = "5.0.0"
 scipy = "^1.10.0"
 screeninfo = "^0.8.1"
+loguru = "^0.7.2"
 
 [tool.poetry.group.dev]
 optional = true
@@ -23,6 +24,7 @@ tox = "^4.5.1"
 pyperf = "^2.6.1"
 pyinstrument = "^4.5.3"
 plotly = "^5.16.1"
+ruff = "^0.9.5"
 
 [build-system]
 requires = ["poetry-core"]

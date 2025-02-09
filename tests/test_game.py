@@ -1,11 +1,17 @@
-from ursinaxball.modules.bots import ConstantActionBot
+from ursinaxball.common_values import TeamID
 from ursinaxball.game import Game, GameScore
 from ursinaxball.modules import PlayerHandler
-from ursinaxball.common_values import TeamID
+from ursinaxball.modules.bots import ConstantActionBot
+from ursinaxball.modules.systems.game_config import GameConfig
 
 
 def test_game():
-    game = Game(enable_renderer=False, enable_recorder=False)
+    config = GameConfig(
+        enable_renderer=False,
+        enable_recorder=False,
+    )
+
+    game = Game(config)
 
     custom_score = GameScore(time_limit=1, score_limit=1)
     game.score = custom_score

@@ -41,7 +41,7 @@ class GameScore:
         elif team_id == TeamID.RED:
             self.blue += 1
         else:
-            raise ValueError("Invalid team_id: {}".format(team_id))
+            raise ValueError(f"Invalid team_id: {team_id}")
         self.animation_timeout = 150
 
     def is_score_limit_reached(self) -> bool:
@@ -59,7 +59,6 @@ class GameScore:
 
     def end_animation(self) -> None:
         self.animation_timeout = 300
-        return
 
     def is_game_over(self) -> bool:
         return self.is_score_limit_reached() or self.is_time_limit_reached()

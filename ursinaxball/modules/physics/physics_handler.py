@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Tuple
+from typing import TYPE_CHECKING
 
 import numpy as np
 
@@ -38,8 +38,6 @@ def resolve_disc_disc_collision(disc_a: Disc, disc_b: Disc) -> None:
     disc_b.position = disc_b_res[0]
     disc_b.velocity = disc_b_res[1]
 
-    return
-
 
 def resolve_disc_vertex_collision(disc: Disc, vertex: Vertex) -> None:
     """
@@ -56,12 +54,10 @@ def resolve_disc_vertex_collision(disc: Disc, vertex: Vertex) -> None:
     disc.position = disc_res[0]
     disc.velocity = disc_res[1]
 
-    return
-
 
 def segment_apply_bias(
     segment: Segment, dist: float, normal: np.ndarray
-) -> Tuple[float, np.ndarray]:
+) -> tuple[float, np.ndarray]:
     """
     Applies the bias property during the collision between a segment and a disc
     """
@@ -76,14 +72,14 @@ def segment_apply_bias(
         normal = -normal
 
     if dist < -bias_segment:
-        return np.Infinity, normal
+        return np.inf, normal
 
     return dist, normal
 
 
 def resolve_disc_segment_collision_no_curve(
     disc: Disc, segment: Segment
-) -> Tuple[float, np.ndarray]:
+) -> tuple[float, np.ndarray]:
     res = resolve_disc_segment_collision_no_curve_fn(
         disc.position,
         segment.vertices[0].position,
@@ -94,7 +90,7 @@ def resolve_disc_segment_collision_no_curve(
 
 def resolve_disc_segment_collision_curve(
     disc: Disc, segment: Segment
-) -> Tuple[float, np.ndarray]:
+) -> tuple[float, np.ndarray]:
     res = resolve_disc_segment_collision_curve_fn(
         disc.position,
         segment.circle_center,
@@ -129,8 +125,6 @@ def resolve_disc_segment_collision(disc: Disc, segment: Segment) -> None:
         disc.position = res[0]
         disc.velocity = res[1]
 
-    return
-
 
 def resolve_disc_plane_collision(disc: Disc, plane: Plane) -> None:
     """
@@ -147,8 +141,6 @@ def resolve_disc_plane_collision(disc: Disc, plane: Plane) -> None:
     )
     disc.position = disc_res[0]
     disc.velocity = disc_res[1]
-
-    return
 
 
 def resolve_collisions(stadium_game: Stadium) -> None:

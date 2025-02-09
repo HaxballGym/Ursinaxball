@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 from math import pi, tan
-from typing import List
 
 import numpy as np
 from ursina import Entity, Pipe
 
 from ursinaxball.common_values import CollisionFlag
-from ursinaxball.objects.base import PhysicsObject, Vertex
+from ursinaxball.objects.base.physics_object import PhysicsObject
+from ursinaxball.objects.base.vertex_object import Vertex
 
 
 class Segment(PhysicsObject):
@@ -25,8 +25,8 @@ class Segment(PhysicsObject):
         self.collision_mask: int = self.transform_collision_dict(
             data_object.get("cMask")
         )
-        self.vertices_index: List[int] = [data_object.get("v0"), data_object.get("v1")]
-        self.vertices: List[Vertex] = [
+        self.vertices_index: list[int] = [data_object.get("v0"), data_object.get("v1")]
+        self.vertices: list[Vertex] = [
             Vertex(data_stadium.get("vertexes")[i], data_stadium)
             for i in self.vertices_index
         ]
@@ -42,7 +42,7 @@ class Segment(PhysicsObject):
         # Additional properties
         self.circle_center: np.ndarray = np.zeros(2)
         self.circle_radius: float = 0
-        self.circle_tangeant: List[np.ndarray] = np.array(
+        self.circle_tangeant: list[np.ndarray] = np.array(
             [np.zeros(2), np.zeros(2)], dtype=float
         )
         self.circle_angle: np.ndarray = np.zeros(2)

@@ -1,10 +1,8 @@
 from __future__ import annotations
 
-from typing import List
-
 import numpy as np
 
-from ursinaxball.objects.base import PhysicsObject
+from ursinaxball.objects.base.physics_object import PhysicsObject
 
 
 class Goal(PhysicsObject):
@@ -16,7 +14,7 @@ class Goal(PhysicsObject):
         if data_object is None:
             data_object = {}
 
-        self.points: List[np.ndarray] = np.array(
+        self.points: list[np.ndarray] = np.array(
             [data_object.get("p0"), data_object.get("p1")]
         )
         self.team = data_object.get("team")
@@ -28,4 +26,3 @@ class Goal(PhysicsObject):
         """
         Applies the default values to the goal if they are none
         """
-        pass

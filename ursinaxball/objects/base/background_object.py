@@ -11,7 +11,7 @@ from ursinaxball.common_values import (
     HOCKEY_BORDER_COLOR,
     HOCKEY_FILL_COLOR,
 )
-from ursinaxball.objects.base import PhysicsObject
+from ursinaxball.objects.base.physics_object import PhysicsObject
 
 
 class Background:
@@ -36,21 +36,19 @@ class Background:
             self.fill_color = DEFAULT_FILL_COLOR
 
     def get_limit_entity(self) -> Entity | None:
-        if self.type != "grass" and self.type != "hockey":
+        if self.type not in ("grass", "hockey"):
             return None
 
         if self.limit_width is not None and self.limit_height is not None:
-            vertices_entity = tuple(
-                [
-                    (-self.limit_width - 1.25, -self.limit_height, 0),
-                    (self.limit_width + 1.25, -self.limit_height, 0),
-                    (self.limit_width, -self.limit_height, 0),
-                    (self.limit_width, self.limit_height, 0),
-                    (self.limit_width + 1.25, self.limit_height, 0),
-                    (-self.limit_width - 1.25, self.limit_height, 0),
-                    (-self.limit_width, self.limit_height, 0),
-                    (-self.limit_width, -self.limit_height, 0),
-                ]
+            vertices_entity = (
+                (-self.limit_width - 1.25, -self.limit_height, 0),
+                (self.limit_width + 1.25, -self.limit_height, 0),
+                (self.limit_width, -self.limit_height, 0),
+                (self.limit_width, self.limit_height, 0),
+                (self.limit_width + 1.25, self.limit_height, 0),
+                (-self.limit_width - 1.25, self.limit_height, 0),
+                (-self.limit_width, self.limit_height, 0),
+                (-self.limit_width, -self.limit_height, 0),
             )
 
             limit_entity = Entity(
@@ -65,7 +63,7 @@ class Background:
             return limit_entity
 
     def get_kickoff_circle_entity(self) -> Entity | None:
-        if self.type == "grass" or self.type == "hockey":
+        if self.type in ("grass", "hockey"):
             circle_vertices = PhysicsObject.arc(
                 x=0,
                 y=0,
@@ -89,15 +87,13 @@ class Background:
             return kickoff_circle_entity
 
     def get_kickoff_line_entity(self) -> Entity | None:
-        if self.type != "grass" and self.type != "hockey":
+        if self.type not in ("grass", "hockey"):
             return None
 
         if self.limit_height is not None:
-            vertices_entity = tuple(
-                [
-                    (0, -self.limit_height, 0),
-                    (0, self.limit_height, 0),
-                ]
+            vertices_entity = (
+                (0, -self.limit_height, 0),
+                (0, self.limit_height, 0),
             )
 
             limit_entity = Entity(

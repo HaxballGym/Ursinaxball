@@ -16,6 +16,8 @@ class CollisionFlag(IntFlag):
     C1 = 536870912
     C2 = 1073741824
     C3 = -2147483648
+    # Common collision masks
+    PLAYER_COLLISION = BALL | RED | BLUE | WALL  # 39: Basic collision mask for players
 
 
 class TeamID(IntEnum):

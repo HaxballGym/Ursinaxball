@@ -60,7 +60,7 @@ class PlayerPhysics(Disc):
         if self.kickback is None:
             self.kickback = 0
 
-    def copy(self, other: "PlayerPhysics") -> None:
+    def copy(self, other: PlayerPhysics) -> None:
         self.collision_group = copy.copy(other.collision_group)
         self.collision_mask = copy.copy(other.collision_mask)
         self.position = copy.copy(other.position)
