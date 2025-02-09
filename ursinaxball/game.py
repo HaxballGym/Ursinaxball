@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import copy
 import logging
-from typing import Any, Optional, Sequence, TypeGuard, Union, cast
+from typing import Optional, Sequence, Union
 
 import numpy as np
 from numpy.typing import NDArray
@@ -30,18 +30,15 @@ ActionsType = Union[NDArray[np.int_], Sequence[Optional[ActionType]]]
 DEFAULT_ACTION = [0, 0, 0]
 
 
-def is_sequence_with_none(action: Any) -> TypeGuard[Sequence[int | None]]:
-    """Type guard to check if an action is a sequence containing None values."""
-    if not isinstance(action, (list, tuple)):
-        return False
-    try:
-        return any(x is None for x in action)
-    except TypeError:
-        return False
-
-
 def normalize_action(action: ActionType) -> list[int]:
-    """Convert any action type to a list of integers."""
+    """Convert any action type to a list of integers.
+
+    Args:
+        action: The action to normalize
+
+    Returns:
+        list[int]: A list of integers representing the normalized action
+    """
     if action is None:
         return DEFAULT_ACTION.copy()
 
@@ -283,10 +280,8 @@ class Game:
             actions_list = [normalize_action(action) for action in actions]
             actions = np.array(actions_list, dtype=np.int_)
 
-        # Ensure actions is a numpy array for type checking
-        actions_array = cast(NDArray[np.int_], actions)
-
-        for action, player in zip(actions_array, self.players):
+        # At this point actions is guaranteed to be a numpy array
+        for action, player in zip(actions, self.players):
             self.make_player_action(player, action)
 
         previous_discs_position = [
@@ -298,7 +293,7 @@ class Game:
         resolve_collisions(self.stadium_game)
         done = self.handle_game_state(previous_discs_position)
         if self.recorder is not None:
-            self.recorder.step(actions_array)  # Pass the numpy array
+            self.recorder.step(actions)  # type: ignore
         if self.renderer is not None:
             self.renderer.update()
 
